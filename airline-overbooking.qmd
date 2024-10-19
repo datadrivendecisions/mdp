@@ -4,9 +4,7 @@ jupyter: python3
 ---
 
 
-## Homework Assigmment 1.6 p.11 Lecture notes
-
-# Exercise 1.6 (Airline Overbooking)
+## Homework Assigmment 1.6 p.11 from Lecture notes
 
 An airline seeks a reservation policy for a flight with $S$ seats that maximizes its expected profit from the flight. Reservation requests arrive hourly according to a Bernoulli process with $p$ being the probability of a reservation request per hour (at most one reservation request will arrive per hour). A passenger with a booked reservation pays the fare $f > 0$ at flight time. If $b \geq 0$ passengers with booked reservations are denied boarding at flight time, they do not pay the fare, and the airline pays them a penalty $c(b)$ (divided among them) where $b \mapsto c(b)$ is increasing with $c(0) = 0$.
 
@@ -42,24 +40,22 @@ Make graphs of the different combinations. In each case, estimate the booking li
 
 What conjectures do the graphs suggest about the optimal reservation policy and/or maximum expected reward and their variation with the various data elements? You will lose points on your conjectures only if your graphs are inconsistent with or do not support your conjectures, or if you don’t make enough interesting conjectures. The idea here is to brainstorm intelligently.
 
+## Solutions
+
+### c) Solving the Problem
 
 ```{python}
+# Load packages
 from scipy.stats import binom
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+```
 
-T = 30
-f = 300
-S = 10
-p = 0.2
-q = 0.1
-r_max = 20
+```{python}
+# Functions
 
-def c(b):
-    return 300*b
-
-def solve_mdp(p, q):
+def solve_mdp(T, f, S, p, q, r_max):
 
     V_opt = {}
     policy_opt = {}
@@ -74,7 +70,7 @@ def solve_mdp(p, q):
                 if r <= S:
                     V_opt[n][r] = f*r
                 else:
-                    V_opt[n][r] = f*S - c(r - S)
+                    V_opt[n][r] = f*S - f*(r - S)
 
         else:
             for r in range(T+1 - n):
@@ -113,18 +109,18 @@ def print_policy(policy_opt, V_opt):
 def plot_policy(policy_opt, V_opt, n, title):
     data_dict = {'r': policy_opt[n].keys(), 'policy': policy_opt[n].values(), 'V_star': V_opt[n].values()}
     data = pd.DataFrame(data_dict)
-    fig = px.line(data, x = 'r', y = 'V_star', color='policy', title = title)
+    fig = px.line(data, x = 'r', y = 'V_star', color='policy', title = title, markers=True)
     fig.show()
 
-def plot_policies(params=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)], n=10):
+def plot_policies(T, f, S, r_max, probs=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)], n=10):
     fig = go.Figure()
     
     # Get a list of colors to use for different (p, q) pairs
     color_sequence = px.colors.qualitative.Plotly  # Default Plotly color sequence
-    param_colors = {}  # Dictionary to map each (p, q) to a specific color
+    probs_colors = {}  # Dictionary to map each (p, q) to a specific color
 
-    for idx, (p, q) in enumerate(params):
-        policy_opt, V_opt = solve_mdp(p, q)
+    for idx, (p, q) in enumerate(probs):
+        policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
         data_dict = {
             'r': list(policy_opt[10].keys()),
             'policy': list(policy_opt[10].values()),
@@ -135,7 +131,7 @@ def plot_policies(params=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)], n=1
 
         # Assign a consistent color to this (p, q) pair
         color = color_sequence[idx % len(color_sequence)]
-        param_colors[(p, q)] = color
+        probs_colors[(p, q)] = color
 
         # Identify segments where policy is the same
         segments = []
@@ -170,21 +166,30 @@ def plot_policies(params=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)], n=1
             ))
 
     # Edit the layout
+    
     fig.update_layout(
         title=f"Optimal values and policies {n} epochs before flight",
         xaxis_title='Reservations (r)',
-        yaxis_title='Optimal value (V*)'
+        yaxis_title='Optimal value (V*)',
     )
-
+                                            
     fig.show()
+```
 
 
+```{python}
+T = 30
+f = 300
+S = 10
+p = 0.2
+q = 0.1
+r_max = 22
 ```
 
 ```{python}
-params = [(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)]
+probs = [(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)]
 n=10
-plot_policies(params, n)
+plot_policies(T, f, S, r_max, probs, n)
 ```
 
 ```{python}
@@ -192,7 +197,7 @@ p = 0.2
 q = 0.05
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
-policy_opt, V_opt = solve_mdp(p, q)
+policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
 plot_policy(policy_opt, V_opt, n, title)
 print_policy(policy_opt, V_opt)
 ```
@@ -202,7 +207,7 @@ p = 0.2
 q = 0.1
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
-policy_opt, V_opt = solve_mdp(p, q)
+policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
 plot_policy(policy_opt, V_opt, n, title)
 print_policy(policy_opt, V_opt)
 ```
@@ -212,7 +217,7 @@ p = 0.3
 q = 0.05
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
-policy_opt, V_opt = solve_mdp(p, q)
+policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
 plot_policy(policy_opt, V_opt, n, title)
 print_policy(policy_opt, V_opt)
 ```
@@ -222,7 +227,7 @@ p = 0.3
 q = 0.1
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
-policy_opt, V_opt = solve_mdp(p, q)
+policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
 plot_policy(policy_opt, V_opt, n, title)
 print_policy(policy_opt, V_opt)
 ```
