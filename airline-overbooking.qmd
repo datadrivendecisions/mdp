@@ -47,6 +47,7 @@ What conjectures do the graphs suggest about the optimal reservation policy and/
 from scipy.stats import binom
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 
 T = 30
 f = 300
@@ -114,7 +115,76 @@ def plot_policy(policy_opt, V_opt, n, title):
     data = pd.DataFrame(data_dict)
     fig = px.line(data, x = 'r', y = 'V_star', color='policy', title = title)
     fig.show()
+
+def plot_policies(params=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)], n=10):
+    fig = go.Figure()
     
+    # Get a list of colors to use for different (p, q) pairs
+    color_sequence = px.colors.qualitative.Plotly  # Default Plotly color sequence
+    param_colors = {}  # Dictionary to map each (p, q) to a specific color
+
+    for idx, (p, q) in enumerate(params):
+        policy_opt, V_opt = solve_mdp(p, q)
+        data_dict = {
+            'r': list(policy_opt[10].keys()),
+            'policy': list(policy_opt[10].values()),
+            'V_star': list(V_opt[10].values())
+        }
+        data = pd.DataFrame(data_dict)
+        data = data.sort_values('r')
+
+        # Assign a consistent color to this (p, q) pair
+        color = color_sequence[idx % len(color_sequence)]
+        param_colors[(p, q)] = color
+
+        # Identify segments where policy is the same
+        segments = []
+        current_policy = None
+        current_segment = {'r': [], 'V_star': [], 'policy': None}
+        for index, row in data.iterrows():
+            policy = row['policy']
+            if current_policy is None or policy != current_policy:
+                if current_segment['r']:
+                    segments.append(current_segment)
+                current_policy = policy
+                current_segment = {'r': [], 'V_star': [], 'policy': policy}
+            current_segment['r'].append(row['r'])
+            current_segment['V_star'].append(row['V_star'])
+        segments.append(current_segment)  # Append the last segment
+
+        # Plot each segment with appropriate line style and consistent color
+        segment_count = 0
+        for segment in segments:
+            line_dash = 'solid' if segment['policy'] == 'accept' else 'dot'
+            showlegend = segment_count == 0  # Show legend only for the first segment
+            segment_count += 1
+            fig.add_trace(go.Scatter(
+                x=segment['r'],
+                y=segment['V_star'],
+                mode='lines+markers',
+                name=f'p={p}, q={q}',
+                text = segment['policy'],
+                legendgroup=f'p={p}, q={q}',
+                showlegend=showlegend,
+                line=dict(dash=line_dash, color=color)
+            ))
+
+    # Edit the layout
+    fig.update_layout(
+        title=f"Optimal values and policies {n} epochs before flight",
+        xaxis_title='Reservations (r)',
+        yaxis_title='Optimal value (V*)'
+    )
+
+    fig.show()
+
+
+```
+
+```{python}
+params = [(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)]
+n=10
+plot_policies(params, n)
 ```
 
 ```{python}
