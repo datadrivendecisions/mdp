@@ -176,6 +176,7 @@ def plot_policies(T, f, S, r_max, probs=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (
     fig.show()
 ```
 
+#### Case
 
 ```{python}
 T = 30
@@ -186,11 +187,19 @@ q = 0.1
 r_max = 22
 ```
 
+##### Results
+
 ```{python}
 probs = [(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)]
 n=10
 plot_policies(T, f, S, r_max, probs, n)
 ```
+
+#### Conjectures
+
+1. The booking limit $b_n$ depends only on q and not on p.
+2. The booking limit $b_n$ increases with q.
+3. The optimal value $V^*_n(r)$ decreases with q and increases with p.
 
 ```{python}
 p = 0.2
