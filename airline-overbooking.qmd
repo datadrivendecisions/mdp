@@ -182,8 +182,8 @@ def plot_policies(T, f, S, r_max, probs=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (
 T = 30
 f = 300
 S = 10
-p = 0.2
-q = 0.1
+p_cases = [0.2, 0.3]
+q_cases = [0.05, 0.1]
 r_max = 22
 ```
 
@@ -201,9 +201,11 @@ plot_policies(T, f, S, r_max, probs, n)
 2. The booking limit $b_n$ increases with q.
 3. The optimal value $V^*_n(r)$ decreases with q and increases with p.
 
+#### Cases
+
 ```{python}
-p = 0.2
-q = 0.05
+p = p_cases[0]
+q = q_cases[0]
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
 policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
@@ -212,8 +214,8 @@ print_policy(policy_opt, V_opt)
 ```
 
 ```{python}
-p = 0.2
-q = 0.1
+p = p_cases[0]
+q = q_cases[1]
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
 policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
@@ -222,8 +224,8 @@ print_policy(policy_opt, V_opt)
 ```
 
 ```{python}
-p = 0.3
-q = 0.05
+p = p_cases[1]
+q = q_cases[0]
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
 policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
@@ -232,8 +234,8 @@ print_policy(policy_opt, V_opt)
 ```
 
 ```{python}
-p = 0.3
-q = 0.1
+p = p_cases[1]
+q = q_cases[1]
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
 policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
