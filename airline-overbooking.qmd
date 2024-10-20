@@ -235,7 +235,9 @@ This helper function computes the expected value for accepting or rejecting a re
 
 $$
 \text{Value} = \text{prob}_c \cdot (p \cdot V_{\text{opt}}[n-1][r+1-c] + (1-p) \cdot V_{\text{opt}}[n-1][r-c])
-$$ Where:
+$$
+
+Where:
 
 -   `n`: The current time step (hour before the flight).
 
@@ -333,9 +335,9 @@ plot_policies(T, f, S, r_max, probs, n)
 
 #### Conjectures
 
-1.  The booking limit $b_n$ depends only on q and not on p.
-2.  The booking limit $b_n$ increases with q.
-3.  The optimal value $V^*_n(r)$ decreases with q and increases with p.
+1.  The booking limit $b_n$ depends only on $q$ and not on $p$.
+2.  The booking limit $b_n$ increases with $q$.
+3.  The optimal value $V^*_n(r)$ decreases with $q$ and increases with $p$
 
 #### Cases
 
