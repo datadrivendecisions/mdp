@@ -3,7 +3,6 @@ title: Airline overbooking
 jupyter: python3
 ---
 
-
 ## Homework Assigmment 1.6 p.11 from Lecture notes
 
 An airline seeks a reservation policy for a flight with $S$ seats that maximizes its expected profit from the flight. Reservation requests arrive hourly according to a Bernoulli process with $p$ being the probability of a reservation request per hour (at most one reservation request will arrive per hour). A passenger with a booked reservation pays the fare $f > 0$ at flight time. If $b \geq 0$ passengers with booked reservations are denied boarding at flight time, they do not pay the fare, and the airline pays them a penalty $c(b)$ (divided among them) where $b \mapsto c(b)$ is increasing with $c(0) = 0$.
@@ -44,6 +43,9 @@ What conjectures do the graphs suggest about the optimal reservation policy and/
 
 ### c) Solving the Problem
 
+::: panel-tabset
+## Code
+
 ```{python}
 # Load packages
 from scipy.stats import binom
@@ -54,8 +56,11 @@ import plotly.graph_objects as go
 
 ```{python}
 # Functions
+def Value_calc(n, r, c, p, V_opt, prob_c):
+    value = prob_c*(p*V_opt[n-1][r+1-c] + (1-p)*V_opt[n-1][r-c])
+    return value
 
-def solve_mdp(T, f, S, p, q, r_max):
+def solve_mdp(T, f, S, p, q, r_max, penalty=lambda d, b: 0):
 
     V_opt = {}
     policy_opt = {}
@@ -70,7 +75,7 @@ def solve_mdp(T, f, S, p, q, r_max):
                 if r <= S:
                     V_opt[n][r] = f*r
                 else:
-                    V_opt[n][r] = f*S - f*(r - S)
+                    V_opt[n][r] = f*S - penalty(f, r - S)
 
         else:
             for r in range(T+1 - n):
@@ -79,11 +84,11 @@ def solve_mdp(T, f, S, p, q, r_max):
                     c: binom.pmf(k=c, n=r, p=q) for c in range(r)
                 }
                 V_accept = sum([
-                    prob_c*(p*V_opt[n-1][r+1-c] + (1-p)*V_opt[n-1][r-c])
+                    Value_calc(n, r, c, p, V_opt, prob_c)
                     for c, prob_c in cancellations.items()
                 ])
                 V_reject = sum([
-                    prob_c*V_opt[n-1][r-c]
+                    Value_calc(n, r, c, 0, V_opt, prob_c)
                     for c, prob_c in cancellations.items()
                 ])
 
@@ -120,7 +125,7 @@ def plot_policies(T, f, S, r_max, probs=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (
     probs_colors = {}  # Dictionary to map each (p, q) to a specific color
 
     for idx, (p, q) in enumerate(probs):
-        policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
+        policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max, penalty=penalty_func)
         data_dict = {
             'r': list(policy_opt[10].keys()),
             'policy': list(policy_opt[10].values()),
@@ -175,6 +180,136 @@ def plot_policies(T, f, S, r_max, probs=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (
                                             
     fig.show()
 ```
+## Documentation
+
+#### Function Documentation: `solve_mdp`
+
+**Overview**
+
+The `solve_mdp` function solves a finite-horizon Markov Decision Process (MDP) to determine an optimal reservation policy for an airline. The goal is to maximize the airline's expected profit from a flight with a limited number of seats by making hourly decisions on whether to accept or reject incoming reservation requests. The function accounts for overbooking due to potential cancellations and applies penalties for denied boarding.
+
+**Function Signature**
+
+``` python
+def solve_mdp(T, f, S, p, q, r_max, penalty=lambda d, b: 0):
+```
+
+*Parameters*
+
+-   `T` : int\
+    The total number of hours before flight time. This is the time horizon over which decisions are made.
+
+-   `f` : float\
+    The fare paid by each passenger who successfully boards the flight. This fare represents the reward associated with accepting a reservation.
+
+-   `S` : int\
+    The number of available seats on the flight. This is the maximum number of passengers that can board.
+
+-   `p` : float\
+    The probability of receiving a reservation request in each hour. This is the arrival rate of reservation requests.
+
+-   `q` : float\
+    The probability that a booked reservation is canceled. Each reservation has this independent probability of cancellation.
+
+-   `r_max` : int\
+    The upper limit for the number of reservations the airline is willing to accept (overbooking threshold). If the number of reservations exceeds this value, new requests are automatically rejected.
+
+-  `penalty` : function (optional)\
+    A function that calculates the penalty for denied boarding based on the number of overbooked passengers. The default penalty function is `lambda d, b: 0`, which implies no penalty for denied boarding.
+
+*Returns*
+
+-   `policy_opt` : dict\
+    A dictionary that provides the optimal action (`"accept"` or `"reject"`) at each time step `n` and number of reservations `r`. It has the structure `policy_opt[n][r]`.
+
+-   `V_opt` : dict\
+    A dictionary that provides the maximum expected future profit at each time step `n` and reservation count `r`. It has the structure `V_opt[n][r]`.
+
+**Helper Function:** `Value_calc`
+
+``` python
+def Value_calc(n, r, c, p, V_opt, prob_c):
+```
+
+This helper function computes the expected value for accepting or rejecting a reservation, factoring in the probability of cancellations:
+
+$$
+\text{Value} = \text{prob}_c \cdot (p \cdot V_{\text{opt}}[n-1][r+1-c] + (1-p) \cdot V_{\text{opt}}[n-1][r-c])
+$$ Where:
+
+-   `n`: The current time step (hour before the flight).
+
+-   `r`: The current number of reservations.
+
+-   `c`: The number of cancellations.
+
+-   `p`: The probability of a reservation request.
+
+-   `V_opt`: The dictionary storing the value function.
+
+-   `prob_c`: The probability of having `c` cancellations (based on the binomial distribution).
+
+**Methodology**
+
+The function uses dynamic programming with backward induction to compute the optimal reservation policy and the expected profit. The key challenge is balancing the potential profit from accepting more reservations against the risk of overbooking and paying penalties for denied boarding.
+
+**Value Function Initialization**
+
+At the final time step (`n = 0`), the value function is initialized based on the number of reservations `r`:
+
+$$
+V_0(r) = 
+\begin{cases} 
+f \cdot r & \text{if } r \leq S \\
+f \cdot S - f \cdot (r - S) - c(r - S) & \text{if } r > S
+\end{cases}
+$$
+
+This represents the profit earned from passengers who successfully board the flight. If the number of reservations exceeds the seating capacity (`r > S`), the fare for the overbooked passengers is forfeited, and the airline pays a penalty `c(b)`, where `b = r - S`.
+
+**Recursive Value Calculation**
+
+For each time step `n > 0`, the function calculates the value of accepting (`V_{\text{accept}}`) or rejecting (`V_{\text{reject}}`) a reservation request. This is done using the `Value_calc` function, which computes the expected profit, taking cancellations into account. The value of accepting a reservation is: $$
+V_{\text{accept}} = \sum_{c=0}^{r} \binom{r}{c} q^c (1 - q)^{r - c} \left[ p \cdot V_{\text{opt}}[n-1][r+1-c] + (1-p) \cdot V_{\text{opt}}[n-1][r-c] \right]
+$$ The value of rejecting a reservation is: $$
+V_{\text{reject}} = \sum_{c=0}^{r} \binom{r}{c} q^c (1 - q)^{r - c} V_{\text{opt}}[n-1][r-c]
+$$
+
+**Overbooking and Penalties**
+
+If the number of reservations exceeds the capacity (`r > S`), the function applies a penalty `c(b)` where `b = r - S` represents the number of overbooked passengers. The profit is adjusted to account for this penalty.
+
+**Policy Decision**
+
+At each time step and reservation level: - If `r >= r_max`, the policy is automatically set to `"reject"` (to prevent excessive overbooking). - Otherwise, the policy compares the expected value of accepting vs. rejecting the reservation and selects the action that maximizes the expected profit: $$
+\text{policy}_{n}(r) = 
+\begin{cases} 
+\text{"accept"} & \text{if } V_{\text{accept}} \geq V_{\text{reject}} \\
+\text{"reject"} & \text{otherwise}
+\end{cases}
+$$
+
+**Example Usage**
+
+``` python
+T = 10    # Time steps (hours before flight)
+f = 100   # Fare per passenger
+S = 50    # Seating capacity
+p = 0.8   # Probability of a reservation request
+q = 0.1   # Cancellation probability
+r_max = 60  # Maximum allowable reservations
+
+policy, value = solve_mdp(T, f, S, p, q, r_max, penalty)
+```
+
+**Notes**
+
+-   The function uses the binomial probability mass function (`binom.pmf`) to model the cancellation process. Each reservation has an independent probability `q` of being canceled.
+
+-   The penalty for denied boarding, `c(b)`, can be adjusted based on the problem's requirements, where `b = r - S` is the number of overbooked passengers.
+
+-   The function solves the MDP by backward induction, starting from the final time step and working backward to the first time step to compute the optimal policy.
+:::
 
 #### Case
 
@@ -185,9 +320,10 @@ S = 10
 p_cases = [0.2, 0.3]
 q_cases = [0.05, 0.1]
 r_max = 22
+penalty_func = lambda d, b: d * b
 ```
 
-##### Results
+#### Results
 
 ```{python}
 probs = [(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)]
@@ -197,9 +333,9 @@ plot_policies(T, f, S, r_max, probs, n)
 
 #### Conjectures
 
-1. The booking limit $b_n$ depends only on q and not on p.
-2. The booking limit $b_n$ increases with q.
-3. The optimal value $V^*_n(r)$ decreases with q and increases with p.
+1.  The booking limit $b_n$ depends only on q and not on p.
+2.  The booking limit $b_n$ increases with q.
+3.  The optimal value $V^*_n(r)$ decreases with q and increases with p.
 
 #### Cases
 
@@ -208,7 +344,7 @@ p = p_cases[0]
 q = q_cases[0]
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
-policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
+policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max, penalty=penalty_func)
 plot_policy(policy_opt, V_opt, n, title)
 print_policy(policy_opt, V_opt)
 ```
@@ -218,7 +354,7 @@ p = p_cases[0]
 q = q_cases[1]
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
-policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
+policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max, penalty=penalty_func)
 plot_policy(policy_opt, V_opt, n, title)
 print_policy(policy_opt, V_opt)
 ```
@@ -228,7 +364,7 @@ p = p_cases[1]
 q = q_cases[0]
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
-policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
+policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max, penalty=penalty_func)
 plot_policy(policy_opt, V_opt, n, title)
 print_policy(policy_opt, V_opt)
 ```
@@ -238,8 +374,7 @@ p = p_cases[1]
 q = q_cases[1]
 n = 10
 title = f"Optimal values and policies with p={p}, q={q} and {n} epochs before flight"
-policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max)
+policy_opt, V_opt = solve_mdp(T, f, S, p, q, r_max, penalty=penalty_func)
 plot_policy(policy_opt, V_opt, n, title)
 print_policy(policy_opt, V_opt)
 ```
-
