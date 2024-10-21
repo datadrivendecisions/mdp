@@ -55,7 +55,7 @@ def visualize_grid(grid):
                         color="white", fontsize=16, ha='center', va='center')
             else:
                 ax.add_patch(patches.Rectangle((col, row), 1, 1, edgecolor="black", facecolor="white"))
-                ax.text(col + 0.5, row + 0.5, f"{grid[rows - row - 1, col]:.1f}", 
+                ax.text(col + 0.5, row + 0.5, f"{grid[rows - row - 1, col]:.2f}", 
                         fontsize=16, ha='center', va='center')
     
     ax.set_xticks(np.arange(0, cols+1, 1))
