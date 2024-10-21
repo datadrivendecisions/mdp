@@ -123,9 +123,6 @@ visualize_policy(example_policy)
 ```
 
 ```{python}
-# Reimport necessary libraries and redefine variables due to environment reset
-import numpy as np
-
 # Function to calculate the transition matrix for each action
 def calculate_transition_matrix_for_actions(grid, actions_map):
     rows, cols = grid.shape
