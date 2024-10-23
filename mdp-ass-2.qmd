@@ -1,0 +1,69 @@
+---
+title: "MDP Assignment 2"
+author: "Witek ten Hove"
+format: html
+editor: visual
+jupyter: python3
+---
+
+## 2. Service Rate Control
+
+Consider a discrete-time single-server queueing system that is observed every $\eta > 0$ units of time. The controller makes decisions at times $0, \eta, 2\eta, \dots$. Jobs arrive following a Poisson distribution with a rate of 1.5 jobs per period of length $\eta$. The system has a finite capacity of 8 units, meaning if arriving jobs cause the system content to exceed 8 units, the excess jobs do not enter the system and are lost.
+
+At each decision epoch, the controller observes the number of jobs in the system and selects the service rate from a set of probability distributions indexed by elements of the set $B = \{0, 1, 2\}$. For each $b \in B$, let $f_b(n)$ denote the probability of $n$ service completions within a period of length $\eta$ where:
+
+- $f_0(1) = 0.8$, $f_0(2) = 0.2$
+- $f_1(1) = 0.5$, $f_1(2) = 0.5$
+- $f_2(1) = 0.2$, $f_2(2) = 0.8$
+
+The stationary reward structure consists of four components:
+1. A constant reward $R = 5$ for every completed service.
+2. An expected holding cost $h(s) = 2s$ per period when there are $s$ jobs in the system.
+3. A fixed cost $K = 3$ for changing the service rate.
+4. A per-period cost $d(b)$ for using service rate $b$, where:
+   - $d(0) = 0$
+   - $d(1) = 2$
+   - $d(2) = 5$
+
+We are tasked with determining a minimum-cost service rate control policy.
+
+### (a) Problem Formulation
+
+- Formulate the problem as an infinite horizon Markov decision process (MDP).
+- Choose the optimality criterion: average costs or discounted costs, and provide justification.
+- Develop the model and algorithm to compute the optimal policies and value.
+  - Write your own code for the algorithm (do not use existing MDP libraries).
+  
+### Please Report:
+
+- Model description
+- Your choice of optimality criterion, including motivation
+- Solution algorithm (including motivation)
+- Numerical results and a discussion of those
+
+### (b) Additional Constraint
+
+Now, suppose we require that the server may work at service rate $b = 2$ for at most 25% of the time. Model and solve this adjusted problem.
+
+## Tests
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+
+def poisson_function(lam, k):
+    return (lam**k) * np.exp(-lam) / math.factorial(k)
+ 
+## Test the poisson function
+
+assert poisson_function(1.5, 0) == 0.22313016014842982
+
+## Plot the poisson function
+
+x = np.arange(0, 10, 1)
+plt.plot(x, [poisson_function(1.5, i) for i in x])
+plt.show()
+
+```
+
