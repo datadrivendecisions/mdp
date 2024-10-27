@@ -12,38 +12,47 @@ Consider a discrete-time single-server queueing system that is observed every $\
 
 At each decision epoch, the controller observes the number of jobs in the system and selects the service rate from a set of probability distributions indexed by elements of the set $B = \{0, 1, 2\}$. For each $b \in B$, let $f_b(n)$ denote the probability of $n$ service completions within a period of length $\eta$ where:
 
-- $f_0(1) = 0.8$, $f_0(2) = 0.2$
-- $f_1(1) = 0.5$, $f_1(2) = 0.5$
-- $f_2(1) = 0.2$, $f_2(2) = 0.8$
+-   $f_0(1) = 0.8$, $f_0(2) = 0.2$
+-   $f_1(1) = 0.5$, $f_1(2) = 0.5$
+-   $f_2(1) = 0.2$, $f_2(2) = 0.8$
 
 The stationary reward structure consists of four components:
-1. A constant reward $R = 5$ for every completed service.
-2. An expected holding cost $h(s) = 2s$ per period when there are $s$ jobs in the system.
-3. A fixed cost $K = 3$ for changing the service rate.
-4. A per-period cost $d(b)$ for using service rate $b$, where:
-   - $d(0) = 0$
-   - $d(1) = 2$
-   - $d(2) = 5$
+
+1.  A constant reward $R = 5$ for every completed service.
+
+2.  An expected holding cost $h(s) = 2s$ per period when there are $s$ jobs in the system.
+
+3.  A fixed cost $K = 3$ for changing the service rate.
+
+4.  A per-period cost $d(b)$ for using service rate $b$, where:
+
+    -   $d(0) = 0$
+
+    -   $d(1) = 2$
+
+    -   $d(2) = 5$
 
 We are tasked with determining a minimum-cost service rate control policy.
 
 ### (a) Problem Formulation
 
-- Formulate the problem as an infinite horizon Markov decision process (MDP).
-- Choose the optimality criterion: average costs or discounted costs, and provide justification.
-- Develop the model and algorithm to compute the optimal policies and value.
-  - Write your own code for the algorithm (do not use existing MDP libraries).
-  
+-   Formulate the problem as an infinite horizon Markov decision process (MDP).
+-   Choose the optimality criterion: average costs or discounted costs, and provide justification.
+-   Develop the model and algorithm to compute the optimal policies and value.
+    -   Write your own code for the algorithm (do not use existing MDP libraries).
+
 ### Please Report:
 
-- Model description
-- Your choice of optimality criterion, including motivation
-- Solution algorithm (including motivation)
-- Numerical results and a discussion of those
+-   Model description
+-   Your choice of optimality criterion, including motivation
+-   Solution algorithm (including motivation)
+-   Numerical results and a discussion of those
 
 ### (b) Additional Constraint
 
 Now, suppose we require that the server may work at service rate $b = 2$ for at most 25% of the time. Model and solve this adjusted problem.
+
+![](mm1.png)
 
 ## Tests
 
@@ -67,3 +76,159 @@ plt.show()
 
 ```
 
+## Simulation
+
+```{python}
+import simpy
+import random
+import matplotlib.pyplot as plt
+
+# Parameters for the queue
+RANDOM_SEED = 42
+ARRIVAL_RATE = 1.5  # lambda (arrival rate per time unit)
+SIM_TIME = 100  # total simulation time (in minutes)
+BUFFER_CAPACITY = 8  # buffer can hold up to 8 items
+
+# Data tracking for plotting
+arrivals_per_interval = []  # List to track arrivals in each minute
+buffer_state_per_interval = []  # List to track buffer state at the end of each minute
+processed_per_interval = []  # List to track processed items during each minute
+current_interval = 0
+arrivals_this_interval = 0
+processed_this_interval = 0
+
+# Define the service time distribution
+def service_time():
+    return random.choices([1, 2], [0.5, 0.5])[0]  # 50% chance of 1 or 2 units of time
+
+# Customer arrival process
+def customer(env, name, server):
+    global current_interval, arrivals_this_interval, processed_this_interval
+
+    # Track arrivals in the current interval
+    if int(env.now) > current_interval:
+        # Store the number of arrivals and processed items in the previous minute
+        arrivals_per_interval.append(arrivals_this_interval)
+        processed_per_interval.append(-processed_this_interval)  # Store as negative to indicate processing
+        # Store the net buffer state (arrivals - processed) at the end of the interval
+        buffer_state_per_interval.append(min(buffer_state_per_interval[-1]+arrivals_this_interval-processed_this_interval,8))
+        
+        # Update to the next interval and reset the counters
+        current_interval = int(env.now)
+        arrivals_this_interval = 0
+        processed_this_interval = 0
+
+    # Increment arrivals for the current interval
+    arrivals_this_interval += 1
+
+    # Check if buffer has space
+    if len(server.queue) + len(server.users) < BUFFER_CAPACITY:
+        with server.request() as request:
+            yield request
+            service_duration = service_time()
+            yield env.timeout(service_duration)
+            processed_this_interval += 1
+    else:
+        # If buffer is full, discard the arrival
+        print(f"{name} discarded due to full buffer at time {env.now:.2f}")
+
+# Process generating customers
+def source(env, server):
+    i = 0
+    while True:
+        interarrival_time = random.expovariate(ARRIVAL_RATE)
+        yield env.timeout(interarrival_time)
+        i += 1
+        env.process(customer(env, f'Customer {i}', server))
+
+# Setup and start the simulation
+print('M/G/1 queue simulation with Poisson arrivals, discrete service times, and a buffer')
+random.seed(RANDOM_SEED)
+env = simpy.Environment()
+
+# Server with a single resource (1 server)
+server = simpy.Resource(env, capacity=1)
+
+# Initialize the buffer state (starting at 0)
+buffer_state_per_interval.append(0)
+
+# Start the arrival of customers
+env.process(source(env, server))
+
+# Run the simulation
+env.run(until=SIM_TIME)
+
+# Append the last interval's data
+arrivals_per_interval.append(arrivals_this_interval)
+processed_per_interval.append(-processed_this_interval)
+buffer_state_per_interval.append(min(buffer_state_per_interval[-1]+arrivals_this_interval-processed_this_interval,8))
+print(len(arrivals_per_interval), len(processed_per_interval), len(buffer_state_per_interval))
+print(buffer_state_per_interval)
+
+# Generate a list of time intervals for the x-axis
+interval_times = list(range(len(arrivals_per_interval)))
+
+# Plotting the tracked data
+plt.figure(figsize=(10, 6))
+
+# Plot number of arrivals per minute
+plt.step(interval_times, arrivals_per_interval, where='mid', label='Arrivals per Minute Interval', color='blue')
+
+# Plot buffer state at the end of each interval
+plt.step(interval_times, buffer_state_per_interval[1:], where='mid', label='Net Buffer State', color='red')
+
+# Plot processed items as negative numbers
+plt.step(interval_times, processed_per_interval, where='mid', label='Processed per Minute Interval (Negative)', color='green')
+
+plt.xlabel('Time (minutes)')
+plt.ylabel('Count')
+plt.title('Arrivals, Processed Items, and Buffer State per Minute in M/G/1 Queue Simulation')
+plt.grid(True)
+plt.legend()
+plt.show()
+```
+
+### Solution exercise 3.1 from notes G. Koole
+
+Here is the exercise converted into markdown with LaTeX formatting:
+
+**Exercise 3.1** Consider a Markov chain with $X = \{1, 2, 3, 4\}$,
+
+$$
+P = \begin{pmatrix}
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 \\
+\frac{1}{3} & \frac{1}{3} & \frac{1}{3} & 0
+\end{pmatrix},
+$$
+
+and $\pi_0 = (1, 0, 0, 0)$.
+
+a.  Compute by hand $\pi_t$ for $t \leq 6$.
+
+b.  Compute using a suitable tool (for example Maple or Excel) $\pi_t$ for $t = 10, 20, 30$.
+
+c.  Compute by hand $\pi_\ast$.
+
+```{python}
+import numpy as np
+def calc_probs(pi_t, P, t):
+  P = np.linalg.matrix_power(P, t)
+  return np.dot(pi_t, P)
+  
+pi_0 = np.array([1,0,0,0])
+P = np.array([[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1/3, 1/3, 1/3, 0]])
+
+print(P)
+pi_t = pi_0
+for t in range (1,7):
+  pi_t = calc_probs(pi_0, P, t)
+  print(f'pi_{t} = {pi_t}')
+```
+
+```{python}
+for t in [10, 20, 30]:
+  pi_t = calc_probs(pi_0, P, t)
+  print(f'pi_{t} = {pi_t}')
+```

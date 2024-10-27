@@ -177,9 +177,10 @@ def plot_policies(T, f, S, r_max, probs=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (
         xaxis_title='Reservations (r)',
         yaxis_title='Optimal value (V*)',
     )
-                                            
+    fig.write_image("images/airline-policies.png", width=800, height=600, scale=3) # Save the plot as an image                                   
     fig.show()
 ```
+
 ## Documentation
 
 #### Function Documentation: `solve_mdp`
@@ -214,7 +215,7 @@ def solve_mdp(T, f, S, p, q, r_max, penalty=lambda d, b: 0):
 -   `r_max` : int\
     The upper limit for the number of reservations the airline is willing to accept (overbooking threshold). If the number of reservations exceeds this value, new requests are automatically rejected.
 
--  `penalty` : function (optional)\
+-   `penalty` : function (optional)\
     A function that calculates the penalty for denied boarding based on the number of overbooked passengers. The default penalty function is `lambda d, b: 0`, which implies no penalty for denied boarding.
 
 *Returns*
