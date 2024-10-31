@@ -7,28 +7,15 @@ format:
           <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
 jupyter: python3
 keep-ipynb: true
-editor: 
-  markdown: 
-    wrap: 72
 ---
 
 ## Assignment 2
 
 ### Service Rate Control
 
-Consider a discrete-time single-server queueing system that is observed
-every $\eta > 0$ units of time. The controller makes decisions at times
-$0, \eta, 2\eta, \dots$. Jobs arrive following a Poisson distribution
-with rate 1.5 jobs per period of length $\eta$. There is a finite system
-capacity of eight units; that is, if arriving jobs cause the system
-content to exceed eight units, excess jobs do not enter the system and
-are lost.
+Consider a discrete-time single-server queueing system that is observed every $\eta > 0$ units of time. The controller makes decisions at times $0, \eta, 2\eta, \dots$. Jobs arrive following a Poisson distribution with rate 1.5 jobs per period of length $\eta$. There is a finite system capacity of eight units; that is, if arriving jobs cause the system content to exceed eight units, excess jobs do not enter the system and are lost.
 
-At each decision epoch, the controller observes the number of jobs in
-the system and selects the service rate from a set of probability
-distributions indexed by elements of the set $B = \{0, 1, 2\}$. For each
-$b \in B$, let $f_b(n)$ denote the probability of $n$ service
-completions within a period of length $\eta$ with:
+At each decision epoch, the controller observes the number of jobs in the system and selects the service rate from a set of probability distributions indexed by elements of the set $B = \{0, 1, 2\}$. For each $b \in B$, let $f_b(n)$ denote the probability of $n$ service completions within a period of length $\eta$ with:
 
 -   $f_0(1) = 0.8$, $f_0(2) = 0.2$
 -   $f_1(1) = 0.5$, $f_1(2) = 0.5$
@@ -37,54 +24,43 @@ completions within a period of length $\eta$ with:
 The stationary reward structure consists of four components:
 
 1.  A constant reward $R = 5$ for every completed service.
-2.  An expected holding cost $h(s) = 2s$ per period when there are $s$
-    jobs in the system.
+2.  An expected holding cost $h(s) = 2s$ per period when there are $s$ jobs in the system.
 3.  A fixed cost $K = 3$ for changing the service rate.
-4.  A per-period cost $d(b)$ for using service rate $b$, where
-    $d(0) = 0$, $d(1) = 2$, and $d(2) = 5$.
+4.  A per-period cost $d(b)$ for using service rate $b$, where $d(0) = 0$, $d(1) = 2$, and $d(2) = 5$.
 
 Determine a minimum-cost service rate control policy.
 
 #### (a)
 
--   Formulate the problem above as an infinite horizon Markov decision
-    problem.
--   Choose the optimality criterion that you find most reasonable
-    (average costs or discounted costs). Also, choose a method (or
-    methods) for computing the optimal policies and the value. Motivate
-    your choices.
--   Develop the model and the algorithm. Compute the optimal policies
-    and the value. *(Note: you should write your own code for the
-    algorithm, i.e., do not use an existing MDP implementation that is
-    available as a code library or on the internet).*
+-   Formulate the problem above as an infinite horizon Markov decision problem.
+-   Choose the optimality criterion that you find most reasonable (average costs or discounted costs). Also, choose a method (or methods) for computing the optimal policies and the value. Motivate your choices.
+-   Develop the model and the algorithm. Compute the optimal policies and the value. *(Note: you should write your own code for the algorithm, i.e., do not use an existing MDP implementation that is available as a code library or on the internet).*
 
-Please Report: - Model description - Your choice for an optimality
-criterion including motivation - Solution algorithm (including
-motivation) - Numerical results and a discussion of those
+Please Report: - Model description - Your choice for an optimality criterion including motivation - Solution algorithm (including motivation) - Numerical results and a discussion of those
 
 #### (b)
 
-Now, we require that the server may work at service rate $b = 2$ at most
-25% of the time. Model and solve this adjusted problem.
+Now, we require that the server may work at service rate $b = 2$ at most 25% of the time. Model and solve this adjusted problem.
 
 ------------------------------------------------------------------------
 
 ## Solution
 
-The transition from state $i$ to $j$ of the queuing system is as
-follows:
+This model is also described in Puterman's book (section 3.7.2) and we follow the same approach but will motivate the modeling choices.
 
--   After state $i$ the controller chooses a service rate
+The transition from state $s$ to $s'$ of the queuing system is as follows:
 
--   After jobs (0, 1 or 2) have departed the system
+-   After state $s$ the controller chooses a service rate $b'$.
+-   After 0, 1, or 2 jobs have departed the system,
+-   New jobs arrive.
+-   The current number of jobs in the system is state $s'$.
 
--   New jobs arrive
+:::: {#fig-status}
+::: {#sketch-holder}
+:::
 
--   The current number of jobs in the system is state $j$
-
-<h2>System State Timeline</h2>
-<div id="sketch-holder"></div>
-
+System state update between observations $t \text{ and } t+1$
+::::
 
 <script>
     function setup() {
@@ -106,11 +82,11 @@ follows:
         
         // Draw events
         const events = [
-            { x: 150, label: "State i", symbol: "i" },
-            { x: 300, label: "Choose\nservice rate", symbol: "μ" },
+            { x: 150, label: "State s", symbol: "(x,b)" },
+            { x: 300, label: "Choose\nservice rate", symbol: "b'" },
             { x: 450, label: "Jobs depart\n(0,1,2)", symbol: "↓" },
             { x: 600, label: "New jobs\narrive", symbol: "↑" },
-            { x: 700, label: "State j", symbol: "j" }
+            { x: 700, label: "State s'", symbol: "(x',b')" }
         ];
         
         // Draw arrows and events
@@ -151,91 +127,86 @@ follows:
     }
 </script>
 
-To formulate this problem as an infinite horizon Markov decision process
-(MDP), we define the key components:
+To formulate this problem as an infinite horizon Markov decision process (MDP), we define the key components:
 
-### State Space ($S$)
+#### Decision epochs ($T$)
 
-The state $s$ represents the number of jobs in the system, and it can
-take values from $0$ to $8$ (since the system has a finite capacity of 8
-units): $$ S = \{0, 1, 2, \dots, 8\} $$
+$T = \{0, 1, 2, \dots\}$, corresponding to observation times $0, \eta, 2\eta, \dots$
 
-### Action Space ($B$)
+#### State space ($S$)
 
-At each decision epoch, the controller can select a service rate
-$b \in B$, where: $$ B = \{0, 1, 2\} $$
+The state $s = (x, b)$ consists of the number of jobs $x \in X$ in the system: $X = \{0, 1, 2, \dots, 8\}$
 
-### Transition Probabilities ($P(j|i, b)$)
+and the current service rate $b \in B$: $B = \{0, 1, 2\}$.
 
-The transition probabilities depend on the arrival rate (Poisson
-distribution with a rate of 1.5 jobs per period of length $\eta$) and
-the service rate $b$ chosen.
+#### Action space ($B$)
 
--   Let $f_a(k)$ denote the probability of $k$ job arrivals in a period
-    of length $\eta$. Since arrivals follow a Poisson distribution with
-    rate 1.5:
-    $$ f_a(k) = \frac{(1.5)^k e^{-1.5}}{k!}, \quad k = 0, 1, 2, \dots $$
+At each decision epoch, the controller can take an action and selects a service rate $b' \in B$ for the next epoch.
 
--   Let $f_b(n)$ denote the probability of $n$ service completions under
-    service rate $b$, where $f_b(1)$ and $f_b(2)$ are given for each
-    $b \in B$.
+#### Transition probabilities ($P$)
 
-Define $p(j | i, a)$ as the probability of transitioning to state $j$
-when the system is in state $i$ and action $a$ is chosen. We have the
-following cases:
+The transition probabilities depend on the arrival rate (Poisson distribution with a rate of 1.5 jobs per period of length $\eta$) and the service rate $b'$ chosen.
 
--   $i = 0 \ or\  1$: the system is empty or contains only one job and
-    the controler has to choose a service rate $b$. The choice does not
-    affect $j$ because there are either no jobs in the system to be
-    processed or the system will be empty with probability 1 after
-    processing. The number of jobs in state $j$ equals the number of
-    arrivals.
--   $1 < i \leq 8$: the system contains $i$ items and the controler has
-    to choose a service rate $b$. The number of items in the system
-    after processing depends on the number of items processed. The
-    number of items in the system in state $j$ will be
-    $min(i - d + k, 8)$ with probability:
+-   Let $f^a(k)$ denote the probability of $k$ job arrivals in a period of length $\eta$. Since arrivals follow a Poisson distribution with rate 1.5:
 
 $$
-\begin{cases}
-\sum_d{f_b(n) * f_a(s_j - s_i + n)} & \text{if } s_j < 8 \\
-\sum_d{f_b(n) * (1-\sum_{k=0}^{s_i - n - 1}f_a(k))} & \text{if } s_j = 8 \\
+f_a(k)=\begin{cases}
+\frac{(1.5)^k e^{-1.5}}{k!}, & \text{if } k = 0, 1, 2, \dots \\
+0, & \text{otherwise}
 \end{cases}
 $$
 
-### Cost Function ($C(s, b, s')$)
+-   Let $f_b(n)$ denote the probability of $n \in \{1, 2\}$ service completions under service rate $b$, where the distributions of $n$ are given for each $b \in B$. This only applies to starting states $s$ with $x > 1$ when the system contains enough jobs to be processed.
+
+Define $p(s' | s, b')$ as the probability of transitioning to state $s' = (x',b')$ when the system is in state $s = (x, b)$ and service state $b'$ is chosen. We can then distinguish the following cases:
+
+$$
+p(s'|s, b') = 
+\begin{cases} 
+f^a(x') & \text{if } x \in \{0, 1\} \text{ and } x' < 8, \\
+1 - \sum_{k=0}^{7} f^a(k) & \text{if } x \in \{0, 1\} \text{ and } x' = 8, \\
+\sum_{n=1}^{2} f_{b'}(n) \cdot f^a(x' - x + n) & \text{if } 1 < x \leq 8 \text{ and } x' < 8, \\
+\sum_{n=1}^{2} f_{b'}(n) \cdot \left(1 - \sum_{k=0}^{7 - x + n} f^a(k)\right) & \text{if } 1 < x \leq 8 \text{ and } x' = 8.
+\end{cases}
+$$
+
+#### Cost and rewards ($C$)
 
 The cost function consists of four components:
 
-1.  **Reward for service completions**: For each service completion $n$,
-    the system receives a reward of $R = 5$. The expected number of
-    service completions when the system is in state $s$ and action $b$
-    is chosen is: $$ 5n $$
+1.  **Reward for service completions**: For each service completion $n$, the system receives a reward of $R = 5$. The total reward for service completions when the system is in state $s$ and action $b'$ is chosen is: $5n$.
 
-2.  **Holding cost**: The expected holding cost per period is
-    $h(s) = 2s$ when there are $s$ jobs in the system.
+2.  **Holding cost**: The expected holding cost per period is $h(x) = 2x$ when there are $x$ jobs in the system.
 
-3.  **Cost of changing service rate**: If the controller changes the
-    service rate from one period to the next, a fixed cost of $K = 3$ is
-    incurred.
+3.  **Cost of changing service rate**: If the controller changes the service rate from one period to the next ($b \neq b'$), a fixed cost of $K = 3$ is incurred.
 
-4.  **Per-period cost for using service rate**: The cost $d(b)$ depends
-    on the chosen service rate $b$, where:
-    $$ d(0) = 0, \quad d(1) = 2, \quad d(2) = 5 $$
+4.  **Per-period cost for using service rate**: The cost $d(b')$ depends on the chosen service rate $b'$, where: $d(0) = 0, \quad d(1) = 2, \quad d(2) = 5$
 
 The total cost function can thus be written as:
-$$ C(s, b, s') = h(s) + d(b) + K \cdot \mathbf{1}_{\{b \text{ changed}\}} - 5 n$$
+$$
+C_n(s, b') = h(x) + d(b') + K \cdot \mathbf{1}_{\{b \neq b'\}} - Rn \\
+$$
 
-### Objective
+#### Value  and objective
 
-The objective is to find a service rate control policy $\pi(s)$ that
-minimizes the total expected cost over an infinite horizon. This is
-typically done by solving the Bellman equation:
-$$ V(s) = \min_{b \in B} \left[ C(s, b, s') + \sum_{s'} P(s'|s, b) V(s') \right] $$
-where $V(s)$ is the value function representing the minimum expected
-cost starting from state $s$.
+The objective is to find a service rate control policy $\pi(s)$ that minimizes the average cost over an infinite horizon starting in state $s$:
 
-### Optimality criterion: discounted reward
+$$
+C(s, b') = h(x) + d(b') + K \cdot \mathbf{1}_{\{b \neq b'\}} - R \cdot \sum_{n=1}^{2} f_{b'}(n) \cdot n
+$$
+
+$$
+C^{\pi}(i) = \mathbb{E}\left[ \sum_{t=0}^{\inf}C(s_t, \pi(s_{t+1})) | s_0 = i\right], \text{ for } i \in S
+$$
+$$
+g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
+$$
+
+---
+
+### Code
+
+#### Optimality criterion: discounted reward
 
 ```{python}
 from ortools.linear_solver import pywraplp
@@ -244,37 +215,21 @@ from scipy.stats import poisson
 # Create the solver
 solver = pywraplp.Solver.CreateSolver('GLOP')
 
-# max system capacity
-S_max = 8
-
-# discount factor lambda
-l = 0.95
-
-# period cost d(b) for using server state b for one period
-d = {
+# Parameters
+d = { # cost for using server rate
         0: 0,
         1: 2,
         2: 5
-    }
+    }  
+K = 3  # cost for changing the service rate
+R = 5  # reward for processing 1 job per period
+H = 2 # holding cost per period
+S_max = 8  # max system capacity
+l = 0.95 # discount factor lambda
 
-# cost K for changing the service rate
-K = 3
-
-# reward R for processing 1 job per period
-R = 5
-
-# costs for using server state b_prime when previous 
-# server state was b. These consist of a period cost of using 
-# server state b_prime and a cost for changing server state if
-# b_prime != b.
-def c(b, b_prime):
-    if b_prime == b:
-        return d[b_prime]
-    else:
-        return d[b_prime] + 3
-
-def h(s):
-    return 2 * s
+# cost function for calculating the holding cost
+def h(s, H):
+    return H * s # expected holding cost per period
 
 # probability f_b(n) of processing n jobs if the service rate is b
 def f(n, b):
@@ -296,32 +251,32 @@ B = [0, 1, 2]
 # Define the expected reward R_{(s,b),a'} when state is (s,b) and chosen service rate is a'
 def r(s, b, a):
     if s == 0:
-        return - c(b, a)
+        return - d[a] - K*(b != a) # no costs for processing and holding jobs
     elif s == 1:
-        return R * 1.0 - h(s) - c(b, a)
+        return R - h(1, H) - d[a] - K*(b != a) # reward and cost for processing and holding 1 job
     else:
-        return R * sum(f(n, a) * n for n in [1, 2]) - h(s) - c(b, a)
+        return R * sum(f(n, a) * n for n in [1, 2]) - h(s, H) - d[a] - K*(b != a)
 
 # Transition probabilities
-def P(s_i, s_j, b_j, a):
+def P(s_i, b_i, s_j, b_j, a):
     if b_j != a:
         return 0.0
     if s_i <= 1:
         if s_j < S_max:
-            return g(s_j)
+            return g(s_j) # Arrival rate
         elif s_j == S_max:
-            return g_or_more(s_j)
+            return g_or_more(s_j) # 1 - probability of 0, 1, 2, 3, 4, 5, 6, 7 arrivals
         else:
-            return 0.0
+            return 0.0 # s_j > S_max, not possible
     elif s_i <= S_max:
         if s_j < S_max:
-            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2])
+            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
         elif s_j == S_max:
-            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2])
+            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
         else:
-            return 0.0
+            return 0.0 # s_j > S_max, not possible
     else:
-        return 0.0
+        return 0.0 # s_i > S_max, not possible
 
 # Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
 x = {}
@@ -350,7 +305,7 @@ for s_j in S:
     for b_j in B:
         lhs = solver.Sum(x[(s_j, b_j, a)] for a in B)
         rhs = l * solver.Sum(
-          P(s_i, s_j, b_j, a) * x[(s_i, b_i, a)] 
+          P(s_i, b_i, s_j, b_j, a) * x[(s_i, b_i, a)] 
           for s_i in S for b_i in B for a in B
           )
         solver.Add(lhs == alpha[(s_j, b_j)] + rhs)
@@ -372,7 +327,7 @@ else:
     print("No feasible solution found.")
 ```
 
-### Optimality criterion: average reward
+#### Optimality criterion: average reward
 
 ```{python}
 # Create the solver
@@ -380,33 +335,30 @@ solver = pywraplp.Solver.CreateSolver('GLOP')
 solver.SetTimeLimit(60000)  # Set time limit in milliseconds (60 seconds)
 
 # Parameters
-d = {0: 0, 1: 2, 2: 5}  # Period cost for each server state
-K = 3  # Cost for changing the service rate
-R = 5  # Reward for processing 1 job per period
-S_max = 8  # Max system capacity
+d = { # cost for using server rate
+        0: 0,
+        1: 2,
+        2: 5
+    }  
+K = 3  # cost for changing the service rate
+R = 5  # reward for processing 1 job per period
+H = 2 # holding cost per period
+S_max = 8  # max system capacity
 
-# Cost function for using server state b_prime when previous server state was b
-def c(b, b_prime):
-    return d[b_prime] if b == b_prime else d[b_prime] + 3
+# cost function for calculating the holding cost
+def h(s, H):
+    return H * s # expected holding cost per period
 
-def h(s):
-    return 2 * s
-
-# Probability f_b(n) of processing n jobs if the service rate is b
+# probability f_b(n) of processing n jobs if the service rate is b
 def f(n, b):
-    if b == 0:
-        return 0.8 if n == 1 else 0.2 if n == 2 else 0.0
-    elif b == 1:
-        return 0.5 if n in {1, 2} else 0.0
-    elif b == 2:
-        return 0.2 if n == 1 else 0.8 if n == 2 else 0.0
-    return 0.0
+    b_prob = {0: [0.8, 0.2], 1: [0.5, 0.5], 2: [0.2, 0.8]}
+    return b_prob[b][n - 1]
 
-# Probability g(n) of n new jobs arriving
+# probability g(n) of n new jobs arriving
 def g(n):
     return poisson.pmf(n, mu=1.5)
 
-# Probability of n or more new jobs arriving
+# probability of n or more new jobs arriving
 def g_or_more(n):
     return 1 - sum(g(m) for m in range(n))
 
@@ -414,29 +366,35 @@ def g_or_more(n):
 S = range(S_max + 1)
 B = [0, 1, 2]
 
-# Define the expected reward R_{(s,b),a'} when state is (s,b) and chosen service rate is a
+# Define the expected reward R_{(s,b),a'} when state is (s,b) and chosen service rate is a'
 def r(s, b, a):
     if s == 0:
-        return -c(b, a)
+        return - d[a] - K*(b != a) # no costs for processing and holding jobs
     elif s == 1:
-        return R - h(s) - c(b, a)
+        return R - h(1, H) - d[a] - K*(b != a) # reward and cost for processing and holding 1 job
     else:
-        return R * sum(f(n, a) * n for n in [1, 2]) - h(s) - c(b, a)
+        return R * sum(f(n, a) * n for n in [1, 2]) - h(s, H) - d[a] - K*(b != a)
 
 # Transition probabilities
 def P(s_i, b_i, s_j, b_j, a):
     if b_j != a:
         return 0.0
-    if s_i == 0:
-        return g(s_j) if s_j < S_max else g_or_more(s_j)
-    elif s_i == 1:
-        return g(s_j) if s_j < S_max else g_or_more(s_j)
+    if s_i <= 1:
+        if s_j < S_max:
+            return g(s_j) # Arrival rate
+        elif s_j == S_max:
+            return g_or_more(s_j) # 1 - probability of 0, 1, 2, 3, 4, 5, 6, 7 arrivals
+        else:
+            return 0.0 # s_j > S_max, not possible
     elif s_i <= S_max:
         if s_j < S_max:
-            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2])
+            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
         elif s_j == S_max:
-            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2])
-    return 0.0
+            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
+        else:
+            return 0.0 # s_j > S_max, not possible
+    else:
+        return 0.0 # s_i > S_max, not possible
 
 # Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
 x = {}
@@ -495,43 +453,27 @@ else:
     print("No feasible solution found.")
 ```
 
-### Optimality criterion: discounted reward with service rate restriction
+#### Optimality criterion: discounted reward with service rate restriction
 
 ```{python}
 # Create the solver
 solver = pywraplp.Solver.CreateSolver('GLOP')
 
-# max system capacity
-S_max = 8
-
-# discount factor lambda
-l = 0.95
-
-# period cost d(b) for using server state b for one period
-d = {
+# Parameters
+d = { # cost for using server rate
         0: 0,
         1: 2,
         2: 5
-    }
+    }  
+K = 3  # cost for changing the service rate
+R = 5  # reward for processing 1 job per period
+H = 2 # holding cost per period
+S_max = 8  # max system capacity
+l = 0.95 # discount factor lambda
 
-# cost K for changing the service rate
-K = 3
-
-# reward R for processing 1 job per period
-R = 5
-
-# costs for using server state b_prime when previous 
-# server state was b. These consist of a period cost of using 
-# server state b_prime and a cost for changing server state if
-# b_prime != b.
-def c(b, b_prime):
-    if b_prime == b:
-        return d[b_prime]
-    else:
-        return d[b_prime] + 3
-
-def h(s):
-    return 2 * s
+# cost function for calculating the holding cost
+def h(s, H):
+    return H * s # expected holding cost per period
 
 # probability f_b(n) of processing n jobs if the service rate is b
 def f(n, b):
@@ -550,37 +492,35 @@ def g_or_more(n):
 S = range(S_max + 1)
 B = [0, 1, 2]
 
-
-
 # Define the expected reward R_{(s,b),a'} when state is (s,b) and chosen service rate is a'
 def r(s, b, a):
     if s == 0:
-        return 0.0 - c(b, a)
+        return - d[a] - K*(b != a) # no costs for processing and holding jobs
     elif s == 1:
-        return R * 1.0 - h(s) - c(b, a)
+        return R - h(1, H) - d[a] - K*(b != a) # reward and cost for processing and holding 1 job
     else:
-        return R * sum(f(n, a) * n for n in [1, 2]) - h(s) - c(b, a)
+        return R * sum(f(n, a) * n for n in [1, 2]) - h(s, H) - d[a] - K*(b != a)
 
 # Transition probabilities
-def P(s_i, s_j, b_j, a):
+def P(s_i, b_i, s_j, b_j, a):
     if b_j != a:
         return 0.0
     if s_i <= 1:
         if s_j < S_max:
-            return g(s_j)
+            return g(s_j) # Arrival rate
         elif s_j == S_max:
-            return g_or_more(s_j)
+            return g_or_more(s_j) # 1 - probability of 0, 1, 2, 3, 4, 5, 6, 7 arrivals
         else:
-            return 0.0
+            return 0.0 # s_j > S_max, not possible
     elif s_i <= S_max:
         if s_j < S_max:
-            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2])
+            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
         elif s_j == S_max:
-            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2])
+            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
         else:
-            return 0.0
+            return 0.0 # s_j > S_max, not possible
     else:
-        return 0.0
+        return 0.0 # s_i > S_max, not possible
 
 # Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
 x = {}
@@ -609,7 +549,7 @@ for s_j in S:
     for b_j in B:
         lhs = solver.Sum(x[(s_j, b_j, a)] for a in B)
         rhs = l * solver.Sum(
-          P(s_i, s_j, b_j, a) * x[(s_i, b_i, a)] 
+          P(s_i, b_i, s_j, b_j, a) * x[(s_i, b_i, a)] 
           for s_i in S for b_i in B for a in B
           )
         solver.Add(lhs == alpha[(s_j, b_j)] + rhs)
@@ -638,7 +578,7 @@ else:
     print("No feasible solution found.")
 ```
 
-### Optimality criterion: average reward with service rate restriction
+#### Optimality criterion: average reward with service rate restriction
 
 ```{python}
 # Create the solver
@@ -646,33 +586,30 @@ solver = pywraplp.Solver.CreateSolver('GLOP')
 solver.SetTimeLimit(60000)  # Set time limit in milliseconds (60 seconds)
 
 # Parameters
-d = {0: 0, 1: 2, 2: 5}  # Period cost for each server state
-K = 3  # Cost for changing the service rate
-R = 5  # Reward for processing 1 job per period
-S_max = 8  # Max system capacity
+d = { # cost for using server rate
+        0: 0,
+        1: 2,
+        2: 5
+    }  
+K = 3  # cost for changing the service rate
+R = 5  # reward for processing 1 job per period
+H = 2 # holding cost per period
+S_max = 8  # max system capacity
 
-# Cost function for using server state b_prime when previous server state was b
-def c(b, b_prime):
-    return d[b_prime] if b == b_prime else d[b_prime] + 3
+# cost function for calculating the holding cost
+def h(s, H):
+    return H * s # expected holding cost per period
 
-def h(s):
-    return 2 * s
-
-# Probability f_b(n) of processing n jobs if the service rate is b
+# probability f_b(n) of processing n jobs if the service rate is b
 def f(n, b):
-    if b == 0:
-        return 0.8 if n == 1 else 0.2 if n == 2 else 0.0
-    elif b == 1:
-        return 0.5 if n in {1, 2} else 0.0
-    elif b == 2:
-        return 0.2 if n == 1 else 0.8 if n == 2 else 0.0
-    return 0.0
+    b_prob = {0: [0.8, 0.2], 1: [0.5, 0.5], 2: [0.2, 0.8]}
+    return b_prob[b][n - 1]
 
-# Probability g(n) of n new jobs arriving
+# probability g(n) of n new jobs arriving
 def g(n):
     return poisson.pmf(n, mu=1.5)
 
-# Probability of n or more new jobs arriving
+# probability of n or more new jobs arriving
 def g_or_more(n):
     return 1 - sum(g(m) for m in range(n))
 
@@ -680,29 +617,35 @@ def g_or_more(n):
 S = range(S_max + 1)
 B = [0, 1, 2]
 
-# Define the expected reward R_{(s,b),a'} when state is (s,b) and chosen service rate is a
+# Define the expected reward R_{(s,b),a'} when state is (s,b) and chosen service rate is a'
 def r(s, b, a):
     if s == 0:
-        return -c(b, a)
+        return - d[a] - K*(b != a) # no costs for processing and holding jobs
     elif s == 1:
-        return R - h(s) - c(b, a)
+        return R - h(1, H) - d[a] - K*(b != a) # reward and cost for processing and holding 1 job
     else:
-        return R * sum(f(n, a) * n for n in [1, 2]) - h(s) - c(b, a)
+        return R * sum(f(n, a) * n for n in [1, 2]) - h(s, H) - d[a] - K*(b != a)
 
 # Transition probabilities
 def P(s_i, b_i, s_j, b_j, a):
     if b_j != a:
         return 0.0
-    if s_i == 0:
-        return g(s_j) if s_j < S_max else g_or_more(s_j)
-    elif s_i == 1:
-        return g(s_j) if s_j < S_max else g_or_more(s_j)
+    if s_i <= 1:
+        if s_j < S_max:
+            return g(s_j) # Arrival rate
+        elif s_j == S_max:
+            return g_or_more(s_j) # 1 - probability of 0, 1, 2, 3, 4, 5, 6, 7 arrivals
+        else:
+            return 0.0 # s_j > S_max, not possible
     elif s_i <= S_max:
         if s_j < S_max:
-            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2])
+            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
         elif s_j == S_max:
-            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2])
-    return 0.0
+            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
+        else:
+            return 0.0 # s_j > S_max, not possible
+    else:
+        return 0.0 # s_i > S_max, not possible
 
 # Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
 x = {}
@@ -764,3 +707,4 @@ if status == pywraplp.Solver.OPTIMAL:
 else:
     print("No feasible solution found.")
 ```
+

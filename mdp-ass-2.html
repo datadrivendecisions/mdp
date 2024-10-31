@@ -68,6 +68,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="mdp-ass-2_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="mdp-ass-2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="mdp-ass-2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="mdp-ass-2_files/libs/quarto-diagram/mermaid.min.js"></script>
+<script src="mdp-ass-2_files/libs/quarto-diagram/mermaid-init.js"></script>
+<link href="mdp-ass-2_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -182,7 +185,7 @@ window.Quarto = {
 </section>
 <section id="tests" class="level2">
 <h2 class="anchored" data-anchor-id="tests">Tests</h2>
-<div id="ab246160" class="cell" data-execution_count="1">
+<div id="48099e98" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
@@ -210,7 +213,7 @@ window.Quarto = {
 </section>
 <section id="simulation" class="level2">
 <h2 class="anchored" data-anchor-id="simulation">Simulation</h2>
-<div id="a0831b6e" class="cell" data-execution_count="2">
+<div id="791de2b7" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> simpy</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -314,10 +317,11 @@ window.Quarto = {
 <span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time (minutes)'</span>)</span>
 <span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Count'</span>)</span>
-<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Arrivals, Processed Items, and Buffer State per Minute in M/G/1 Queue Simulation'</span>)</span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Arrivals, processed items, and buffer state per time unit in M/G/1 queue simulation'</span>)</span>
 <span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
 <span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>plt.close()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>M/G/1 queue simulation with Poisson arrivals, discrete service times, and a buffer
 Customer 11 discarded due to full buffer at time 4.32
@@ -413,7 +417,6 @@ Customer 148 discarded due to full buffer at time 97.18
 </div>
 <section id="solution-exercise-3.1-from-notes-g.-koole" class="level3">
 <h3 class="anchored" data-anchor-id="solution-exercise-3.1-from-notes-g.-koole">Solution exercise 3.1 from notes G. Koole</h3>
-<p>Here is the exercise converted into markdown with LaTeX formatting:</p>
 <p><strong>Exercise 3.1</strong> Consider a Markov chain with <span class="math inline">\(X = \{1, 2, 3, 4\}\)</span>,</p>
 <p><span class="math display">\[
 P = \begin{pmatrix}
@@ -429,7 +432,9 @@ P = \begin{pmatrix}
 <li><p>Compute using a suitable tool (for example Maple or Excel) <span class="math inline">\(\pi_t\)</span> for <span class="math inline">\(t = 10, 20, 30\)</span>.</p></li>
 <li><p>Compute by hand <span class="math inline">\(\pi_\ast\)</span>.</p></li>
 </ol>
-<div id="584e0671" class="cell" data-execution_count="3">
+<p>a.</p>
+<p><img src="images/koole1.jpeg" class="img-fluid"></p>
+<div id="3c9cc09b" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calc_probs(pi_t, P, t):</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  P <span class="op">=</span> np.linalg.matrix_power(P, t)</span>
@@ -456,7 +461,8 @@ pi_5 = [0.         0.33333333 0.33333333 0.33333333]
 pi_6 = [0.11111111 0.11111111 0.44444444 0.33333333]</code></pre>
 </div>
 </div>
-<div id="a0947931" class="cell" data-execution_count="4">
+<p>b.</p>
+<div id="d4310e07" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> [<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>]:</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  pi_t <span class="op">=</span> calc_probs(pi_0, P, t)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="ss">f'pi_</span><span class="sc">{</span>t<span class="sc">}</span><span class="ss"> = </span><span class="sc">{</span>pi_t<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -464,6 +470,571 @@ pi_6 = [0.11111111 0.11111111 0.44444444 0.33333333]</code></pre>
 <pre><code>pi_10 = [0.12345679 0.19753086 0.34567901 0.33333333]
 pi_20 = [0.11131433 0.22166336 0.33429863 0.33272367]
 pi_30 = [0.11112261 0.22221679 0.33336804 0.33329256]</code></pre>
+</div>
+</div>
+<p>c.</p>
+<div id="fig-elephants" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-elephants-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-elephants" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-page1" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-page1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/koole2.jpeg" class="img-fluid figure-img" data-ref-parent="fig-elephants">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-page1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(a) Page 1
+</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell-subref quarto-layout-cell" data-ref-parent="fig-elephants" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div id="fig-page2" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-subfloat-fig figure">
+<div aria-describedby="fig-page2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/koole3.jpeg" class="img-fluid figure-img" data-ref-parent="fig-elephants">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-subfloat-caption quarto-subfloat-fig" id="fig-page2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+(b) Page 2
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-elephants-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Solution to Exercise 3.1c.
+</figcaption>
+</figure>
+</div>
+<p><strong>Assumption 2.1.1</strong><br>
+There exists a state, <span class="math inline">\(\Delta \in S\)</span> with the following properties:</p>
+<ul>
+<li><p><span class="math inline">\(\Delta\)</span> is an absorbing, zero reward state under any Markov policy, i.e., <span class="math inline">\(A(\Delta) = \{0\}\)</span>, <span class="math inline">\(p_{\Delta, \Delta}(0) = 1\)</span>, <span class="math inline">\(r_{\Delta}(0) = 0\)</span>, and <span class="math inline">\(M(\Delta) = 1\)</span>;</p></li>
+<li><p>For all <span class="math inline">\(i \in S\)</span>, <span class="math inline">\(a \in A(i)\)</span>, and some constant <span class="math inline">\(\gamma \in (0, 1)\)</span>, <span class="math display">\[
+\sum_{j \neq \Delta} p_{ij}(a) M(j) \leq \gamma M(i).
+\]</span></p></li>
+</ul>
+<p>Moreover,</p>
+<ul>
+<li>Let <span class="math inline">\(r := \sup_{a \in A(i)} \frac{|r_i(a)|}{M(i)} &lt; \infty\)</span>.</li>
+</ul>
+<p>To understand this mathematical statement, let’s break down each part using simple concepts and then move on to building examples in Python.</p>
+</section>
+<section id="explanation-of-each-part" class="level3">
+<h3 class="anchored" data-anchor-id="explanation-of-each-part">Explanation of Each Part</h3>
+<ol type="1">
+<li><strong>State <span class="math inline">\(\Delta\)</span> as a Special State</strong>:
+<ul>
+<li>We assume there exists a particular state, denoted as <span class="math inline">\(\Delta\)</span>, which is part of the state space <span class="math inline">\(S\)</span>.</li>
+<li><span class="math inline">\(\Delta\)</span> is an <em>absorbing</em> state. This means that once the system enters <span class="math inline">\(\Delta\)</span>, it remains there forever (like a “sink” state in a Markov chain).</li>
+</ul></li>
+<li><strong>Absorbing, Zero Reward State</strong>:
+<ul>
+<li>In state <span class="math inline">\(\Delta\)</span>, the only available action has a reward of zero. This means the system has no incentive to enter or stay in this state.</li>
+<li>Notationally, this is expressed as:
+<ul>
+<li><span class="math inline">\(A(\Delta) = \{0\}\)</span>: The only action in <span class="math inline">\(\Delta\)</span> is zero.</li>
+<li><span class="math inline">\(p_{\Delta,\Delta}(0) = 1\)</span>: With probability 1, the system stays in <span class="math inline">\(\Delta\)</span> after choosing action 0.</li>
+<li><span class="math inline">\(r_{\Delta}(0) = 0\)</span>: The reward in <span class="math inline">\(\Delta\)</span> for action 0 is zero.</li>
+<li><span class="math inline">\(M(\Delta) = 1\)</span>: This could represent the importance or weight of this state, set to 1 for simplicity.</li>
+</ul></li>
+</ul></li>
+<li><strong>Condition on Transition Probabilities</strong>:
+<ul>
+<li>For any state <span class="math inline">\(i\)</span> (not equal to <span class="math inline">\(\Delta\)</span>) and any action <span class="math inline">\(a\)</span> available in that state, the probability-weighted sum of transitions to all other states <span class="math inline">\(j \neq \Delta\)</span> (scaled by <span class="math inline">\(M(j)\)</span>) is bounded above by <span class="math inline">\(\gamma M(i)\)</span>.</li>
+<li>Here, <span class="math inline">\(\gamma\)</span> is a constant less than 1, which ensures that states move toward <span class="math inline">\(\Delta\)</span> over time in a weighted sense.</li>
+</ul></li>
+<li><strong>Bounded Rewards Condition</strong>:
+<ul>
+<li>The reward function is bounded. Specifically, the highest possible reward, scaled by <span class="math inline">\(M(i)\)</span>, across all states and actions is finite.</li>
+</ul></li>
+</ol>
+</section>
+<section id="python-examples" class="level3">
+<h3 class="anchored" data-anchor-id="python-examples">Python Examples</h3>
+<p>Let’s create Python code that constructs three simple examples of systems that satisfy the above conditions.</p>
+<section id="example-1-simple-markov-chain-with-an-absorbing-state" class="level4">
+<h4 class="anchored" data-anchor-id="example-1-simple-markov-chain-with-an-absorbing-state">Example 1: Simple Markov Chain with an Absorbing State</h4>
+<p>In this example, we’ll set up a Markov chain with three states where state 2 (<span class="math inline">\(\Delta\)</span>) is absorbing.</p>
+<div id="b428acc3" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1: Simple Markov Chain with absorbing state ∆</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Define states and actions</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>states <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>]  <span class="co"># State 2 is the absorbing state (∆)</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>actions <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]  <span class="co"># Action set, with only action 0 in state 2</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Transition probabilities</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Format: P[state][action][next_state]</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> {</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">0</span>: [<span class="fl">0.7</span>, <span class="fl">0.3</span>, <span class="fl">0.0</span>], <span class="dv">1</span>: [<span class="fl">0.4</span>, <span class="fl">0.6</span>, <span class="fl">0.0</span>]},  <span class="co"># State 0 transitions</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">0</span>: [<span class="fl">0.2</span>, <span class="fl">0.7</span>, <span class="fl">0.1</span>], <span class="dv">1</span>: [<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.4</span>]},  <span class="co"># State 1 transitions</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>: {<span class="dv">0</span>: [<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>]}                       <span class="co"># State 2 is absorbing</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Rewards for each action in each state</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>R <span class="op">=</span> {</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">0</span>: <span class="dv">5</span>, <span class="dv">1</span>: <span class="dv">3</span>},  <span class="co"># State 0 rewards</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">0</span>: <span class="dv">4</span>, <span class="dv">1</span>: <span class="dv">2</span>},  <span class="co"># State 1 rewards</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>: {<span class="dv">0</span>: <span class="dv">0</span>}          <span class="co"># State 2 has zero reward (absorbing)</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co"># State importance/weight function M</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> [<span class="fl">0.5</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>]  <span class="co"># State 2 is absorbing, so its importance is set to 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    %% Define states
+    S0["State 0"]
+    S1["State 1"]
+    S2["State 2 (Absorbing)"]
+    
+    %% Transitions from State 0
+    S0 --&gt;|a0: p=0.7, r=5| S0
+    S0 --&gt;|a0: p=0.3, r=5| S1
+    S0 --&gt;|a1: p=0.4, r=3| S0
+    S0 --&gt;|a1: p=0.6, r=3| S1
+    
+    %% Transitions from State 1
+    S1 --&gt;|a0: p=0.2, r=4| S0
+    S1 --&gt;|a0: p=0.7, r=4| S1
+    S1 --&gt;|a0: p=0.1, r=4| S2
+    S1 --&gt;|a1: p=0.1, r=2| S0
+    S1 --&gt;|a1: p=0.5, r=2| S1
+    S1 --&gt;|a1: p=0.4, r=2| S2
+    
+    %% Transition for Absorbing State 2
+    S2 --&gt;|a0: p=1.0, r=0| S2
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="example-2-markov-chain-with-probabilistic-transition-toward-the-absorbing-state" class="level4">
+<h4 class="anchored" data-anchor-id="example-2-markov-chain-with-probabilistic-transition-toward-the-absorbing-state">Example 2: Markov Chain with Probabilistic Transition Toward the Absorbing State</h4>
+<p>This example shows a Markov chain where each state has a probability of transitioning toward the absorbing state <span class="math inline">\(\Delta = 2\)</span>.</p>
+<div id="84f12d3f" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2: Markov Chain with probabilistic transitions towards absorbing state</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define states and actions</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>states <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>actions <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Transition probabilities favor moving towards state 2 (∆)</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> {</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">0</span>: [<span class="fl">0.6</span>, <span class="fl">0.3</span>, <span class="fl">0.1</span>], <span class="dv">1</span>: [<span class="fl">0.3</span>, <span class="fl">0.4</span>, <span class="fl">0.3</span>]},</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">0</span>: [<span class="fl">0.3</span>, <span class="fl">0.5</span>, <span class="fl">0.2</span>], <span class="dv">1</span>: [<span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.5</span>]},</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>: {<span class="dv">0</span>: [<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>]}  <span class="co"># Absorbing state</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Rewards, again with zero reward in absorbing state</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>R <span class="op">=</span> {</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">0</span>: <span class="dv">6</span>, <span class="dv">1</span>: <span class="dv">4</span>},</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">0</span>: <span class="dv">3</span>, <span class="dv">1</span>: <span class="dv">5</span>},</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>: {<span class="dv">0</span>: <span class="dv">0</span>}</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co"># State importance/weight function M</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> [<span class="fl">1.0</span>, <span class="fl">1.5</span>, <span class="fl">1.0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    %% Define states
+    S0["State 0"]
+    S1["State 1"]
+    S2["State 2 (Absorbing)"]
+    
+    %% Transitions from State 0
+    S0 --&gt;|a0: p=0.6, r=6| S0
+    S0 --&gt;|a0: p=0.3, r=6| S1
+    S0 --&gt;|a0: p=0.1, r=6| S2
+    S0 --&gt;|a1: p=0.3, r=4| S0
+    S0 --&gt;|a1: p=0.4, r=4| S1
+    S0 --&gt;|a1: p=0.3, r=4| S2
+    
+    %% Transitions from State 1
+    S1 --&gt;|a0: p=0.3, r=3| S0
+    S1 --&gt;|a0: p=0.5, r=3| S1
+    S1 --&gt;|a0: p=0.2, r=3| S2
+    S1 --&gt;|a1: p=0.2, r=5| S0
+    S1 --&gt;|a1: p=0.3, r=5| S1
+    S1 --&gt;|a1: p=0.5, r=5| S2
+    
+    %% Transition for Absorbing State 2
+    S2 --&gt;|a0: p=1.0, r=0| S2
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="example-3-a-system-with-different-rewards-and-cost-structure" class="level4">
+<h4 class="anchored" data-anchor-id="example-3-a-system-with-different-rewards-and-cost-structure">Example 3: A System with Different Rewards and Cost Structure</h4>
+<p>Here’s a variant with different rewards and where the absorbing state is reached only after several transitions.</p>
+<div id="7265c9d2" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3: Complex system with delayed transition to absorbing state</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define states and actions</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>states <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>actions <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Transition probabilities with a focus on eventually reaching the absorbing state</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> {</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">0</span>: [<span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.0</span>], <span class="dv">1</span>: [<span class="fl">0.3</span>, <span class="fl">0.6</span>, <span class="fl">0.1</span>]},</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">0</span>: [<span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.4</span>], <span class="dv">1</span>: [<span class="fl">0.1</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>]},</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>: {<span class="dv">0</span>: [<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>]}  <span class="co"># Absorbing state</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Rewards with varying values but zero reward in state 2</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>R <span class="op">=</span> {</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">0</span>: <span class="dv">7</span>, <span class="dv">1</span>: <span class="dv">3</span>},</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">0</span>: <span class="dv">2</span>, <span class="dv">1</span>: <span class="dv">6</span>},</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>: {<span class="dv">0</span>: <span class="dv">0</span>}</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a><span class="co"># State importance/weight function M, with a finite bound</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>M <span class="op">=</span> [<span class="fl">1.0</span>, <span class="fl">0.8</span>, <span class="fl">1.0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    %% Define states
+    S0["State 0"]
+    S1["State 1"]
+    S2["State 2 (Absorbing)"]
+    
+    %% Transitions from State 0
+    S0 --&gt;|a0: p=0.5, r=7| S0
+    S0 --&gt;|a0: p=0.5, r=7| S1
+    S0 --&gt;|a1: p=0.3, r=3| S0
+    S0 --&gt;|a1: p=0.6, r=3| S1
+    S0 --&gt;|a1: p=0.1, r=3| S2
+    
+    %% Transitions from State 1
+    S1 --&gt;|a0: p=0.2, r=2| S0
+    S1 --&gt;|a0: p=0.4, r=2| S1
+    S1 --&gt;|a0: p=0.4, r=2| S2
+    S1 --&gt;|a1: p=0.1, r=6| S0
+    S1 --&gt;|a1: p=0.4, r=6| S1
+    S1 --&gt;|a1: p=0.5, r=6| S2
+    
+    %% Transition for Absorbing State 2
+    S2 --&gt;|a0: p=1.0, r=0| S2
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="explanation-of-code-structure" class="level3">
+<h3 class="anchored" data-anchor-id="explanation-of-code-structure">Explanation of Code Structure</h3>
+<ul>
+<li><strong>States and Actions</strong>: Each state and action pair has transition probabilities and rewards.</li>
+<li><strong>Transition Probabilities (<code>P</code>)</strong>: Probabilities of moving from one state to another based on chosen actions, with state 2 absorbing.</li>
+<li><strong>Rewards (<code>R</code>)</strong>: Each action has a reward in each state, with zero reward in the absorbing state.</li>
+<li><strong>Importance (<code>M</code>)</strong>: The weights or importance levels of each state, helping to satisfy the bounded reward condition.</li>
+</ul>
+<p><strong>Lemma 2.1.1</strong><br>
+Suppose that Assumption 2.1.1 holds. Then, for all Markov policies <span class="math inline">\(\sigma\)</span>, the following statements hold:</p>
+<ul>
+<li><p><strong>1. Probability Bound for Remaining Time Before Absorption</strong>:<br>
+<span class="math display">\[
+P^\sigma_i \{\tau_\Delta &gt; n\} \leq \gamma^n M(i), \quad i \in S, \quad n = 1, 2, \dots
+\]</span> where <span class="math inline">\(\tau_\Delta = \min \{ n \geq 1 \mid X_n = \Delta \}\)</span>.<br>
+This means that the probability of not reaching the absorbing state <span class="math inline">\(\Delta\)</span> by step <span class="math inline">\(n\)</span> decays at a rate proportional to <span class="math inline">\(\gamma^n\)</span> and is scaled by <span class="math inline">\(M(i)\)</span>, the importance of the initial state <span class="math inline">\(i\)</span>.</p></li>
+<li><p><strong>2. Expected Time to Absorption</strong>:<br>
+<span class="math display">\[
+E^\sigma_i [\tau_\Delta] = \sum_{n \geq 0} P^\sigma_i \{\tau_\Delta &gt; n\} \leq \frac{M(i)}{1 - \gamma}
+\]</span> The expected time to reach the absorbing state <span class="math inline">\(\Delta\)</span> (starting from state <span class="math inline">\(i\)</span>) is bounded by <span class="math inline">\(\frac{M(i)}{1 - \gamma}\)</span>, ensuring that the process reaches <span class="math inline">\(\Delta\)</span> within a finite expected time.</p></li>
+<li><p><strong>3. Bound on Expected Reward at Each Step Before Absorption</strong>:<br>
+<span class="math display">\[
+E^\sigma_i \left[ \left| r_{X_n}(A_n) \right| \right] \leq r \cdot \gamma^n M(i)
+\]</span> This inequality provides a bound on the expected absolute reward at step <span class="math inline">\(n\)</span>, showing that it decays at a rate of <span class="math inline">\(\gamma^n\)</span>, scaled by <span class="math inline">\(M(i)\)</span> and a constant <span class="math inline">\(r\)</span> (the maximum possible reward per unit of importance).</p></li>
+<li><p><strong>4. Bound on Total Expected Reward Until Absorption</strong>:<br>
+<span class="math display">\[
+E^\sigma_i \left[ \sum_{n=0}^{\tau_\Delta} \left| r_{X_n}(A_n) \right| \right] \leq \frac{r}{1 - \gamma} M(i), \quad i \in S
+\]</span> This final bound indicates that the total expected reward accumulated from the starting state <span class="math inline">\(i\)</span> until reaching <span class="math inline">\(\Delta\)</span> is finite and depends on <span class="math inline">\(M(i)\)</span>, <span class="math inline">\(r\)</span>, and <span class="math inline">\(\gamma\)</span>. The bound ensures that the rewards do not accumulate indefinitely, given <span class="math inline">\(\gamma &lt; 1\)</span>.</p></li>
+</ul>
+<p>Let’s break down each part of Lemma 2.1.1, which provides results about certain expectations and probabilities under a Markov policy, given that Assumption 2.1.1 holds.</p>
+<hr>
+</section>
+<section id="context-and-key-terms" class="level3">
+<h3 class="anchored" data-anchor-id="context-and-key-terms">Context and Key Terms</h3>
+<ol type="1">
+<li><p><strong>Assumption 2.1.1</strong>: This assumption specifies that there exists an absorbing state <span class="math inline">\(\Delta\)</span> in the state space <span class="math inline">\(S\)</span>, with certain properties related to transition probabilities, rewards, and importance weights.</p></li>
+<li><p><strong>Markov Policy</strong> <span class="math inline">\(\sigma\)</span>: A policy that decides actions based on the current state without considering previous history.</p></li>
+<li><p><strong>Absorbing Time <span class="math inline">\(\tau_\Delta\)</span></strong>: This is defined as <span class="math inline">\(\tau_\Delta = \min \{ n \geq 1 | X_n = \Delta \}\)</span>, meaning it is the first time (after at least one step) that the process reaches the absorbing state <span class="math inline">\(\Delta\)</span>.</p></li>
+</ol>
+<hr>
+</section>
+<section id="statement-of-lemma-2.1.1" class="level3">
+<h3 class="anchored" data-anchor-id="statement-of-lemma-2.1.1">Statement of Lemma 2.1.1</h3>
+<p>Under Assumption 2.1.1, the lemma asserts the following results:</p>
+<ol type="1">
+<li><strong>Probability Bound for Remaining Time Before Absorption</strong>: <span class="math display">\[
+P^\sigma_i \{\tau_\Delta &gt; n\} \leq \gamma^n M(i), \quad i \in S, \quad n = 1, 2, \dots
+\]</span>
+<ul>
+<li><strong>Interpretation</strong>: This part states that the probability of staying outside the absorbing state <span class="math inline">\(\Delta\)</span> for more than <span class="math inline">\(n\)</span> steps decays at an exponential rate, <span class="math inline">\(\gamma^n\)</span>, and is scaled by the importance weight <span class="math inline">\(M(i)\)</span> of the initial state <span class="math inline">\(i\)</span>.</li>
+<li>This result tells us that the probability of not reaching the absorbing state decreases rapidly over time, due to the <span class="math inline">\(\gamma^n\)</span> term (where <span class="math inline">\(\gamma &lt; 1\)</span>).</li>
+</ul></li>
+<li><strong>Expected Time to Absorption</strong>: <span class="math display">\[
+E^\sigma_i [\tau_\Delta] = \sum_{n \geq 0} P^\sigma_i \{\tau_\Delta &gt; n\} \leq \frac{M(i)}{1 - \gamma}
+\]</span>
+<ul>
+<li><strong>Interpretation</strong>: The expected time to reach the absorbing state <span class="math inline">\(\Delta\)</span> (starting from state <span class="math inline">\(i\)</span>) is bounded above by <span class="math inline">\(\frac{M(i)}{1 - \gamma}\)</span>.</li>
+<li>This bound implies that, on average, the process reaches the absorbing state fairly quickly because <span class="math inline">\(\gamma\)</span> is less than 1, causing the expected time to be finite.</li>
+</ul></li>
+<li><strong>Bound on Expected Reward at Each Step Before Absorption</strong>: <span class="math display">\[
+E^\sigma_i \left[ |r_{X_n}(A_n)| \right] \leq r \cdot \gamma^n M(i)
+\]</span>
+<ul>
+<li><strong>Interpretation</strong>: Here, <span class="math inline">\(E^\sigma_i\left[ |r_{X_n}(A_n)| \right]\)</span> represents the expected absolute reward at step <span class="math inline">\(n\)</span> while following policy <span class="math inline">\(\sigma\)</span>.</li>
+<li>The bound shows that the expected reward decays exponentially by <span class="math inline">\(\gamma^n\)</span>, and it is also scaled by <span class="math inline">\(M(i)\)</span> and a constant <span class="math inline">\(r\)</span> (related to the maximum possible reward per unit of importance).</li>
+</ul></li>
+<li><strong>Bound on Total Expected Reward Until Absorption</strong>: <span class="math display">\[
+E^\sigma_i \left[ \sum_{n=0}^{\tau_\Delta} |r_{X_n}(A_n)| \right] \leq \frac{r}{1 - \gamma} M(i)
+\]</span>
+<ul>
+<li><strong>Interpretation</strong>: This part provides a bound on the total expected reward accumulated from the starting state <span class="math inline">\(i\)</span> until the process reaches the absorbing state <span class="math inline">\(\Delta\)</span>.</li>
+<li>It tells us that the total expected reward is finite and depends on the importance weight <span class="math inline">\(M(i)\)</span> and constants <span class="math inline">\(r\)</span> and <span class="math inline">\(\gamma\)</span>. Since <span class="math inline">\(\gamma &lt; 1\)</span>, this total is also bounded, implying that rewards don’t accumulate indefinitely.</li>
+</ul></li>
+</ol>
+<hr>
+</section>
+<section id="summary-of-lemma-2.1.1" class="level3">
+<h3 class="anchored" data-anchor-id="summary-of-lemma-2.1.1">Summary of Lemma 2.1.1</h3>
+<p>This lemma states that, under certain conditions:</p>
+<ul>
+<li><p>The probability of not reaching the absorbing state within <span class="math inline">\(n\)</span> steps decreases exponentially.</p></li>
+<li><p>The expected time to reach the absorbing state is finite and bounded by <span class="math inline">\(\frac{M(i)}{1 - \gamma}\)</span>.</p></li>
+<li><p>The expected reward at each step and the total reward until absorption are both bounded, ensuring that the process does not accumulate excessive rewards over time.</p></li>
+</ul>
+<p>Each result in the lemma essentially uses the fact that <span class="math inline">\(\gamma &lt; 1\)</span> to show that the system’s behavior is controlled and converges towards the absorbing state, rather than diverging.</p>
+</section>
+<section id="algorithm-1-policy-iteration" class="level3">
+<h3 class="anchored" data-anchor-id="algorithm-1-policy-iteration">Algorithm 1: Policy Iteration</h3>
+<p><strong>Initialization</strong>:<br>
+Set <span class="math inline">\(n := 0\)</span>. Choose any initial stationary, deterministic policy <span class="math inline">\(f_0 = (f_0, \dots)\)</span>.</p>
+<p><strong>Step 1</strong>:<br>
+Compute <span class="math inline">\(V_{f_n}\)</span> by solving: <span class="math display">\[
+V_{f_n} = T_{f_n} V_{f_n} = r(f_n) + P(f_n) V_{f_n}.
+\]</span> For small problems, this can be done by matrix inversion: <span class="math display">\[
+V_{f_n} = (I - P(f_n))^{-1} r(f_n).
+\]</span></p>
+<p><strong>Step 2</strong>:<br>
+Set <span class="math inline">\(f := f_n\)</span> and compute <span class="math inline">\(f_{n+1} = f'\)</span> based on Equation (2.4.1), taking <span class="math inline">\(f = f'\)</span> if possible.</p>
+<p><strong>Step 3</strong>:<br>
+If <span class="math inline">\(f_{n+1} = f_n\)</span>, then this policy is optimal. Stop.<br>
+Otherwise, set <span class="math inline">\(n := n + 1\)</span> and return to Step 1.</p>
+<div id="f6d48185" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define states and actions</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>states <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]  <span class="co"># For simplicity, consider two states</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>actions <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]  <span class="co"># Two actions per state</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Transition probabilities P[state][action][next_state]</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co"># For example, P[0][0][1] = 0.3 means from state 0, taking action 0, there is a 30% chance to move to state 1.</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> {</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">0</span>: [<span class="fl">0.7</span>, <span class="fl">0.3</span>], <span class="dv">1</span>: [<span class="fl">0.4</span>, <span class="fl">0.6</span>]},  <span class="co"># State 0 transitions</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">0</span>: [<span class="fl">0.2</span>, <span class="fl">0.8</span>], <span class="dv">1</span>: [<span class="fl">0.1</span>, <span class="fl">0.9</span>]},  <span class="co"># State 1 transitions</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Rewards for each action in each state</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># R[state][action] gives the reward for taking the specified action in the given state.</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>R <span class="op">=</span> {</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">0</span>: <span class="dv">5</span>, <span class="dv">1</span>: <span class="dv">2</span>},  <span class="co"># State 0 rewards</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">0</span>: <span class="dv">3</span>, <span class="dv">1</span>: <span class="dv">4</span>},  <span class="co"># State 1 rewards</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Discount factor for future rewards</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>gamma <span class="op">=</span> <span class="fl">0.9</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize an arbitrary policy where both states take action 0</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>policy <span class="op">=</span> {<span class="dv">0</span>: <span class="dv">0</span>, <span class="dv">1</span>: <span class="dv">0</span>}  <span class="co"># Start with action 0 for both states</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> policy_evaluation(policy):</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Evaluate the current policy by solving the linear system for V."""</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    num_states <span class="op">=</span> <span class="bu">len</span>(states)</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> np.eye(num_states)  <span class="co"># Identity matrix for (I - gamma * P(policy))</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.zeros(num_states)  <span class="co"># Initialize reward vector</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build system of equations to solve for V</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> s <span class="kw">in</span> states:</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>        action <span class="op">=</span> policy[s]</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update the diagonal element for the current state</span></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>        A[s][s] <span class="op">-=</span> gamma <span class="op">*</span> P[s][action][s]</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> next_state <span class="kw">in</span> states:</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Update off-diagonal elements for transitions to other states</span></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> next_state <span class="op">!=</span> s:</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>                A[s][next_state] <span class="op">-=</span> gamma <span class="op">*</span> P[s][action][next_state]</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>        b[s] <span class="op">=</span> R[s][action]  <span class="co"># Set the reward for current state and action</span></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> np.linalg.solve(A, b)  <span class="co"># Solve for V using matrix inversion</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> V</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> policy_improvement(V):</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generate a new policy by choosing actions that maximize expected future rewards."""</span></span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>    new_policy <span class="op">=</span> {}</span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> s <span class="kw">in</span> states:</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate expected rewards for each action</span></span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>        action_values <span class="op">=</span> [</span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>            R[s][a] <span class="op">+</span> gamma <span class="op">*</span> <span class="bu">sum</span>(P[s][a][next_state] <span class="op">*</span> V[next_state] <span class="cf">for</span> next_state <span class="kw">in</span> states)</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> a <span class="kw">in</span> actions</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Select the action with the maximum expected value</span></span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a>        new_policy[s] <span class="op">=</span> np.argmax(action_values)</span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> new_policy</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a><span class="co"># Main loop for policy iteration</span></span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>is_policy_stable <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>iteration <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="kw">not</span> is_policy_stable:</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Iteration </span><span class="sc">{</span>iteration<span class="sc">}</span><span class="ss">: Policy </span><span class="sc">{</span>policy<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 1: Policy Evaluation - calculate value function for current policy</span></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> policy_evaluation(policy)</span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 2: Policy Improvement - get a new policy based on the value function</span></span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>    new_policy <span class="op">=</span> policy_improvement(V)</span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check if the policy has stabilized (no change in policy)</span></span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> new_policy <span class="op">==</span> policy:</span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a>        is_policy_stable <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"Optimal policy found!"</span>)</span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a>        policy <span class="op">=</span> new_policy  <span class="co"># Update policy for the next iteration</span></span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a>        iteration <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a><span class="co"># Output the final optimal policy and corresponding value function</span></span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Final optimal policy:"</span>, policy)</span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Value function for optimal policy:"</span>, V)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration 0: Policy {0: 0, 1: 0}
+Iteration 1: Policy {0: 0, 1: 1}
+Optimal policy found!
+Final optimal policy: {0: 0, 1: 1}
+Value function for optimal policy: [44.13043478 41.95652174]</code></pre>
+</div>
+</div>
+<div id="7683b53c" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define states and actions</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>states <span class="op">=</span> [s <span class="cf">for</span> s <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">8</span>)]  <span class="co"># For simplicity, consider two states</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>actions <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]  <span class="co"># Two actions per state</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Transition probabilities P[state][action][next_state]</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co"># For example, P[0][0][1] = 0.3 means from state 0, taking action 0, there is a 30% chance to move to state 1.</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> {</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">0</span>: [<span class="fl">0.05</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>], <span class="dv">1</span>: [<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>]},  <span class="co"># State 0 transitions</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">0</span>: [<span class="fl">0.05</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>], <span class="dv">1</span>: [<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>]},  <span class="co"># Etc.</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>: {<span class="dv">0</span>: [<span class="fl">0.05</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>], <span class="dv">1</span>: [<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>]},</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="dv">3</span>: {<span class="dv">0</span>: [<span class="fl">0.05</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>], <span class="dv">1</span>: [<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>]},</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="dv">4</span>: {<span class="dv">0</span>: [<span class="fl">0.05</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>], <span class="dv">1</span>: [<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>]},</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="dv">5</span>: {<span class="dv">0</span>: [<span class="fl">0.05</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>], <span class="dv">1</span>: [<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>]},</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    <span class="dv">6</span>: {<span class="dv">0</span>: [<span class="fl">0.05</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>], <span class="dv">1</span>: [<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>]},</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    <span class="dv">7</span>: {<span class="dv">0</span>: [<span class="fl">0.05</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>], <span class="dv">1</span>: [<span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.1</span>, <span class="fl">0.2</span>, <span class="fl">0.2</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="fl">0.05</span>]},</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Rewards for each action in each state</span></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a><span class="co"># R[state][action] gives the reward for taking the specified action in the given state.</span></span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>R <span class="op">=</span> {</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">0</span>: <span class="dv">5</span>, <span class="dv">1</span>: <span class="dv">2</span>},  <span class="co"># State 0 rewards</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">0</span>: <span class="dv">3</span>, <span class="dv">1</span>: <span class="dv">4</span>},  <span class="co"># Etc.</span></span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>: {<span class="dv">0</span>: <span class="dv">3</span>, <span class="dv">1</span>: <span class="dv">4</span>},</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>    <span class="dv">3</span>: {<span class="dv">0</span>: <span class="dv">3</span>, <span class="dv">1</span>: <span class="dv">4</span>},</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>    <span class="dv">4</span>: {<span class="dv">0</span>: <span class="dv">3</span>, <span class="dv">1</span>: <span class="dv">4</span>},</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="dv">5</span>: {<span class="dv">0</span>: <span class="dv">3</span>, <span class="dv">1</span>: <span class="dv">4</span>},</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    <span class="dv">6</span>: {<span class="dv">0</span>: <span class="dv">3</span>, <span class="dv">1</span>: <span class="dv">4</span>},</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    <span class="dv">7</span>: {<span class="dv">0</span>: <span class="dv">3</span>, <span class="dv">1</span>: <span class="dv">4</span>},</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Discount factor for future rewards</span></span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>gamma <span class="op">=</span> <span class="fl">0.9</span></span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize an arbitrary policy where both states take action 0</span></span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>policy <span class="op">=</span> {i: <span class="dv">0</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">8</span>)}  <span class="co"># Start with action 0 for both states</span></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> policy_evaluation(policy):</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Evaluate the current policy by solving the linear system for V."""</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>    num_states <span class="op">=</span> <span class="bu">len</span>(states)</span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> np.eye(num_states)  <span class="co"># Identity matrix for (I - gamma * P(policy))</span></span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> np.zeros(num_states)  <span class="co"># Initialize reward vector</span></span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Build system of equations to solve for V</span></span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> s <span class="kw">in</span> states:</span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>        action <span class="op">=</span> policy[s]</span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Update the diagonal element for the current state</span></span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>        A[s][s] <span class="op">-=</span> gamma <span class="op">*</span> P[s][action][s]</span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> next_state <span class="kw">in</span> states:</span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Update off-diagonal elements for transitions to other states</span></span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> next_state <span class="op">!=</span> s:</span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>                A[s][next_state] <span class="op">-=</span> gamma <span class="op">*</span> P[s][action][next_state]</span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>        b[s] <span class="op">=</span> R[s][action]  <span class="co"># Set the reward for current state and action</span></span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> np.linalg.solve(A, b)  <span class="co"># Solve for V using matrix inversion</span></span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> V</span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> policy_improvement(V):</span>
+<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generate a new policy by choosing actions that maximize expected future rewards."""</span></span>
+<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a>    new_policy <span class="op">=</span> {}</span>
+<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> s <span class="kw">in</span> states:</span>
+<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate expected rewards for each action</span></span>
+<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a>        action_values <span class="op">=</span> [</span>
+<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a>            R[s][a] <span class="op">+</span> gamma <span class="op">*</span> <span class="bu">sum</span>(P[s][a][next_state] <span class="op">*</span> V[next_state] <span class="cf">for</span> next_state <span class="kw">in</span> states)</span>
+<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> a <span class="kw">in</span> actions</span>
+<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Select the action with the maximum expected value</span></span>
+<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a>        new_policy[s] <span class="op">=</span> np.argmax(action_values)</span>
+<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> new_policy</span>
+<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a><span class="co"># Main loop for policy iteration</span></span>
+<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a>is_policy_stable <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a>iteration <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="kw">not</span> is_policy_stable:</span>
+<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Iteration </span><span class="sc">{</span>iteration<span class="sc">}</span><span class="ss">: Policy </span><span class="sc">{</span>policy<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb13-77"><a href="#cb13-77" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 1: Policy Evaluation - calculate value function for current policy</span></span>
+<span id="cb13-78"><a href="#cb13-78" aria-hidden="true" tabindex="-1"></a>    V <span class="op">=</span> policy_evaluation(policy)</span>
+<span id="cb13-79"><a href="#cb13-79" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Step 2: Policy Improvement - get a new policy based on the value function</span></span>
+<span id="cb13-80"><a href="#cb13-80" aria-hidden="true" tabindex="-1"></a>    new_policy <span class="op">=</span> policy_improvement(V)</span>
+<span id="cb13-81"><a href="#cb13-81" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb13-82"><a href="#cb13-82" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check if the policy has stabilized (no change in policy)</span></span>
+<span id="cb13-83"><a href="#cb13-83" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> new_policy <span class="op">==</span> policy:</span>
+<span id="cb13-84"><a href="#cb13-84" aria-hidden="true" tabindex="-1"></a>        is_policy_stable <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb13-85"><a href="#cb13-85" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"Optimal policy found!"</span>)</span>
+<span id="cb13-86"><a href="#cb13-86" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb13-87"><a href="#cb13-87" aria-hidden="true" tabindex="-1"></a>        policy <span class="op">=</span> new_policy  <span class="co"># Update policy for the next iteration</span></span>
+<span id="cb13-88"><a href="#cb13-88" aria-hidden="true" tabindex="-1"></a>        iteration <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb13-89"><a href="#cb13-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-90"><a href="#cb13-90" aria-hidden="true" tabindex="-1"></a><span class="co"># Output the final optimal policy and corresponding value function</span></span>
+<span id="cb13-91"><a href="#cb13-91" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Final optimal policy:"</span>, policy)</span>
+<span id="cb13-92"><a href="#cb13-92" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Value function for optimal policy:"</span>, V)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Iteration 0: Policy {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0}
+Iteration 1: Policy {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1}
+Optimal policy found!
+Final optimal policy: {0: 0, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1}
+Value function for optimal policy: [41.45 40.45 40.45 40.45 40.45 40.45 40.45 40.45]</code></pre>
 </div>
 </div>
 </section>

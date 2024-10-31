@@ -182,15 +182,14 @@ plt.step(interval_times, processed_per_interval, where='mid', label='Processed p
 
 plt.xlabel('Time (minutes)')
 plt.ylabel('Count')
-plt.title('Arrivals, Processed Items, and Buffer State per Minute in M/G/1 Queue Simulation')
+plt.title('Arrivals, processed items, and buffer state per time unit in M/G/1 queue simulation')
 plt.grid(True)
 plt.legend()
 plt.show()
+plt.close()
 ```
 
 ### Solution exercise 3.1 from notes G. Koole
-
-Here is the exercise converted into markdown with LaTeX formatting:
 
 **Exercise 3.1** Consider a Markov chain with $X = \{1, 2, 3, 4\}$,
 
@@ -211,6 +210,10 @@ b.  Compute using a suitable tool (for example Maple or Excel) $\pi_t$ for $t = 
 
 c.  Compute by hand $\pi_\ast$.
 
+a\.
+
+![](images/koole1.jpeg)
+
 ```{python}
 import numpy as np
 def calc_probs(pi_t, P, t):
@@ -227,8 +230,646 @@ for t in range (1,7):
   print(f'pi_{t} = {pi_t}')
 ```
 
+b\.
+
 ```{python}
 for t in [10, 20, 30]:
   pi_t = calc_probs(pi_0, P, t)
   print(f'pi_{t} = {pi_t}')
+```
+
+c\.
+
+::: {#fig-elephants layout-ncol=2}
+
+![Page 1](images/koole2.jpeg){#fig-page1}
+
+![Page 2](images/koole3.jpeg){#fig-page2}
+
+Solution to Exercise 3.1c.
+:::
+
+**Assumption 2.1.1**  
+There exists a state, $\Delta \in S$ with the following properties:
+
+- $\Delta$ is an absorbing, zero reward state under any Markov policy, i.e., $A(\Delta) = \{0\}$,
+  $p_{\Delta, \Delta}(0) = 1$, $r_{\Delta}(0) = 0$, and $M(\Delta) = 1$;
+  
+- For all $i \in S$, $a \in A(i)$, and some constant $\gamma \in (0, 1)$,
+  $$
+  \sum_{j \neq \Delta} p_{ij}(a) M(j) \leq \gamma M(i).
+  $$
+
+Moreover,
+
+- Let $r := \sup_{a \in A(i)} \frac{|r_i(a)|}{M(i)} < \infty$.
+
+To understand this mathematical statement, let's break down each part using simple concepts and then move on to building examples in Python.
+
+### Explanation of Each Part
+
+1. **State $\Delta$ as a Special State**:
+   - We assume there exists a particular state, denoted as $\Delta$, which is part of the state space $S$.
+   - $\Delta$ is an *absorbing* state. This means that once the system enters $\Delta$, it remains there forever (like a "sink" state in a Markov chain).
+
+2. **Absorbing, Zero Reward State**:
+   - In state $\Delta$, the only available action has a reward of zero. This means the system has no incentive to enter or stay in this state.
+   - Notationally, this is expressed as:
+     - $A(\Delta) = \{0\}$: The only action in $\Delta$ is zero.
+     - $p_{\Delta,\Delta}(0) = 1$: With probability 1, the system stays in $\Delta$ after choosing action 0.
+     - $r_{\Delta}(0) = 0$: The reward in $\Delta$ for action 0 is zero.
+     - $M(\Delta) = 1$: This could represent the importance or weight of this state, set to 1 for simplicity.
+
+3. **Condition on Transition Probabilities**:
+   - For any state $i$ (not equal to $\Delta$) and any action $a$ available in that state, the probability-weighted sum of transitions to all other states $j \neq \Delta$ (scaled by $M(j)$) is bounded above by $\gamma M(i)$.
+   - Here, $\gamma$ is a constant less than 1, which ensures that states move toward $\Delta$ over time in a weighted sense.
+
+4. **Bounded Rewards Condition**:
+   - The reward function is bounded. Specifically, the highest possible reward, scaled by $M(i)$, across all states and actions is finite.
+
+### Python Examples
+
+Let’s create Python code that constructs three simple examples of systems that satisfy the above conditions.
+
+#### Example 1: Simple Markov Chain with an Absorbing State
+
+In this example, we’ll set up a Markov chain with three states where state 2 ($\Delta$) is absorbing.
+
+
+```{python}
+# Example 1: Simple Markov Chain with absorbing state ∆
+
+import numpy as np
+import networkx as nx
+
+# Define states and actions
+states = [0, 1, 2]  # State 2 is the absorbing state (∆)
+actions = [0, 1]  # Action set, with only action 0 in state 2
+
+# Transition probabilities
+# Format: P[state][action][next_state]
+P = {
+    0: {0: [0.7, 0.3, 0.0], 1: [0.4, 0.6, 0.0]},  # State 0 transitions
+    1: {0: [0.2, 0.7, 0.1], 1: [0.1, 0.5, 0.4]},  # State 1 transitions
+    2: {0: [0.0, 0.0, 1.0]}                       # State 2 is absorbing
+}
+
+# Rewards for each action in each state
+R = {
+    0: {0: 5, 1: 3},  # State 0 rewards
+    1: {0: 4, 1: 2},  # State 1 rewards
+    2: {0: 0}          # State 2 has zero reward (absorbing)
+}
+
+# State importance/weight function M
+M = [0.5, 1.0, 1.0]  # State 2 is absorbing, so its importance is set to 1
+```
+
+```{mermaid}
+graph LR
+    %% Define states
+    S0["State 0"]
+    S1["State 1"]
+    S2["State 2 (Absorbing)"]
+    
+    %% Transitions from State 0
+    S0 -->|a0: p=0.7, r=5| S0
+    S0 -->|a0: p=0.3, r=5| S1
+    S0 -->|a1: p=0.4, r=3| S0
+    S0 -->|a1: p=0.6, r=3| S1
+    
+    %% Transitions from State 1
+    S1 -->|a0: p=0.2, r=4| S0
+    S1 -->|a0: p=0.7, r=4| S1
+    S1 -->|a0: p=0.1, r=4| S2
+    S1 -->|a1: p=0.1, r=2| S0
+    S1 -->|a1: p=0.5, r=2| S1
+    S1 -->|a1: p=0.4, r=2| S2
+    
+    %% Transition for Absorbing State 2
+    S2 -->|a0: p=1.0, r=0| S2
+```
+
+#### Example 2: Markov Chain with Probabilistic Transition Toward the Absorbing State
+
+This example shows a Markov chain where each state has a probability of transitioning toward the absorbing state $\Delta = 2$.
+
+```{python}
+# Example 2: Markov Chain with probabilistic transitions towards absorbing state
+
+# Define states and actions
+states = [0, 1, 2]
+actions = [0, 1]
+
+# Transition probabilities favor moving towards state 2 (∆)
+P = {
+    0: {0: [0.6, 0.3, 0.1], 1: [0.3, 0.4, 0.3]},
+    1: {0: [0.3, 0.5, 0.2], 1: [0.2, 0.3, 0.5]},
+    2: {0: [0.0, 0.0, 1.0]}  # Absorbing state
+}
+
+# Rewards, again with zero reward in absorbing state
+R = {
+    0: {0: 6, 1: 4},
+    1: {0: 3, 1: 5},
+    2: {0: 0}
+}
+
+# State importance/weight function M
+M = [1.0, 1.5, 1.0]
+```
+
+```{mermaid}
+graph LR
+    %% Define states
+    S0["State 0"]
+    S1["State 1"]
+    S2["State 2 (Absorbing)"]
+    
+    %% Transitions from State 0
+    S0 -->|a0: p=0.6, r=6| S0
+    S0 -->|a0: p=0.3, r=6| S1
+    S0 -->|a0: p=0.1, r=6| S2
+    S0 -->|a1: p=0.3, r=4| S0
+    S0 -->|a1: p=0.4, r=4| S1
+    S0 -->|a1: p=0.3, r=4| S2
+    
+    %% Transitions from State 1
+    S1 -->|a0: p=0.3, r=3| S0
+    S1 -->|a0: p=0.5, r=3| S1
+    S1 -->|a0: p=0.2, r=3| S2
+    S1 -->|a1: p=0.2, r=5| S0
+    S1 -->|a1: p=0.3, r=5| S1
+    S1 -->|a1: p=0.5, r=5| S2
+    
+    %% Transition for Absorbing State 2
+    S2 -->|a0: p=1.0, r=0| S2
+```
+
+#### Example 3: A System with Different Rewards and Cost Structure
+
+Here’s a variant with different rewards and where the absorbing state is reached only after several transitions.
+
+```{python}
+# Example 3: Complex system with delayed transition to absorbing state
+
+# Define states and actions
+states = [0, 1, 2]
+actions = [0, 1]
+
+# Transition probabilities with a focus on eventually reaching the absorbing state
+P = {
+    0: {0: [0.5, 0.5, 0.0], 1: [0.3, 0.6, 0.1]},
+    1: {0: [0.2, 0.4, 0.4], 1: [0.1, 0.4, 0.5]},
+    2: {0: [0.0, 0.0, 1.0]}  # Absorbing state
+}
+
+# Rewards with varying values but zero reward in state 2
+R = {
+    0: {0: 7, 1: 3},
+    1: {0: 2, 1: 6},
+    2: {0: 0}
+}
+
+# State importance/weight function M, with a finite bound
+M = [1.0, 0.8, 1.0]
+```
+
+```{mermaid}
+graph LR
+    %% Define states
+    S0["State 0"]
+    S1["State 1"]
+    S2["State 2 (Absorbing)"]
+    
+    %% Transitions from State 0
+    S0 -->|a0: p=0.5, r=7| S0
+    S0 -->|a0: p=0.5, r=7| S1
+    S0 -->|a1: p=0.3, r=3| S0
+    S0 -->|a1: p=0.6, r=3| S1
+    S0 -->|a1: p=0.1, r=3| S2
+    
+    %% Transitions from State 1
+    S1 -->|a0: p=0.2, r=2| S0
+    S1 -->|a0: p=0.4, r=2| S1
+    S1 -->|a0: p=0.4, r=2| S2
+    S1 -->|a1: p=0.1, r=6| S0
+    S1 -->|a1: p=0.4, r=6| S1
+    S1 -->|a1: p=0.5, r=6| S2
+    
+    %% Transition for Absorbing State 2
+    S2 -->|a0: p=1.0, r=0| S2
+```
+
+### Explanation of Code Structure
+- **States and Actions**: Each state and action pair has transition probabilities and rewards.
+- **Transition Probabilities (`P`)**: Probabilities of moving from one state to another based on chosen actions, with state 2 absorbing.
+- **Rewards (`R`)**: Each action has a reward in each state, with zero reward in the absorbing state.
+- **Importance (`M`)**: The weights or importance levels of each state, helping to satisfy the bounded reward condition.
+
+
+**Lemma 2.1.1**  
+Suppose that Assumption 2.1.1 holds. Then, for all Markov policies $\sigma$, the following statements hold:
+
+- **1. Probability Bound for Remaining Time Before Absorption**:  
+  $$
+  P^\sigma_i \{\tau_\Delta > n\} \leq \gamma^n M(i), \quad i \in S, \quad n = 1, 2, \dots
+  $$
+  where $\tau_\Delta = \min \{ n \geq 1 \mid X_n = \Delta \}$.  
+  This means that the probability of not reaching the absorbing state $\Delta$ by step $n$ decays at a rate proportional to $\gamma^n$ and is scaled by $M(i)$, the importance of the initial state $i$.
+
+- **2. Expected Time to Absorption**:  
+  $$
+  E^\sigma_i [\tau_\Delta] = \sum_{n \geq 0} P^\sigma_i \{\tau_\Delta > n\} \leq \frac{M(i)}{1 - \gamma}
+  $$
+  The expected time to reach the absorbing state $\Delta$ (starting from state $i$) is bounded by $\frac{M(i)}{1 - \gamma}$, ensuring that the process reaches $\Delta$ within a finite expected time.
+
+- **3. Bound on Expected Reward at Each Step Before Absorption**:  
+  $$
+  E^\sigma_i \left[ \left| r_{X_n}(A_n) \right| \right] \leq r \cdot \gamma^n M(i)
+  $$
+  This inequality provides a bound on the expected absolute reward at step $n$, showing that it decays at a rate of $\gamma^n$, scaled by $M(i)$ and a constant $r$ (the maximum possible reward per unit of importance).
+
+- **4. Bound on Total Expected Reward Until Absorption**:  
+  $$
+  E^\sigma_i \left[ \sum_{n=0}^{\tau_\Delta} \left| r_{X_n}(A_n) \right| \right] \leq \frac{r}{1 - \gamma} M(i), \quad i \in S
+  $$
+  This final bound indicates that the total expected reward accumulated from the starting state $i$ until reaching $\Delta$ is finite and depends on $M(i)$, $r$, and $\gamma$. The bound ensures that the rewards do not accumulate indefinitely, given $\gamma < 1$.
+
+
+
+Let's break down each part of Lemma 2.1.1, which provides results about certain expectations and probabilities under a Markov policy, given that Assumption 2.1.1 holds.
+
+---
+
+### Context and Key Terms
+
+1. **Assumption 2.1.1**: This assumption specifies that there exists an absorbing state $\Delta$ in the state space $S$, with certain properties related to transition probabilities, rewards, and importance weights.
+   
+2. **Markov Policy** $\sigma$: A policy that decides actions based on the current state without considering previous history.
+
+3. **Absorbing Time $\tau_\Delta$**: This is defined as $\tau_\Delta = \min \{ n \geq 1 | X_n = \Delta \}$, meaning it is the first time (after at least one step) that the process reaches the absorbing state $\Delta$.
+
+---
+
+### Statement of Lemma 2.1.1
+
+Under Assumption 2.1.1, the lemma asserts the following results:
+
+1. **Probability Bound for Remaining Time Before Absorption**:
+   $$
+   P^\sigma_i \{\tau_\Delta > n\} \leq \gamma^n M(i), \quad i \in S, \quad n = 1, 2, \dots
+   $$
+   - **Interpretation**: This part states that the probability of staying outside the absorbing state $\Delta$ for more than $n$ steps decays at an exponential rate, $\gamma^n$, and is scaled by the importance weight $M(i)$ of the initial state $i$.
+   - This result tells us that the probability of not reaching the absorbing state decreases rapidly over time, due to the $\gamma^n$ term (where $\gamma < 1$).
+
+2. **Expected Time to Absorption**:
+   $$
+   E^\sigma_i [\tau_\Delta] = \sum_{n \geq 0} P^\sigma_i \{\tau_\Delta > n\} \leq \frac{M(i)}{1 - \gamma}
+   $$
+   - **Interpretation**: The expected time to reach the absorbing state $\Delta$ (starting from state $i$) is bounded above by $\frac{M(i)}{1 - \gamma}$.
+   - This bound implies that, on average, the process reaches the absorbing state fairly quickly because $\gamma$ is less than 1, causing the expected time to be finite.
+
+3. **Bound on Expected Reward at Each Step Before Absorption**:
+   $$
+   E^\sigma_i \left[ |r_{X_n}(A_n)| \right] \leq r \cdot \gamma^n M(i)
+   $$
+   - **Interpretation**: Here, $E^\sigma_i\left[ |r_{X_n}(A_n)| \right]$ represents the expected absolute reward at step $n$ while following policy $\sigma$.
+   - The bound shows that the expected reward decays exponentially by $\gamma^n$, and it is also scaled by $M(i)$ and a constant $r$ (related to the maximum possible reward per unit of importance).
+
+4. **Bound on Total Expected Reward Until Absorption**:
+   $$
+   E^\sigma_i \left[ \sum_{n=0}^{\tau_\Delta} |r_{X_n}(A_n)| \right] \leq \frac{r}{1 - \gamma} M(i)
+   $$
+   - **Interpretation**: This part provides a bound on the total expected reward accumulated from the starting state $i$ until the process reaches the absorbing state $\Delta$.
+   - It tells us that the total expected reward is finite and depends on the importance weight $M(i)$ and constants $r$ and $\gamma$. Since $\gamma < 1$, this total is also bounded, implying that rewards don’t accumulate indefinitely.
+
+---
+
+### Summary of Lemma 2.1.1
+
+This lemma states that, under certain conditions:
+
+- The probability of not reaching the absorbing state within $n$ steps decreases exponentially.
+
+- The expected time to reach the absorbing state is finite and bounded by $\frac{M(i)}{1 - \gamma}$.
+
+- The expected reward at each step and the total reward until absorption are both bounded, ensuring that the process does not accumulate excessive rewards over time.
+
+Each result in the lemma essentially uses the fact that $\gamma < 1$ to show that the system’s behavior is controlled and converges towards the absorbing state, rather than diverging.
+
+
+### Algorithm 1: Policy Iteration
+
+**Initialization**:  
+Set $n := 0$. Choose any initial stationary, deterministic policy $f_0 = (f_0, \dots)$.
+
+**Step 1**:  
+Compute $V_{f_n}$ by solving:
+$$
+V_{f_n} = T_{f_n} V_{f_n} = r(f_n) + P(f_n) V_{f_n}.
+$$
+For small problems, this can be done by matrix inversion:
+$$
+V_{f_n} = (I - P(f_n))^{-1} r(f_n).
+$$
+
+**Step 2**:  
+Set $f := f_n$ and compute $f_{n+1} = f'$ based on Equation (2.4.1), taking $f = f'$ if possible.
+
+**Step 3**:  
+If $f_{n+1} = f_n$, then this policy is optimal. Stop.  
+Otherwise, set $n := n + 1$ and return to Step 1.
+
+```{python}
+import numpy as np
+
+# Define states and actions
+states = [0, 1]  # For simplicity, consider two states
+actions = [0, 1]  # Two actions per state
+
+# Transition probabilities P[state][action][next_state]
+# For example, P[0][0][1] = 0.3 means from state 0, taking action 0, there is a 30% chance to move to state 1.
+P = {
+    0: {0: [0.7, 0.3], 1: [0.4, 0.6]},  # State 0 transitions
+    1: {0: [0.2, 0.8], 1: [0.1, 0.9]},  # State 1 transitions
+}
+
+# Rewards for each action in each state
+# R[state][action] gives the reward for taking the specified action in the given state.
+R = {
+    0: {0: 5, 1: 2},  # State 0 rewards
+    1: {0: 3, 1: 4},  # State 1 rewards
+}
+
+# Discount factor for future rewards
+gamma = 0.9
+
+# Initialize an arbitrary policy where both states take action 0
+policy = {0: 0, 1: 0}  # Start with action 0 for both states
+
+def policy_evaluation(policy):
+    """Evaluate the current policy by solving the linear system for V."""
+    num_states = len(states)
+    A = np.eye(num_states)  # Identity matrix for (I - gamma * P(policy))
+    b = np.zeros(num_states)  # Initialize reward vector
+
+    # Build system of equations to solve for V
+    for s in states:
+        action = policy[s]
+        # Update the diagonal element for the current state
+        A[s][s] -= gamma * P[s][action][s]
+        for next_state in states:
+            # Update off-diagonal elements for transitions to other states
+            if next_state != s:
+                A[s][next_state] -= gamma * P[s][action][next_state]
+        b[s] = R[s][action]  # Set the reward for current state and action
+
+    V = np.linalg.solve(A, b)  # Solve for V using matrix inversion
+    return V
+
+def policy_improvement(V):
+    """Generate a new policy by choosing actions that maximize expected future rewards."""
+    new_policy = {}
+    for s in states:
+        # Calculate expected rewards for each action
+        action_values = [
+            R[s][a] + gamma * sum(P[s][a][next_state] * V[next_state] for next_state in states)
+            for a in actions
+        ]
+        # Select the action with the maximum expected value
+        new_policy[s] = np.argmax(action_values)
+    return new_policy
+
+# Main loop for policy iteration
+is_policy_stable = False
+iteration = 0
+while not is_policy_stable:
+    print(f"Iteration {iteration}: Policy {policy}")
+    # Step 1: Policy Evaluation - calculate value function for current policy
+    V = policy_evaluation(policy)
+    # Step 2: Policy Improvement - get a new policy based on the value function
+    new_policy = policy_improvement(V)
+    
+    # Check if the policy has stabilized (no change in policy)
+    if new_policy == policy:
+        is_policy_stable = True
+        print("Optimal policy found!")
+    else:
+        policy = new_policy  # Update policy for the next iteration
+        iteration += 1
+
+# Output the final optimal policy and corresponding value function
+print("Final optimal policy:", policy)
+print("Value function for optimal policy:", V)
+```
+
+
+```{python}
+import numpy as np
+
+# Define states and actions
+states = [s for s in range(8)]  # For simplicity, consider two states
+actions = [0, 1]  # Two actions per state
+
+# Transition probabilities P[state][action][next_state]
+# For example, P[0][0][1] = 0.3 means from state 0, taking action 0, there is a 30% chance to move to state 1.
+P = {
+    0: {0: [0.05, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.05], 1: [0.05, 0.1, 0.1, 0.2, 0.2, 0.15, 0.15, 0.05]},  # State 0 transitions
+    1: {0: [0.05, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.05], 1: [0.05, 0.1, 0.1, 0.2, 0.2, 0.15, 0.15, 0.05]},  # Etc.
+    2: {0: [0.05, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.05], 1: [0.05, 0.1, 0.1, 0.2, 0.2, 0.15, 0.15, 0.05]},
+    3: {0: [0.05, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.05], 1: [0.05, 0.1, 0.1, 0.2, 0.2, 0.15, 0.15, 0.05]},
+    4: {0: [0.05, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.05], 1: [0.05, 0.1, 0.1, 0.2, 0.2, 0.15, 0.15, 0.05]},
+    5: {0: [0.05, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.05], 1: [0.05, 0.1, 0.1, 0.2, 0.2, 0.15, 0.15, 0.05]},
+    6: {0: [0.05, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.05], 1: [0.05, 0.1, 0.1, 0.2, 0.2, 0.15, 0.15, 0.05]},
+    7: {0: [0.05, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15, 0.05], 1: [0.05, 0.1, 0.1, 0.2, 0.2, 0.15, 0.15, 0.05]},
+}
+
+# Rewards for each action in each state
+# R[state][action] gives the reward for taking the specified action in the given state.
+R = {
+    0: {0: 5, 1: 2},  # State 0 rewards
+    1: {0: 3, 1: 4},  # Etc.
+    2: {0: 3, 1: 4},
+    3: {0: 3, 1: 4},
+    4: {0: 3, 1: 4},
+    5: {0: 3, 1: 4},
+    6: {0: 3, 1: 4},
+    7: {0: 3, 1: 4},
+}
+
+# Discount factor for future rewards
+gamma = 0.9
+
+# Initialize an arbitrary policy where both states take action 0
+policy = {i: 0 for i in range(8)}  # Start with action 0 for both states
+
+def policy_evaluation(policy):
+    """Evaluate the current policy by solving the linear system for V."""
+    num_states = len(states)
+    A = np.eye(num_states)  # Identity matrix for (I - gamma * P(policy))
+    b = np.zeros(num_states)  # Initialize reward vector
+
+    # Build system of equations to solve for V
+    for s in states:
+        action = policy[s]
+        # Update the diagonal element for the current state
+        A[s][s] -= gamma * P[s][action][s]
+        for next_state in states:
+            # Update off-diagonal elements for transitions to other states
+            if next_state != s:
+                A[s][next_state] -= gamma * P[s][action][next_state]
+        b[s] = R[s][action]  # Set the reward for current state and action
+
+    V = np.linalg.solve(A, b)  # Solve for V using matrix inversion
+    return V
+
+def policy_improvement(V):
+    """Generate a new policy by choosing actions that maximize expected future rewards."""
+    new_policy = {}
+    for s in states:
+        # Calculate expected rewards for each action
+        action_values = [
+            R[s][a] + gamma * sum(P[s][a][next_state] * V[next_state] for next_state in states)
+            for a in actions
+        ]
+        # Select the action with the maximum expected value
+        new_policy[s] = np.argmax(action_values)
+    return new_policy
+
+# Main loop for policy iteration
+is_policy_stable = False
+iteration = 0
+while not is_policy_stable:
+    print(f"Iteration {iteration}: Policy {policy}")
+    # Step 1: Policy Evaluation - calculate value function for current policy
+    V = policy_evaluation(policy)
+    # Step 2: Policy Improvement - get a new policy based on the value function
+    new_policy = policy_improvement(V)
+    
+    # Check if the policy has stabilized (no change in policy)
+    if new_policy == policy:
+        is_policy_stable = True
+        print("Optimal policy found!")
+    else:
+        policy = new_policy  # Update policy for the next iteration
+        iteration += 1
+
+# Output the final optimal policy and corresponding value function
+print("Final optimal policy:", policy)
+print("Value function for optimal policy:", V)
+```
+
+```{python}
+import numpy as np
+from scipy.stats import poisson
+
+def f_a(k, l):
+    return poisson.pmf(k, mu=l)
+
+def f_a_larger(k, l):
+    return 1 - sum(f_a(i, l) for i in range(k + 1))
+
+def f_b(b, n):
+    service_rate = {0: [0.8, 0.2], 1: [0.5, 0.5], 2: [0.2, 0.8]}
+    return service_rate[b][n - 1]
+
+R = 5
+K = 3
+
+def d(b):
+    service_cost = {0: 0, 1: 2, 2: 5}
+    return service_cost[b]
+
+def k(b, b_prime):
+    return K if b != b_prime else 0
+
+def h(s):
+    return 2 * s
+
+# Reward function
+def r(s, b, b_prime):
+    if s == 0:
+        return - d(b_prime)
+    elif s == 1:
+        return R - h(s) - d(b_prime) - k(b, b_prime)
+    else:
+        return R * sum(f_b(b_prime, n) * n for n in [1, 2]) - h(s) - d(b_prime) - k(b, b_prime)
+
+# Define states and actions
+states = list(range(8))
+actions = [0, 1, 2]
+
+# Transition probability function
+def p(s, b, s_prime):
+    if s <= 1:
+        return f_a(s_prime, 1.5)
+    elif s <= 8:
+        if s_prime < 8:
+            return sum(f_b(b, n) * f_a(s_prime - s + n, 1.5) for n in range(1, 3))
+        elif s_prime == 8:
+            return sum(f_b(b, n) * f_a_larger(s - n - 1, 1.5) for n in range(1, 3))
+    return 0.0
+
+# Discount factor for future rewards
+gamma = 0.9
+
+def policy_evaluation(policy):
+    """Evaluate the current policy by solving the linear system for V."""
+    num_states = len(states)
+    A = np.eye(num_states)
+    w = np.zeros(num_states)
+
+    for s in states:
+        action_prime = policy[s]
+        action = policy[s - 1] if s > 0 else action_prime
+        A[s][s] -= gamma * p(s, action_prime, s)
+        for next_state in states:
+            if next_state != s:
+                A[s][next_state] -= gamma * p(s, action, next_state)
+        w[s] = r(s, action, action_prime)
+
+    V = np.linalg.solve(A, w)
+    return V
+
+def policy_improvement(V, policy):
+    """Generate a new policy by choosing actions that maximize expected future rewards."""
+    new_policy = {}
+    for s in states:
+        action_prime = policy[s]
+        action_values = [
+            r(s, b, action_prime) + gamma * sum(p(s, b, next_state) * V[next_state] for next_state in states)
+            for b in actions
+        ]
+        new_policy[s] = np.argmax(action_values)
+    return new_policy
+
+def optimize_policy():
+    """Iteratively improve the policy until it converges to the optimal policy."""
+    policy = {i: 0 for i in range(8)}  # Initialize an arbitrary policy with action 0 for all states
+    is_policy_stable = False
+    iteration = 0
+
+    while not is_policy_stable:
+        print(f"Iteration {iteration}: Policy {policy}")
+        
+        # Step 1: Policy Evaluation - calculate value function for current policy
+        V = policy_evaluation(policy)
+        
+        # Step 2: Policy Improvement - get a new policy based on the value function
+        new_policy = policy_improvement(V, policy)
+        
+        # Check if the policy has stabilized (no change in policy)
+        if new_policy == policy:
+            is_policy_stable = True
+            print("Optimal policy found!")
+        else:
+            policy = new_policy  # Update policy for the next iteration
+            iteration += 1
+
+    print("Final optimal policy:", policy)
+    print("Value function for optimal policy:", V)
+
+# Run the policy optimization
+optimize_policy()
 ```
