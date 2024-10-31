@@ -300,19 +300,20 @@ f^a(x') &amp; \text{if } x \in \{0, 1\} \text{ and } x' &lt; 8, \\
 C_n(s, b') = h(x) + d(b') + K \cdot \mathbf{1}_{\{b \neq b'\}} - Rn \\
 \]</span></p>
 </section>
-<section id="value-and-objective" class="level4">
-<h4 class="anchored" data-anchor-id="value-and-objective">Value and objective</h4>
-<p>The objective is to find a service rate control policy <span class="math inline">\(\pi(s)\)</span> that minimizes the average cost over an infinite horizon starting in state <span class="math inline">\(s\)</span>:</p>
+<section id="solution-1" class="level4">
+<h4 class="anchored" data-anchor-id="solution-1">Solution</h4>
+<p>The equilibrium probabilities under stationary policy <span class="math inline">\(f\)</span>, <span class="math inline">\(\pi^f_{s'}\)</span> are the unique solution to eqquilibrium equations:</p>
 <p><span class="math display">\[
-C(s, b') = h(x) + d(b') + K \cdot \mathbf{1}_{\{b \neq b'\}} - R \cdot \sum_{n=1}^{2} f_{b'}(n) \cdot n
+\pi^f_j = \sum_{i \in S} \pi^f_i \cdot p(j|i, f(i)),
+\]</span> <span class="math display">\[
+\sum_{j \in S} \pi^f_{j} = 1.
+\]</span> The long-run average cost per unit time under a stationary policy f is given by:</p>
+<p><span class="math display">\[
+g^f = \sum_{j \in S} \pi^f_j \cdot C(j, f(j)).
+\]</span> A stationary policy <span class="math inline">\(f^*\)</span> is said to be <strong>average cost optimal</strong> if</p>
+<p><span class="math display">\[
+g^{f^*} \leq g^{f} \quad \text{for each stationary policy } f.
 \]</span></p>
-<p><span class="math display">\[
-C^{\pi}(i) = \mathbb{E}\left[ \sum_{t=0}^{\inf}C(s_t, \pi(s_{t+1})) | s_0 = i\right], \text{ for } i \in S
-\]</span> <span class="math display">\[
-g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
-\]</span> <span class="math display">\[
-g^*(i) = \inf_{\pi} g_{\pi}(i), \quad i \in S
-\]</span>.</p>
 <hr>
 </section>
 <section id="code" class="level3">
@@ -340,7 +341,7 @@ g^*(i) = \inf_{\pi} g_{\pi}(i), \quad i \in S
 <li><strong>Switching Costs</strong>: Additional cost if the service rate changes (i.e., <span class="math inline">\(b \neq a\)</span>).</li>
 </ul></li>
 </ul>
-<div id="f4a44a2c" class="cell" data-execution_count="1">
+<div id="53a73905" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">##Initialize packages, parameters and functions</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ortools.linear_solver <span class="im">import</span> pywraplp</span>
@@ -444,7 +445,7 @@ g^*(i) = \inf_{\pi} g_{\pi}(i), \quad i \in S
 <li>Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable <span class="math inline">\(x\)</span> is greater than zero.</li>
 </ul></li>
 </ul>
-<div id="bc025659" class="cell" data-execution_count="2">
+<div id="0b0a256c" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -611,7 +612,7 @@ If 8 jobs in the system:
 <li>The solver is executed, and upon finding an optimal solution, the code prints the optimal actions for each state.</li>
 </ul></li>
 </ul>
-<div id="3cf9ed96" class="cell" data-execution_count="3">
+<div id="4b71c8cd" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>
@@ -761,7 +762,7 @@ If 8 jobs in the system:
 <li>Calculated the total probability of choosing service rate <span class="math inline">\(a = 2\)</span> across all states.</li>
 </ul></li>
 </ul>
-<div id="5736b3b7" class="cell" data-execution_count="4">
+<div id="15bddbed" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -912,7 +913,7 @@ If 8 jobs in the system:
 <li><p><strong>Initialization, Decision Variables, Objective Function, and Balance Constraints</strong>: Same as in the average reward model.</p></li>
 <li><p><strong>Total Probability Constraint</strong>: Ensures the probabilities sum to 1.</p></li>
 </ul>
-<div id="3e0fcba0" class="cell" data-execution_count="5">
+<div id="58c5de81" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>

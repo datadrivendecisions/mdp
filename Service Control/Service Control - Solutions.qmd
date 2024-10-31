@@ -187,24 +187,26 @@ $$
 C_n(s, b') = h(x) + d(b') + K \cdot \mathbf{1}_{\{b \neq b'\}} - Rn \\
 $$
 
-#### Value  and objective
+#### Solution
 
-The objective is to find a service rate control policy $\pi(s)$ that minimizes the average cost over an infinite horizon starting in state $s$:
-
-$$
-C(s, b') = h(x) + d(b') + K \cdot \mathbf{1}_{\{b \neq b'\}} - R \cdot \sum_{n=1}^{2} f_{b'}(n) \cdot n
-$$
+The equilibrium probabilities under stationary policy $f$, $\pi^f_{s'}$ are the unique solution to eqquilibrium equations: 
 
 $$
-C^{\pi}(i) = \mathbb{E}\left[ \sum_{t=0}^{\inf}C(s_t, \pi(s_{t+1})) | s_0 = i\right], \text{ for } i \in S
+\pi^f_j = \sum_{i \in S} \pi^f_i \cdot p(j|i, f(i)),
 $$
 $$
-g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
+\sum_{j \in S} \pi^f_{j} = 1.
 $$
-$$
-g^*(i) = \inf_{\pi} g_{\pi}(i), \quad i \in S
-$$.
+The long-run average cost per unit time under a stationary policy f is given by:
 
+$$
+g^f = \sum_{j \in S} \pi^f_j \cdot C(j, f(j)).
+$$
+A stationary policy $f^*$ is said to be **average cost optimal** if
+
+$$
+g^{f^*} \leq g^{f} \quad \text{for each stationary policy } f.
+$$
 ---
 
 ### Code
