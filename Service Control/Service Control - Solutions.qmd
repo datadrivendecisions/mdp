@@ -206,14 +206,31 @@ $$
 
 ### Code
 
-#### Optimality criterion: discounted reward
+#### Setup
+
+**Parameters:**
+
+- **State Space (\( S \))**: Each state is a tuple \( (s, b) \), where:
+  - \( s \) is the number of jobs in the system (ranging from 0 to \( S_{\text{max}} = 8 \)).
+  - \( b \) is the current service rate (from the set \( B = \{0, 1, 2\} \)).
+
+- **Action Space (\( A \))**: The actions are the possible service rates \( b' \in B \) that the controller can choose at each decision epoch.
+
+- **Transition Probabilities (\( P \))**: The function `P(s_i, b_i, s_j, b_j, a)` calculates the probability of moving from state \( (s_i, b_i) \) to \( (s_j, b_j) \) given action \( a \). It accounts for:
+  - The probability of job arrivals (modeled using a Poisson distribution with rate 1.5).
+  - The probability of job completions based on the chosen service rate's distribution \( f_b(n) \).
+
+- **Reward Function (\( r(s, b, a) \))**: Computes the immediate reward for being in state \( (s, b) \) and choosing action \( a \). It includes:
+  - **Processing Rewards**: Earned for completing jobs.
+  - **Holding Costs**: Penalty for the number of jobs in the system.
+  - **Operating Costs**: Cost of using a specific service rate.
+  - **Switching Costs**: Additional cost if the service rate changes (i.e., \( b \neq a \)).
 
 ```{python}
+##Initialize packages, parameters and functions
+
 from ortools.linear_solver import pywraplp
 from scipy.stats import poisson
-
-# Create the solver
-solver = pywraplp.Solver.CreateSolver('GLOP')
 
 # Parameters
 d = { # cost for using server rate
@@ -277,6 +294,41 @@ def P(s_i, b_i, s_j, b_j, a):
             return 0.0 # s_j > S_max, not possible
     else:
         return 0.0 # s_i > S_max, not possible
+```
+
+
+#### Optimality criterion: discounted reward
+
+In this solution, we model the problem as a Markov Decision Process (MDP) with the goal of **maximizing the expected discounted reward** over an infinite horizon. The discount factor \( \lambda = 0.95 \) is applied to future rewards, reflecting the preference for immediate rewards over distant ones.
+
+**Code Explanation:**
+
+- **Initialization**:
+  - Import necessary libraries (`pywraplp` for the solver and `poisson` from `scipy.stats`).
+  - Define parameters such as costs, rewards, and probabilities.
+  - Define helper functions for holding costs (`h`), processing probabilities (`f`), and arrival probabilities (`g` and `g_or_more`).
+
+- **Decision Variables**:
+  - Create variables \( x_{(s,b),a} \) representing the probability of being in state \( (s, b) \) and choosing action \( a \).
+  - These variables are created using `solver.NumVar`.
+
+- **Objective Function**:
+  - Constructed to maximize the expected discounted reward.
+  - Uses the immediate reward function `r(s, b, a)` and sums over all states and actions.
+  - Set up using `solver.Objective` and `objective.SetCoefficient`.
+
+- **Balance Constraints**:
+  - Ensure the flow of probabilities between states adheres to the MDP dynamics.
+  - Incorporate the discount factor \( \lambda \).
+  - Added using `solver.Add`, ensuring that the probability of being in a state equals the discounted sum of probabilities of transitioning into that state.
+
+- **Solving and Output**:
+  - The solver is executed with `solver.Solve()`.
+  - Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable \( x \) is greater than zero.
+
+```{python}
+# Create the solver
+solver = pywraplp.Solver.CreateSolver('GLOP')
 
 # Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
 x = {}
@@ -329,72 +381,41 @@ else:
 
 #### Optimality criterion: average reward
 
+In this solution, the objective shifts to **maximizing the average reward per period** without considering discounting. This reflects a long-term perspective where future rewards are valued equally with immediate rewards.
+
+**Solution Design:**
+
+- **Balance Constraints**:
+  - Modified to ensure that the steady-state probabilities satisfy the flow conservation equations.
+  - The inflow to each state equals the outflow, reflecting a stable long-term system.
+
+- **Total Probability Constraint**:
+  - An additional constraint ensures that the sum of all probabilities \( x_{(s,b),a} \) equals 1.
+  - This ensures that the decision variables represent a valid probability distribution.
+  
+**Code Explanation:**
+
+- **Initialization**: Similar to the previous model.
+
+- **Decision Variables and Objective Function**:
+  - Variables \( x_{(s,b),a} \) are defined in the same way.
+  - The objective function maximizes the average reward, summing over all states and actions without discounting.
+
+- **Balance Constraints**:
+  - The constraints now equate the total inflow and outflow probabilities for each state \( (s_j, b_j) \).
+  - Implemented using `solver.Add`, ensuring that for each state, the sum of incoming probabilities equals the sum of outgoing probabilities.
+
+- **Total Probability Constraint**:
+  - Ensures the sum of all \( x_{(s,b),a} \) is 1.
+  - Added using `solver.Add`.
+
+- **Solving and Output**:
+  - The solver is executed, and upon finding an optimal solution, the code prints the optimal actions for each state.
+
 ```{python}
 # Create the solver
 solver = pywraplp.Solver.CreateSolver('GLOP')
 solver.SetTimeLimit(60000)  # Set time limit in milliseconds (60 seconds)
-
-# Parameters
-d = { # cost for using server rate
-        0: 0,
-        1: 2,
-        2: 5
-    }  
-K = 3  # cost for changing the service rate
-R = 5  # reward for processing 1 job per period
-H = 2 # holding cost per period
-S_max = 8  # max system capacity
-
-# cost function for calculating the holding cost
-def h(s, H):
-    return H * s # expected holding cost per period
-
-# probability f_b(n) of processing n jobs if the service rate is b
-def f(n, b):
-    b_prob = {0: [0.8, 0.2], 1: [0.5, 0.5], 2: [0.2, 0.8]}
-    return b_prob[b][n - 1]
-
-# probability g(n) of n new jobs arriving
-def g(n):
-    return poisson.pmf(n, mu=1.5)
-
-# probability of n or more new jobs arriving
-def g_or_more(n):
-    return 1 - sum(g(m) for m in range(n))
-
-# Sets of states (S: number of jobs in the system, B: server states)
-S = range(S_max + 1)
-B = [0, 1, 2]
-
-# Define the expected reward R_{(s,b),a'} when state is (s,b) and chosen service rate is a'
-def r(s, b, a):
-    if s == 0:
-        return - d[a] - K*(b != a) # no costs for processing and holding jobs
-    elif s == 1:
-        return R - h(1, H) - d[a] - K*(b != a) # reward and cost for processing and holding 1 job
-    else:
-        return R * sum(f(n, a) * n for n in [1, 2]) - h(s, H) - d[a] - K*(b != a)
-
-# Transition probabilities
-def P(s_i, b_i, s_j, b_j, a):
-    if b_j != a:
-        return 0.0
-    if s_i <= 1:
-        if s_j < S_max:
-            return g(s_j) # Arrival rate
-        elif s_j == S_max:
-            return g_or_more(s_j) # 1 - probability of 0, 1, 2, 3, 4, 5, 6, 7 arrivals
-        else:
-            return 0.0 # s_j > S_max, not possible
-    elif s_i <= S_max:
-        if s_j < S_max:
-            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
-        elif s_j == S_max:
-            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
-        else:
-            return 0.0 # s_j > S_max, not possible
-    else:
-        return 0.0 # s_i > S_max, not possible
 
 # Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
 x = {}
@@ -455,72 +476,26 @@ else:
 
 #### Optimality criterion: discounted reward with service rate restriction
 
+This solution introduces a **service rate restriction** into the discounted reward model, limiting the usage of the highest service rate \( b = 2 \) to at most 25% of the time. This constraint could represent resource limitations or cost considerations.
+
+**Solution Design:**
+
+- **Service Rate Restriction**:
+  - A new constraint is added to limit the total probability of choosing service rate \( a = 2 \).
+  - The constraint ensures that the sum of probabilities where \( a = 2 \) does not exceed 25% of the total probability.
+
+**Code Explanation:**
+
+- **Initialization, Decision Variables, and Objective Function**: Same as in the discounted reward model.
+
+- **Balance Constraints**: Remain the same.
+
+- **Service Rate Restriction Constraint**:
+  - Calculated the total probability of choosing service rate \( a = 2 \) across all states.
+
 ```{python}
 # Create the solver
 solver = pywraplp.Solver.CreateSolver('GLOP')
-
-# Parameters
-d = { # cost for using server rate
-        0: 0,
-        1: 2,
-        2: 5
-    }  
-K = 3  # cost for changing the service rate
-R = 5  # reward for processing 1 job per period
-H = 2 # holding cost per period
-S_max = 8  # max system capacity
-l = 0.95 # discount factor lambda
-
-# cost function for calculating the holding cost
-def h(s, H):
-    return H * s # expected holding cost per period
-
-# probability f_b(n) of processing n jobs if the service rate is b
-def f(n, b):
-    b_prob = {0: [0.8, 0.2], 1: [0.5, 0.5], 2: [0.2, 0.8]}
-    return b_prob[b][n - 1]
-
-# probability g(n) of n new jobs arriving
-def g(n):
-    return poisson.pmf(n, mu=1.5)
-
-# probability of n or more new jobs arriving
-def g_or_more(n):
-    return 1 - sum(g(m) for m in range(n))
-
-# Sets of states (S: number of jobs in the system, B: server states)
-S = range(S_max + 1)
-B = [0, 1, 2]
-
-# Define the expected reward R_{(s,b),a'} when state is (s,b) and chosen service rate is a'
-def r(s, b, a):
-    if s == 0:
-        return - d[a] - K*(b != a) # no costs for processing and holding jobs
-    elif s == 1:
-        return R - h(1, H) - d[a] - K*(b != a) # reward and cost for processing and holding 1 job
-    else:
-        return R * sum(f(n, a) * n for n in [1, 2]) - h(s, H) - d[a] - K*(b != a)
-
-# Transition probabilities
-def P(s_i, b_i, s_j, b_j, a):
-    if b_j != a:
-        return 0.0
-    if s_i <= 1:
-        if s_j < S_max:
-            return g(s_j) # Arrival rate
-        elif s_j == S_max:
-            return g_or_more(s_j) # 1 - probability of 0, 1, 2, 3, 4, 5, 6, 7 arrivals
-        else:
-            return 0.0 # s_j > S_max, not possible
-    elif s_i <= S_max:
-        if s_j < S_max:
-            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
-        elif s_j == S_max:
-            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
-        else:
-            return 0.0 # s_j > S_max, not possible
-    else:
-        return 0.0 # s_i > S_max, not possible
 
 # Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
 x = {}
@@ -580,72 +555,25 @@ else:
 
 #### Optimality criterion: average reward with service rate restriction
 
+This solution applies the **service rate restriction** to the average reward model, limiting the usage of the highest service rate \( b = 2 \) while aiming to maximize the average reward.
+
+**Solution Design:**
+
+- **State and Action Spaces, Transition Probabilities, and Reward Function**: Same as in the average reward model.
+
+- **Service Rate Restriction**:
+  - Similar to the previous solution, a constraint is added to limit the total probability of choosing service rate \( a = 2 \).
+
+**Code Explanation:**
+
+- **Initialization, Decision Variables, Objective Function, and Balance Constraints**: Same as in the average reward model.
+
+- **Total Probability Constraint**: Ensures the probabilities sum to 1.
+
 ```{python}
 # Create the solver
 solver = pywraplp.Solver.CreateSolver('GLOP')
 solver.SetTimeLimit(60000)  # Set time limit in milliseconds (60 seconds)
-
-# Parameters
-d = { # cost for using server rate
-        0: 0,
-        1: 2,
-        2: 5
-    }  
-K = 3  # cost for changing the service rate
-R = 5  # reward for processing 1 job per period
-H = 2 # holding cost per period
-S_max = 8  # max system capacity
-
-# cost function for calculating the holding cost
-def h(s, H):
-    return H * s # expected holding cost per period
-
-# probability f_b(n) of processing n jobs if the service rate is b
-def f(n, b):
-    b_prob = {0: [0.8, 0.2], 1: [0.5, 0.5], 2: [0.2, 0.8]}
-    return b_prob[b][n - 1]
-
-# probability g(n) of n new jobs arriving
-def g(n):
-    return poisson.pmf(n, mu=1.5)
-
-# probability of n or more new jobs arriving
-def g_or_more(n):
-    return 1 - sum(g(m) for m in range(n))
-
-# Sets of states (S: number of jobs in the system, B: server states)
-S = range(S_max + 1)
-B = [0, 1, 2]
-
-# Define the expected reward R_{(s,b),a'} when state is (s,b) and chosen service rate is a'
-def r(s, b, a):
-    if s == 0:
-        return - d[a] - K*(b != a) # no costs for processing and holding jobs
-    elif s == 1:
-        return R - h(1, H) - d[a] - K*(b != a) # reward and cost for processing and holding 1 job
-    else:
-        return R * sum(f(n, a) * n for n in [1, 2]) - h(s, H) - d[a] - K*(b != a)
-
-# Transition probabilities
-def P(s_i, b_i, s_j, b_j, a):
-    if b_j != a:
-        return 0.0
-    if s_i <= 1:
-        if s_j < S_max:
-            return g(s_j) # Arrival rate
-        elif s_j == S_max:
-            return g_or_more(s_j) # 1 - probability of 0, 1, 2, 3, 4, 5, 6, 7 arrivals
-        else:
-            return 0.0 # s_j > S_max, not possible
-    elif s_i <= S_max:
-        if s_j < S_max:
-            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
-        elif s_j == S_max:
-            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
-        else:
-            return 0.0 # s_j > S_max, not possible
-    else:
-        return 0.0 # s_i > S_max, not possible
 
 # Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
 x = {}
@@ -708,3 +636,12 @@ else:
     print("No feasible solution found.")
 ```
 
+**General Notes on the Code:**
+
+- **Solver Configuration**:
+  - All models use the OR-Tools `GLOP` linear solver.
+  - Time limits are set where necessary to prevent long computation times.
+
+- **Printing Results**:
+  - The code checks if an optimal solution is found.
+  - It iterates over all states and prints the optimal action(s) where the decision variable \( x \) is positive, indicating the action(s) to take in each state.
