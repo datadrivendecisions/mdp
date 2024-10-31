@@ -310,7 +310,9 @@ C(s, b') = h(x) + d(b') + K \cdot \mathbf{1}_{\{b \neq b'\}} - R \cdot \sum_{n=1
 C^{\pi}(i) = \mathbb{E}\left[ \sum_{t=0}^{\inf}C(s_t, \pi(s_{t+1})) | s_0 = i\right], \text{ for } i \in S
 \]</span> <span class="math display">\[
 g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
-\]</span></p>
+\]</span> <span class="math display">\[
+g^*(i) = \inf_{\pi} g_{\pi}(i), \quad i \in S
+\]</span>.</p>
 <hr>
 </section>
 <section id="code" class="level3">
@@ -319,26 +321,26 @@ g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
 <h4 class="anchored" data-anchor-id="setup">Setup</h4>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><p><strong>State Space (( S ))</strong>: Each state is a tuple ( (s, b) ), where:</p>
+<li><p><strong>State Space (<span class="math inline">\(S\)</span>)</strong>: Each state is a tuple <span class="math inline">\((s, b)\)</span>, where:</p>
 <ul>
-<li>( s ) is the number of jobs in the system (ranging from 0 to ( S_{} = 8 )).</li>
-<li>( b ) is the current service rate (from the set ( B = {0, 1, 2} )).</li>
+<li><span class="math inline">\(s\)</span> is the number of jobs in the system (ranging from 0 to <span class="math inline">\(S_{\text{max}} = 8\)</span>).</li>
+<li><span class="math inline">\(b\)</span> is the current service rate (from the set <span class="math inline">\(B = \{0, 1, 2\}\)</span>).</li>
 </ul></li>
-<li><p><strong>Action Space (( A ))</strong>: The actions are the possible service rates ( b’ B ) that the controller can choose at each decision epoch.</p></li>
-<li><p><strong>Transition Probabilities (( P ))</strong>: The function <code>P(s_i, b_i, s_j, b_j, a)</code> calculates the probability of moving from state ( (s_i, b_i) ) to ( (s_j, b_j) ) given action ( a ). It accounts for:</p>
+<li><p><strong>Action Space (<span class="math inline">\(A\)</span>)</strong>: The actions are the possible service rates <span class="math inline">\(b' \in B\)</span> that the controller can choose at each decision epoch.</p></li>
+<li><p><strong>Transition Probabilities (<span class="math inline">\(P\)</span>)</strong>: The function <code>P(s_i, b_i, s_j, b_j, a)</code> calculates the probability of moving from state <span class="math inline">\((s_i, b_i)\)</span> to <span class="math inline">\((s_j, b_j)\)</span> given action <span class="math inline">\(a\)</span>. It accounts for:</p>
 <ul>
 <li>The probability of job arrivals (modeled using a Poisson distribution with rate 1.5).</li>
-<li>The probability of job completions based on the chosen service rate’s distribution ( f_b(n) ).</li>
+<li>The probability of job completions based on the chosen service rate’s distribution <span class="math inline">\(f_b(n)\)</span>.</li>
 </ul></li>
-<li><p><strong>Reward Function (( r(s, b, a) ))</strong>: Computes the immediate reward for being in state ( (s, b) ) and choosing action ( a ). It includes:</p>
+<li><p><strong>Reward Function (<span class="math inline">\(r(s, b, a)\)</span>)</strong>: Computes the immediate reward for being in state <span class="math inline">\((s, b)\)</span> and choosing action <span class="math inline">\(a\)</span>. It includes:</p>
 <ul>
 <li><strong>Processing Rewards</strong>: Earned for completing jobs.</li>
 <li><strong>Holding Costs</strong>: Penalty for the number of jobs in the system.</li>
 <li><strong>Operating Costs</strong>: Cost of using a specific service rate.</li>
-<li><strong>Switching Costs</strong>: Additional cost if the service rate changes (i.e., ( b a )).</li>
+<li><strong>Switching Costs</strong>: Additional cost if the service rate changes (i.e., <span class="math inline">\(b \neq a\)</span>).</li>
 </ul></li>
 </ul>
-<div id="19f79b49" class="cell" data-execution_count="1">
+<div id="a15065c8" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">##Initialize packages, parameters and functions</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ortools.linear_solver <span class="im">import</span> pywraplp</span>
@@ -410,7 +412,7 @@ g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
 </section>
 <section id="optimality-criterion-discounted-reward" class="level4">
 <h4 class="anchored" data-anchor-id="optimality-criterion-discounted-reward">Optimality criterion: discounted reward</h4>
-<p>In this solution, we model the problem as a Markov Decision Process (MDP) with the goal of <strong>maximizing the expected discounted reward</strong> over an infinite horizon. The discount factor ( = 0.95 ) is applied to future rewards, reflecting the preference for immediate rewards over distant ones.</p>
+<p>In this solution, we model the problem as a Markov Decision Process (MDP) with the goal of <strong>maximizing the expected discounted reward</strong> over an infinite horizon. The discount factor <span class="math inline">\(\lambda = 0.95\)</span> is applied to future rewards, reflecting the preference for immediate rewards over distant ones.</p>
 <p><strong>Code Explanation:</strong></p>
 <ul>
 <li><strong>Initialization</strong>:
@@ -421,7 +423,7 @@ g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
 </ul></li>
 <li><strong>Decision Variables</strong>:
 <ul>
-<li>Create variables ( x_{(s,b),a} ) representing the probability of being in state ( (s, b) ) and choosing action ( a ).</li>
+<li>Create variables <span class="math inline">\(x_{(s,b),a}\)</span> representing the probability of being in state <span class="math inline">\((s, b)\)</span> and choosing action <span class="math inline">\(a\)</span>.</li>
 <li>These variables are created using <code>solver.NumVar</code>.</li>
 </ul></li>
 <li><strong>Objective Function</strong>:
@@ -433,16 +435,16 @@ g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
 <li><strong>Balance Constraints</strong>:
 <ul>
 <li>Ensure the flow of probabilities between states adheres to the MDP dynamics.</li>
-<li>Incorporate the discount factor ( ).</li>
+<li>Incorporate the discount factor <span class="math inline">\(\lambda\)</span>.</li>
 <li>Added using <code>solver.Add</code>, ensuring that the probability of being in a state equals the discounted sum of probabilities of transitioning into that state.</li>
 </ul></li>
 <li><strong>Solving and Output</strong>:
 <ul>
 <li>The solver is executed with <code>solver.Solve()</code>.</li>
-<li>Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable ( x ) is greater than zero.</li>
+<li>Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable <span class="math inline">\(x\)</span> is greater than zero.</li>
 </ul></li>
 </ul>
-<div id="650e2639" class="cell" data-execution_count="2">
+<div id="35babe40" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -582,7 +584,7 @@ If 8 jobs in the system:
 </ul></li>
 <li><strong>Total Probability Constraint</strong>:
 <ul>
-<li>An additional constraint ensures that the sum of all probabilities ( x_{(s,b),a} ) equals 1.</li>
+<li>An additional constraint ensures that the sum of all probabilities <span class="math inline">\(x_{(s,b),a}\)</span> equals 1.</li>
 <li>This ensures that the decision variables represent a valid probability distribution.</li>
 </ul></li>
 </ul>
@@ -591,17 +593,17 @@ If 8 jobs in the system:
 <li><p><strong>Initialization</strong>: Similar to the previous model.</p></li>
 <li><p><strong>Decision Variables and Objective Function</strong>:</p>
 <ul>
-<li>Variables ( x_{(s,b),a} ) are defined in the same way.</li>
+<li>Variables <span class="math inline">\(x_{(s,b),a}\)</span> are defined in the same way.</li>
 <li>The objective function maximizes the average reward, summing over all states and actions without discounting.</li>
 </ul></li>
 <li><p><strong>Balance Constraints</strong>:</p>
 <ul>
-<li>The constraints now equate the total inflow and outflow probabilities for each state ( (s_j, b_j) ).</li>
+<li>The constraints now equate the total inflow and outflow probabilities for each state <span class="math inline">\((s_j, b_j)\)</span>.</li>
 <li>Implemented using <code>solver.Add</code>, ensuring that for each state, the sum of incoming probabilities equals the sum of outgoing probabilities.</li>
 </ul></li>
 <li><p><strong>Total Probability Constraint</strong>:</p>
 <ul>
-<li>Ensures the sum of all ( x_{(s,b),a} ) is 1.</li>
+<li>Ensures the sum of all <span class="math inline">\(x_{(s,b),a}\)</span> is 1.</li>
 <li>Added using <code>solver.Add</code>.</li>
 </ul></li>
 <li><p><strong>Solving and Output</strong>:</p>
@@ -609,7 +611,7 @@ If 8 jobs in the system:
 <li>The solver is executed, and upon finding an optimal solution, the code prints the optimal actions for each state.</li>
 </ul></li>
 </ul>
-<div id="9047850d" class="cell" data-execution_count="3">
+<div id="d88e4fb2" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>
@@ -741,13 +743,13 @@ If 8 jobs in the system:
 </section>
 <section id="optimality-criterion-discounted-reward-with-service-rate-restriction" class="level4">
 <h4 class="anchored" data-anchor-id="optimality-criterion-discounted-reward-with-service-rate-restriction">Optimality criterion: discounted reward with service rate restriction</h4>
-<p>This solution introduces a <strong>service rate restriction</strong> into the discounted reward model, limiting the usage of the highest service rate ( b = 2 ) to at most 25% of the time. This constraint could represent resource limitations or cost considerations.</p>
+<p>This solution introduces a <strong>service rate restriction</strong> into the discounted reward model, limiting the usage of the highest service rate <span class="math inline">\(b = 2\)</span> to at most 25% of the time. This constraint could represent resource limitations or cost considerations.</p>
 <p><strong>Solution Design:</strong></p>
 <ul>
 <li><strong>Service Rate Restriction</strong>:
 <ul>
-<li>A new constraint is added to limit the total probability of choosing service rate ( a = 2 ).</li>
-<li>The constraint ensures that the sum of probabilities where ( a = 2 ) does not exceed 25% of the total probability.</li>
+<li>A new constraint is added to limit the total probability of choosing service rate <span class="math inline">\(a = 2\)</span>.</li>
+<li>The constraint ensures that the sum of probabilities where <span class="math inline">\(a = 2\)</span> does not exceed 25% of the total probability.</li>
 </ul></li>
 </ul>
 <p><strong>Code Explanation:</strong></p>
@@ -756,10 +758,10 @@ If 8 jobs in the system:
 <li><p><strong>Balance Constraints</strong>: Remain the same.</p></li>
 <li><p><strong>Service Rate Restriction Constraint</strong>:</p>
 <ul>
-<li>Calculated the total probability of choosing service rate ( a = 2 ) across all states.</li>
+<li>Calculated the total probability of choosing service rate <span class="math inline">\(a = 2\)</span> across all states.</li>
 </ul></li>
 </ul>
-<div id="8b4b1f80" class="cell" data-execution_count="4">
+<div id="61bf46a5" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -896,13 +898,13 @@ If 8 jobs in the system:
 </section>
 <section id="optimality-criterion-average-reward-with-service-rate-restriction" class="level4">
 <h4 class="anchored" data-anchor-id="optimality-criterion-average-reward-with-service-rate-restriction">Optimality criterion: average reward with service rate restriction</h4>
-<p>This solution applies the <strong>service rate restriction</strong> to the average reward model, limiting the usage of the highest service rate ( b = 2 ) while aiming to maximize the average reward.</p>
+<p>This solution applies the <strong>service rate restriction</strong> to the average reward model, limiting the usage of the highest service rate <span class="math inline">\(b = 2\)</span> while aiming to maximize the average reward.</p>
 <p><strong>Solution Design:</strong></p>
 <ul>
 <li><p><strong>State and Action Spaces, Transition Probabilities, and Reward Function</strong>: Same as in the average reward model.</p></li>
 <li><p><strong>Service Rate Restriction</strong>:</p>
 <ul>
-<li>Similar to the previous solution, a constraint is added to limit the total probability of choosing service rate ( a = 2 ).</li>
+<li>Similar to the previous solution, a constraint is added to limit the total probability of choosing service rate <span class="math inline">\(a = 2\)</span>.</li>
 </ul></li>
 </ul>
 <p><strong>Code Explanation:</strong></p>
@@ -910,7 +912,7 @@ If 8 jobs in the system:
 <li><p><strong>Initialization, Decision Variables, Objective Function, and Balance Constraints</strong>: Same as in the average reward model.</p></li>
 <li><p><strong>Total Probability Constraint</strong>: Ensures the probabilities sum to 1.</p></li>
 </ul>
-<div id="92d4ed58" class="cell" data-execution_count="5">
+<div id="07e075b6" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>
@@ -1050,7 +1052,7 @@ If 8 jobs in the system:
 <li><strong>Printing Results</strong>:
 <ul>
 <li>The code checks if an optimal solution is found.</li>
-<li>It iterates over all states and prints the optimal action(s) where the decision variable ( x ) is positive, indicating the action(s) to take in each state.</li>
+<li>It iterates over all states and prints the optimal action(s) where the decision variable <span class="math inline">\(x\)</span> is positive, indicating the action(s) to take in each state.</li>
 </ul></li>
 </ul>
 </section>
