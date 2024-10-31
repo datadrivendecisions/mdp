@@ -201,6 +201,9 @@ $$
 $$
 g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
 $$
+$$
+g^*(i) = \inf_{\pi} g_{\pi}(i), \quad i \in S
+$$.
 
 ---
 
@@ -210,21 +213,21 @@ $$
 
 **Parameters:**
 
-- **State Space (\( S \))**: Each state is a tuple \( (s, b) \), where:
-  - \( s \) is the number of jobs in the system (ranging from 0 to \( S_{\text{max}} = 8 \)).
-  - \( b \) is the current service rate (from the set \( B = \{0, 1, 2\} \)).
+- **State Space ($S$)**: Each state is a tuple $(s, b)$, where:
+  - $s$ is the number of jobs in the system (ranging from 0 to $S_{\text{max}} = 8$).
+  - $b$ is the current service rate (from the set $B = \{0, 1, 2\}$).
 
-- **Action Space (\( A \))**: The actions are the possible service rates \( b' \in B \) that the controller can choose at each decision epoch.
+- **Action Space ($A$)**: The actions are the possible service rates $b' \in B$ that the controller can choose at each decision epoch.
 
-- **Transition Probabilities (\( P \))**: The function `P(s_i, b_i, s_j, b_j, a)` calculates the probability of moving from state \( (s_i, b_i) \) to \( (s_j, b_j) \) given action \( a \). It accounts for:
+- **Transition Probabilities ($P$)**: The function `P(s_i, b_i, s_j, b_j, a)` calculates the probability of moving from state $(s_i, b_i)$ to $(s_j, b_j)$ given action $a$. It accounts for:
   - The probability of job arrivals (modeled using a Poisson distribution with rate 1.5).
-  - The probability of job completions based on the chosen service rate's distribution \( f_b(n) \).
+  - The probability of job completions based on the chosen service rate's distribution $f_b(n)$.
 
-- **Reward Function (\( r(s, b, a) \))**: Computes the immediate reward for being in state \( (s, b) \) and choosing action \( a \). It includes:
+- **Reward Function ($r(s, b, a)$)**: Computes the immediate reward for being in state $(s, b)$ and choosing action $a$. It includes:
   - **Processing Rewards**: Earned for completing jobs.
   - **Holding Costs**: Penalty for the number of jobs in the system.
   - **Operating Costs**: Cost of using a specific service rate.
-  - **Switching Costs**: Additional cost if the service rate changes (i.e., \( b \neq a \)).
+  - **Switching Costs**: Additional cost if the service rate changes (i.e., $b \neq a$).
 
 ```{python}
 ##Initialize packages, parameters and functions
@@ -299,7 +302,7 @@ def P(s_i, b_i, s_j, b_j, a):
 
 #### Optimality criterion: discounted reward
 
-In this solution, we model the problem as a Markov Decision Process (MDP) with the goal of **maximizing the expected discounted reward** over an infinite horizon. The discount factor \( \lambda = 0.95 \) is applied to future rewards, reflecting the preference for immediate rewards over distant ones.
+In this solution, we model the problem as a Markov Decision Process (MDP) with the goal of **maximizing the expected discounted reward** over an infinite horizon. The discount factor $\lambda = 0.95$ is applied to future rewards, reflecting the preference for immediate rewards over distant ones.
 
 **Code Explanation:**
 
@@ -309,7 +312,7 @@ In this solution, we model the problem as a Markov Decision Process (MDP) with t
   - Define helper functions for holding costs (`h`), processing probabilities (`f`), and arrival probabilities (`g` and `g_or_more`).
 
 - **Decision Variables**:
-  - Create variables \( x_{(s,b),a} \) representing the probability of being in state \( (s, b) \) and choosing action \( a \).
+  - Create variables $x_{(s,b),a}$ representing the probability of being in state $(s, b)$ and choosing action $a$.
   - These variables are created using `solver.NumVar`.
 
 - **Objective Function**:
@@ -319,12 +322,12 @@ In this solution, we model the problem as a Markov Decision Process (MDP) with t
 
 - **Balance Constraints**:
   - Ensure the flow of probabilities between states adheres to the MDP dynamics.
-  - Incorporate the discount factor \( \lambda \).
+  - Incorporate the discount factor $\lambda$.
   - Added using `solver.Add`, ensuring that the probability of being in a state equals the discounted sum of probabilities of transitioning into that state.
 
 - **Solving and Output**:
   - The solver is executed with `solver.Solve()`.
-  - Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable \( x \) is greater than zero.
+  - Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable $x$ is greater than zero.
 
 ```{python}
 # Create the solver
@@ -390,7 +393,7 @@ In this solution, the objective shifts to **maximizing the average reward per pe
   - The inflow to each state equals the outflow, reflecting a stable long-term system.
 
 - **Total Probability Constraint**:
-  - An additional constraint ensures that the sum of all probabilities \( x_{(s,b),a} \) equals 1.
+  - An additional constraint ensures that the sum of all probabilities $x_{(s,b),a}$ equals 1.
   - This ensures that the decision variables represent a valid probability distribution.
   
 **Code Explanation:**
@@ -398,15 +401,15 @@ In this solution, the objective shifts to **maximizing the average reward per pe
 - **Initialization**: Similar to the previous model.
 
 - **Decision Variables and Objective Function**:
-  - Variables \( x_{(s,b),a} \) are defined in the same way.
+  - Variables $x_{(s,b),a}$ are defined in the same way.
   - The objective function maximizes the average reward, summing over all states and actions without discounting.
 
 - **Balance Constraints**:
-  - The constraints now equate the total inflow and outflow probabilities for each state \( (s_j, b_j) \).
+  - The constraints now equate the total inflow and outflow probabilities for each state $(s_j, b_j)$.
   - Implemented using `solver.Add`, ensuring that for each state, the sum of incoming probabilities equals the sum of outgoing probabilities.
 
 - **Total Probability Constraint**:
-  - Ensures the sum of all \( x_{(s,b),a} \) is 1.
+  - Ensures the sum of all $x_{(s,b),a}$ is 1.
   - Added using `solver.Add`.
 
 - **Solving and Output**:
@@ -479,13 +482,13 @@ else:
 
 #### Optimality criterion: discounted reward with service rate restriction
 
-This solution introduces a **service rate restriction** into the discounted reward model, limiting the usage of the highest service rate \( b = 2 \) to at most 25% of the time. This constraint could represent resource limitations or cost considerations.
+This solution introduces a **service rate restriction** into the discounted reward model, limiting the usage of the highest service rate $b = 2$ to at most 25% of the time. This constraint could represent resource limitations or cost considerations.
 
 **Solution Design:**
 
 - **Service Rate Restriction**:
-  - A new constraint is added to limit the total probability of choosing service rate \( a = 2 \).
-  - The constraint ensures that the sum of probabilities where \( a = 2 \) does not exceed 25% of the total probability.
+  - A new constraint is added to limit the total probability of choosing service rate $a = 2$.
+  - The constraint ensures that the sum of probabilities where $a = 2$ does not exceed 25% of the total probability.
 
 **Code Explanation:**
 
@@ -494,7 +497,7 @@ This solution introduces a **service rate restriction** into the discounted rewa
 - **Balance Constraints**: Remain the same.
 
 - **Service Rate Restriction Constraint**:
-  - Calculated the total probability of choosing service rate \( a = 2 \) across all states.
+  - Calculated the total probability of choosing service rate $a = 2$ across all states.
 
 ```{python}
 # Create the solver
@@ -558,14 +561,14 @@ else:
 
 #### Optimality criterion: average reward with service rate restriction
 
-This solution applies the **service rate restriction** to the average reward model, limiting the usage of the highest service rate \( b = 2 \) while aiming to maximize the average reward.
+This solution applies the **service rate restriction** to the average reward model, limiting the usage of the highest service rate $b = 2$ while aiming to maximize the average reward.
 
 **Solution Design:**
 
 - **State and Action Spaces, Transition Probabilities, and Reward Function**: Same as in the average reward model.
 
 - **Service Rate Restriction**:
-  - Similar to the previous solution, a constraint is added to limit the total probability of choosing service rate \( a = 2 \).
+  - Similar to the previous solution, a constraint is added to limit the total probability of choosing service rate $a = 2$.
 
 **Code Explanation:**
 
@@ -647,4 +650,4 @@ else:
 
 - **Printing Results**:
   - The code checks if an optimal solution is found.
-  - It iterates over all states and prints the optimal action(s) where the decision variable \( x \) is positive, indicating the action(s) to take in each state.
+  - It iterates over all states and prints the optimal action(s) where the decision variable $x$ is positive, indicating the action(s) to take in each state.
