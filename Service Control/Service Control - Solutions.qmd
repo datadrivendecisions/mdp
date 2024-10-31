@@ -429,13 +429,6 @@ for s in S:
         for b_prime in B:
             x[(s, b, b_prime)] = solver.NumVar(0.0, 1.0, f'x_{s}_{b}_{b_prime}')
 
-# Initial state probabilities alpha
-alpha = {}
-n_total_states = len(S) * len(B)
-for s in S:
-    for b in B:
-        alpha[(s, b)] = 1 / n_total_states
-
 # Objective: maximize the expected reward
 objective = solver.Objective()
 for s in S:
@@ -586,13 +579,6 @@ for s in S:
     for b in B:
         for b_prime in B:
             x[(s, b, b_prime)] = solver.NumVar(0.0, 1.0, f'x_{s}_{b}_{b_prime}')
-
-# Initial state probabilities alpha
-alpha = {}
-n_total_states = len(S) * len(B)
-for s in S:
-    for b in B:
-        alpha[(s, b)] = 1 / n_total_states
 
 # Objective: maximize the expected reward
 objective = solver.Objective()
