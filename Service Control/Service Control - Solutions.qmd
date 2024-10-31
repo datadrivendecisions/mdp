@@ -471,13 +471,10 @@ if status == pywraplp.Solver.OPTIMAL:
         print(f"If {s} jobs in the system:")
         for b in B:
             print(f"   If previous service rate was {b}:")
-            x_opt = [x[(s, b, a)].solution_value() for a in B]
-            print(f"      Use service rate {a} (x={max(x_opt):.2f})")
-            
-            # for a in B:
-            #     x_opt = x[(s, b, a)].solution_value()
-            #     if x_opt > 0:
-            #         print(f"      Use service rate {a} (x={x_opt:.2f})")
+            for a in B:
+                x_opt = x[(s, b, a)].solution_value()
+                if x_opt > 0:
+                    print(f"      Use service rate {a} (x={x_opt:.2f})")
 else:
     print("No feasible solution found.")
 ```
