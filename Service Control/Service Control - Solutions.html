@@ -338,7 +338,7 @@ g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
 <li><strong>Switching Costs</strong>: Additional cost if the service rate changes (i.e., ( b a )).</li>
 </ul></li>
 </ul>
-<div id="1ef76726" class="cell" data-execution_count="1">
+<div id="19f79b49" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">##Initialize packages, parameters and functions</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ortools.linear_solver <span class="im">import</span> pywraplp</span>
@@ -442,7 +442,7 @@ g^{\pi}(i) = \liminf_{T \to \inf} \frac{C^{\pi}_T(i)}{T}, \text{ for } i \in S
 <li>Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable ( x ) is greater than zero.</li>
 </ul></li>
 </ul>
-<div id="d198a9fb" class="cell" data-execution_count="2">
+<div id="650e2639" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -609,7 +609,7 @@ If 8 jobs in the system:
 <li>The solver is executed, and upon finding an optimal solution, the code prints the optimal actions for each state.</li>
 </ul></li>
 </ul>
-<div id="ad546485" class="cell" data-execution_count="3">
+<div id="9047850d" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>
@@ -663,65 +663,77 @@ If 8 jobs in the system:
 <span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"If </span><span class="sc">{</span>s<span class="sc">}</span><span class="ss"> jobs in the system:"</span>)</span>
 <span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> b <span class="kw">in</span> B:</span>
 <span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"   If previous service rate was </span><span class="sc">{</span>b<span class="sc">}</span><span class="ss">:"</span>)</span>
-<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> a <span class="kw">in</span> B:</span>
-<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>                x_opt <span class="op">=</span> x[(s, b, a)].solution_value()</span>
-<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> x_opt <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>                    <span class="bu">print</span>(<span class="ss">f"      Use service rate </span><span class="sc">{</span>a<span class="sc">}</span><span class="ss"> (x=</span><span class="sc">{</span>x_opt<span class="sc">:.2f}</span><span class="ss">)"</span>)</span>
-<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"No feasible solution found."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>            x_opt <span class="op">=</span> [x[(s, b, a)].solution_value() <span class="cf">for</span> a <span class="kw">in</span> B]</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"      Use service rate </span><span class="sc">{</span>a<span class="sc">}</span><span class="ss"> (x=</span><span class="sc">{</span><span class="bu">max</span>(x_opt)<span class="sc">:.2f}</span><span class="ss">)"</span>)</span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>            <span class="co"># for a in B:</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>            <span class="co">#     x_opt = x[(s, b, a)].solution_value()</span></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>            <span class="co">#     if x_opt &gt; 0:</span></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>            <span class="co">#         print(f"      Use service rate {a} (x={x_opt:.2f})")</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"No feasible solution found."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>If 0 jobs in the system:
    If previous service rate was 0:
-      Use service rate 0 (x=0.06)
+      Use service rate 2 (x=0.06)
    If previous service rate was 1:
+      Use service rate 2 (x=-0.00)
    If previous service rate was 2:
-      Use service rate 0 (x=0.02)
+      Use service rate 2 (x=0.02)
 If 1 jobs in the system:
    If previous service rate was 0:
-      Use service rate 0 (x=0.10)
+      Use service rate 2 (x=0.10)
    If previous service rate was 1:
+      Use service rate 2 (x=-0.00)
    If previous service rate was 2:
-      Use service rate 0 (x=0.06)
+      Use service rate 2 (x=0.06)
 If 2 jobs in the system:
    If previous service rate was 0:
-      Use service rate 0 (x=0.09)
+      Use service rate 2 (x=0.09)
    If previous service rate was 1:
+      Use service rate 2 (x=0.00)
    If previous service rate was 2:
       Use service rate 2 (x=0.10)
 If 3 jobs in the system:
    If previous service rate was 0:
       Use service rate 2 (x=0.05)
    If previous service rate was 1:
+      Use service rate 2 (x=0.00)
    If previous service rate was 2:
       Use service rate 2 (x=0.12)
 If 4 jobs in the system:
    If previous service rate was 0:
       Use service rate 2 (x=0.02)
    If previous service rate was 1:
+      Use service rate 2 (x=0.00)
    If previous service rate was 2:
       Use service rate 2 (x=0.11)
 If 5 jobs in the system:
    If previous service rate was 0:
       Use service rate 2 (x=0.01)
    If previous service rate was 1:
+      Use service rate 2 (x=0.00)
    If previous service rate was 2:
       Use service rate 2 (x=0.09)
 If 6 jobs in the system:
    If previous service rate was 0:
       Use service rate 2 (x=0.00)
    If previous service rate was 1:
+      Use service rate 2 (x=0.00)
    If previous service rate was 2:
       Use service rate 2 (x=0.07)
 If 7 jobs in the system:
    If previous service rate was 0:
       Use service rate 2 (x=0.00)
    If previous service rate was 1:
+      Use service rate 2 (x=0.00)
    If previous service rate was 2:
       Use service rate 2 (x=0.05)
 If 8 jobs in the system:
    If previous service rate was 0:
       Use service rate 2 (x=0.00)
    If previous service rate was 1:
+      Use service rate 2 (x=0.00)
    If previous service rate was 2:
       Use service rate 2 (x=0.04)</code></pre>
 </div>
@@ -747,7 +759,7 @@ If 8 jobs in the system:
 <li>Calculated the total probability of choosing service rate ( a = 2 ) across all states.</li>
 </ul></li>
 </ul>
-<div id="cd6ebb03" class="cell" data-execution_count="4">
+<div id="8b4b1f80" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -898,7 +910,7 @@ If 8 jobs in the system:
 <li><p><strong>Initialization, Decision Variables, Objective Function, and Balance Constraints</strong>: Same as in the average reward model.</p></li>
 <li><p><strong>Total Probability Constraint</strong>: Ensures the probabilities sum to 1.</p></li>
 </ul>
-<div id="ef04b4ef" class="cell" data-execution_count="5">
+<div id="92d4ed58" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>
