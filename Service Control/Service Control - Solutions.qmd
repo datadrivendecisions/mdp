@@ -195,7 +195,7 @@ C(s, b, a) =
 \begin{cases}
 - d(a) - K \cdot \mathbb{1}_{\{b \neq a\}}, & \text{if } s = 0 \\[8pt]
 R - h(1, H) - d(a) - K \cdot \mathbb{1}_{\{b \neq a\}}, & \text{if } s = 1 \\[8pt]
-R \cdot \sum_{n=1}^{2} f_a(n) \cdot n - h(s, H) - d(a) - K \cdot \mathbb{1}_{\{b \neq a\}}, & \text{if } s > 1
+R \cdot \sum_{n=1}^{2} f_a(n) \cdot n - h(x, H) - d(a) - K \cdot \mathbb{1}_{\{b \neq a\}}, & \text{if } s > 1
 \end{cases}
 $$
 
@@ -207,7 +207,7 @@ where:
 
 -   $R$ is the reward for processing a job.
 
--   $h(s, H)$ is the holding cost, where $H$ is a constant per-unit cost and $s$ is the number of jobs in the system.
+-   $h(x, H)$ is the holding cost, where $H$ is a constant per-unit cost and $x$ is the number of jobs in the system in state $s$.
 
 -   $f_a(n)$ is the probability of processing $n$ jobs under chosen service rate $b=a$.
 
