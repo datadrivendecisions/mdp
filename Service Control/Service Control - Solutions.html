@@ -328,17 +328,29 @@ R \cdot \sum_{n=1}^{2} f_a(n) \cdot n - h(x, H) - d(a) - K \cdot \mathbb{1}_{\{b
 <section id="optimality-criterion" class="level4">
 <h4 class="anchored" data-anchor-id="optimality-criterion">Optimality criterion</h4>
 <p>The goal is to find the optimal policy that minimizes the expected discounted cost or average cost per period. The optimal policy is a stationary policy that prescribes the service rate to choose at each state.</p>
-<p>The equilibrium probabilities under stationary policy <span class="math inline">\(f\)</span>, <span class="math inline">\(\pi^f_{s'}\)</span> are the unique solution to equilibrium equations:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Assumption 1
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For each stationary policy <span class="math inline">\(f\)</span>, the associated Markov chain <span class="math inline">\(\{ X_n \}\)</span> has a single recurrent class of states (Unichain Assumption).</p>
+</div>
+</div>
+<p>Under the unichain assumption, the Markov chain <span class="math display">\[\{ X_n \}\]</span> has a unique equilibrium distribution for each stationary policy. The equilibrium probabilities under stationary policy <span class="math inline">\(f\)</span>, <span class="math inline">\(\pi^f_{s'}\)</span> are the unique solution to equilibrium equations:</p>
 <p><span class="math display">\[
-\pi^f_j = \sum_{i \in S} \pi^f_i \cdot p(j|i, f(i)),
-\]</span></p>
-<p>with:</p>
+\pi^f_{s'} = \sum_{s \in S} \pi^f_{s'} \cdot p(s'|s, f_{s}),
+\]</span> with:</p>
 <p><span class="math display">\[
-\sum_{j \in S} \pi^f_{j} = 1.
+\sum_{s' \in S} \pi^f_{s'} = 1.
 \]</span></p>
 <p>The long-run average cost per unit time under a stationary policy f is given by:</p>
 <p><span class="math display">\[
-g^f = \sum_{j \in S} \pi^f_j \cdot C(j, f(j)).
+g^f = \sum_{s' \in S} \pi^f_{s'} \cdot C(j, f_{s'}).
 \]</span></p>
 <p>A stationary policy <span class="math inline">\(f^*\)</span> is said to be <strong>average cost optimal</strong> if</p>
 <p><span class="math display">\[
@@ -400,7 +412,7 @@ q_{s,a} \geq 0, \quad \forall a \in A(s), s \in S
 <li><strong>Switching Costs</strong>: Additional cost if the service rate changes (i.e., <span class="math inline">\(b \neq a\)</span>).</li>
 </ul></li>
 </ul>
-<div id="316f90ba" class="cell" data-execution_count="1">
+<div id="d7508f92" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">##Initialize packages, parameters and functions</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ortools.linear_solver <span class="im">import</span> pywraplp</span>
@@ -504,7 +516,7 @@ q_{s,a} \geq 0, \quad \forall a \in A(s), s \in S
 <li>Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable <span class="math inline">\(x\)</span> is greater than zero.</li>
 </ul></li>
 </ul>
-<div id="a5192814" class="cell" data-execution_count="2">
+<div id="93e640ed" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -671,7 +683,7 @@ If 8 jobs in the system:
 <li>The solver is executed, and upon finding an optimal solution, the code prints the optimal actions for each state.</li>
 </ul></li>
 </ul>
-<div id="d4a7483e" class="cell" data-execution_count="3">
+<div id="66cf27ea" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>
@@ -802,7 +814,7 @@ If 8 jobs in the system:
 <li>Calculated the total probability of choosing service rate <span class="math inline">\(a = 2\)</span> across all states.</li>
 </ul></li>
 </ul>
-<div id="9f886c08" class="cell" data-execution_count="4">
+<div id="f2647dbd" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -953,7 +965,7 @@ If 8 jobs in the system:
 <li><p><strong>Initialization, Decision Variables, Objective Function, and Balance Constraints</strong>: Same as in the average cost model.</p></li>
 <li><p><strong>Total Probability Constraint</strong>: Ensures the probabilities sum to 1.</p></li>
 </ul>
-<div id="12e57c22" class="cell" data-execution_count="5">
+<div id="8701de26" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>

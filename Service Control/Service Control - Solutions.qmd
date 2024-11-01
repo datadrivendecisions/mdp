@@ -225,22 +225,26 @@ where:
 
 The goal is to find the optimal policy that minimizes the expected discounted cost or average cost per period. The optimal policy is a stationary policy that prescribes the service rate to choose at each state.
 
-The equilibrium probabilities under stationary policy $f$, $\pi^f_{s'}$ are the unique solution to equilibrium equations:
+::: {.callout-note}
+## Assumption 1
+For each stationary policy $f$, the associated Markov chain $\{ X_n \}$ has a single recurrent class of states (Unichain Assumption).
+:::
+
+Under the unichain assumption, the Markov chain $$\{ X_n \}$$ has a unique equilibrium distribution for each stationary policy. The equilibrium probabilities under stationary policy $f$, $\pi^f_{s'}$ are the unique solution to equilibrium equations:
 
 $$
-\pi^f_j = \sum_{i \in S} \pi^f_i \cdot p(j|i, f(i)),
+\pi^f_{s'} = \sum_{s \in S} \pi^f_{s'} \cdot p(s'|s, f_{s}),
 $$
-
 with:
 
 $$
-\sum_{j \in S} \pi^f_{j} = 1.
+\sum_{s' \in S} \pi^f_{s'} = 1.
 $$
 
 The long-run average cost per unit time under a stationary policy f is given by:
 
 $$
-g^f = \sum_{j \in S} \pi^f_j \cdot C(j, f(j)).
+g^f = \sum_{s' \in S} \pi^f_{s'} \cdot C(j, f_{s'}).
 $$
 
 A stationary policy $f^*$ is said to be **average cost optimal** if
