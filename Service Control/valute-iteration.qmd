@@ -1,0 +1,98 @@
+---
+title: "value-iteration"
+author: "Witek ten HOve"
+format: html
+editor: visual
+jupyter: python3
+---
+## Setup
+```{python}
+import numpy as np
+```
+
+
+## Model
+
+```{python}
+# Parameters
+
+X_max = 8  # max system capacity
+
+# Sets of states (X: number of jobs in the system, B: chosen server rate)
+X = range(X_max + 1)
+B = [0, 1, 2]
+
+# Create states
+S = [[b for b in B] for x in X]
+
+for x, s in enumerate(S):
+    print(f'State {x}, {s}')
+
+# Service rate probabilities
+f_b = [[0.8, 0.2],[0.5, 0.5],[0.2, 0.8]]
+
+exp_b = [np.dot(f_b[b], np.array([1,2]).T) for b in B]
+print(exp_b[0], exp_b[1], exp_b[2])
+
+# cost for using server rate
+d = [0, 2, 5]  
+K = 3  # cost for changing the service rate
+R = 5  # reward for processing 1 job per period
+H = 2 # holding cost per period
+```
+```{python}
+# Create functions
+# Transition probabilities
+def P(s_i, s_j, a):
+    x_i, b_i = s_i
+    x_j, b_j = s_j
+    if b_j != a:
+        return 0.0
+    if x_i <= 1:
+        if x_j < X_max:
+            return g(x_j) # Arrival rate
+        elif x_j == X_max:
+            return g_or_more(x_j) # 1 - probability of 0, 1, 2, 3, 4, 5, 6, 7 arrivals
+        else:
+            return 0.0 # X_j > X_max, not possible
+    elif x_i <= X_max:
+        if x_j < X_max:
+            return sum(f(n, b_j) * g(x_j - x_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
+        elif x_j == X_max:
+            return sum(f(n, b_j) * g_or_more(x_j - x_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
+        else:
+            return 0.0 # x_j > X_max, not possible
+    else:
+        return 0.0 # X_i > X_max, not possible
+      
+# Test transition probabilities
+test_cases = [
+  [[0, 0], [0, 1], 1],
+  [[3, 1], [5, 1], 1],
+  [[3, 1], [5, 1], 0],
+  [[8, 2], [5, 1], 1],
+  [[8, 2], [5, 1], 2],
+  [[8, 2], [5, 1], 0],
+  [[8, 2], [6, 2], 2],
+  [[5, 0], [8, 1], 1],
+  [[5, 0], [8, 2], 2]
+  ]
+for s_i, s_j, a in test_cases:
+    print(s_i, s_j, a, P(s_i, s_j, a))
+
+# Expected reward function
+def r(s, a):
+    x = s[0]
+    b = s[1]
+    if x == 0:
+        return 0
+    else:
+        return R * exp_b[a] - H * x - d[b] - K * (a != b)
+
+# Test reward function
+print([1, 0], r([1, 0],0))
+print([1, 0], r([1, 0],1))
+print([4, 0], r([4, 0],0))
+print([4, 1], r([4, 1],0))
+```
+

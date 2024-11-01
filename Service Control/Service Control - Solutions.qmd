@@ -158,7 +158,11 @@ $$
 
 -   Let $f_b(n)$ denote the probability of $n \in \{1, 2\}$ service completions under service rate $b$, where the distributions of $n$ are given for each $b \in B$. This only applies to starting states $s$ with $x > 1$ when the system contains enough jobs to be processed.
 
-Define $p(s' | s, b')$ as the probability of transitioning to state $s' = (x',b')$ when the system is in state $s = (x, b)$ and service state $b'$ is chosen. We can then distinguish the following cases:
+Define $p(s' | s, a)$ as the probability of transitioning to state $s' = (x', b')$ when the system is in state $s = (x, b)$ and action $b'$ is chosen. We can then distinguish the following cases:
+
+$$
+p(s' | s, a \neq b') = 0
+$$
 
 $$
 p(s'|s, b') = 
@@ -182,10 +186,30 @@ The cost function consists of four components:
 
 4.  **Per-period cost for using service rate**: The cost $d(b')$ depends on the chosen service rate $b'$, where: $d(0) = 0, \quad d(1) = 2, \quad d(2) = 5$
 
-The total cost function can thus be written as:
+Certainly! Here’s the Python code expressed in math notation:
+
+Define the reward (or cost) function $C(s, b, a)$ for state $s$, current service rate $b$, and chosen action (service rate) $a$ as follows:
+
 $$
-C_n(s, b') = h(x) + d(b') + K \cdot \mathbf{1}_{\{b \neq b'\}} - Rn \\
+C(s, b, a) = 
+\begin{cases}
+- d(a) - K \cdot \mathbb{1}_{\{b \neq a\}}, & \text{if } s = 0 \\[8pt]
+R - h(1, H) - d(a) - K \cdot \mathbb{1}_{\{b \neq a\}}, & \text{if } s = 1 \\[8pt]
+R \cdot \sum_{n=1}^{2} f_a(n) \cdot n - h(s, H) - d(a) - K \cdot \mathbb{1}_{\{b \neq a\}}, & \text{if } s > 1
+\end{cases}
 $$
+
+where:
+
+- $d(a)$ is the per-period cost of using service rate $a$.
+
+- $K \cdot \mathbb{1}_{\{b \neq a\}}$ represents the cost $K$ for changing the service rate (incurred only if $b \neq a$).
+
+- $R$ is the reward for processing a job.
+
+- $h(s, H)$ is the holding cost, where $H$ is a constant per-unit cost and $s$ is the number of jobs in the system.
+
+- $f_a(n)$ is the probability of processing $n$ jobs under chosen service rate $b=a$.
 
 #### Solution
 
@@ -221,7 +245,7 @@ $$
 
 - **Action Space ($A$)**: The actions are the possible service rates $b' \in B$ that the controller can choose at each decision epoch.
 
-- **Transition Probabilities ($P$)**: The function `P(s_i, b_i, s_j, b_j, a)` calculates the probability of moving from state $(s_i, b_i)$ to $(s_j, b_j)$ given action $a$. It accounts for:
+- **Transition Probabilities ($P$)**: The function `P(x_i, b_i, x_j, b_j, a)` calculates the probability of moving from state $(x_i, b_i)$ to $(x_j, b_j)$ given action $a$. It accounts for:
   - The probability of job arrivals (modeled using a Poisson distribution with rate 1.5).
   - The probability of job completions based on the chosen service rate's distribution $f_b(n)$.
 
@@ -246,7 +270,7 @@ d = { # cost for using server rate
 K = 3  # cost for changing the service rate
 R = 5  # reward for processing 1 job per period
 H = 2 # holding cost per period
-S_max = 8  # max system capacity
+X_max = 8  # max system capacity
 l = 0.95 # discount factor lambda
 
 # cost function for calculating the holding cost
@@ -267,38 +291,38 @@ def g_or_more(n):
     return 1 - sum(g(m) for m in range(n))
 
 # Sets of states (S: number of jobs in the system, B: server states)
-S = range(S_max + 1)
+X = range(X_max + 1)
 B = [0, 1, 2]
 
 # Define the expected reward R_{(s,b),a'} when state is (s,b) and chosen service rate is a'
-def r(s, b, a):
-    if s == 0:
+def r(x, b, a):
+    if x == 0:
         return - d[a] - K*(b != a) # no costs for processing and holding jobs
-    elif s == 1:
+    elif x == 1:
         return R - h(1, H) - d[a] - K*(b != a) # reward and cost for processing and holding 1 job
     else:
-        return R * sum(f(n, a) * n for n in [1, 2]) - h(s, H) - d[a] - K*(b != a)
+        return R * sum(f(n, a) * n for n in [1, 2]) - h(x, H) - d[a] - K*(b != a)
 
 # Transition probabilities
-def P(s_i, b_i, s_j, b_j, a):
+def P(x_i, b_i, x_j, b_j, a):
     if b_j != a:
         return 0.0
-    if s_i <= 1:
-        if s_j < S_max:
-            return g(s_j) # Arrival rate
-        elif s_j == S_max:
-            return g_or_more(s_j) # 1 - probability of 0, 1, 2, 3, 4, 5, 6, 7 arrivals
+    if x_i <= 1:
+        if x_j < X_max:
+            return g(x_j) # Arrival rate
+        elif x_j == X_max:
+            return g_or_more(x_j) # 1 - probability of 0, 1, 2, 3, 4, 5, 6, 7 arrivals
         else:
-            return 0.0 # s_j > S_max, not possible
-    elif s_i <= S_max:
-        if s_j < S_max:
-            return sum(f(n, b_j) * g(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
-        elif s_j == S_max:
-            return sum(f(n, b_j) * g_or_more(s_j - s_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
+            return 0.0 # x_j > X_max, not possible
+    elif x_i <= X_max:
+        if x_j < X_max:
+            return sum(f(n, b_j) * g(x_j - x_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
+        elif x_j == X_max:
+            return sum(f(n, b_j) * g_or_more(x_j - x_i + n) for n in [1, 2]) # Arrivals have to compensate for the difference in states and processed jobs
         else:
-            return 0.0 # s_j > S_max, not possible
+            return 0.0 # x_j > X_max, not possible
     else:
-        return 0.0 # s_i > S_max, not possible
+        return 0.0 # x_i > X_max, not possible
 ```
 
 
@@ -335,49 +359,49 @@ In this solution, we model the problem as a Markov Decision Process (MDP) with t
 # Create the solver
 solver = pywraplp.Solver.CreateSolver('GLOP')
 
-# Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
-x = {}
-for s in S:
+# Decision variables q_{(x,b),b'}: probability of choosing server state b' when state is (x,b)
+q = {}
+for x_i in X:
     for b in B:
         for b_prime in B:
-            x[(s, b, b_prime)] = solver.NumVar(0.0, 1.0, f'x_{s}_{b}_{b_prime}')
+            q[(x_i, b, b_prime)] = solver.NumVar(0.0, 1.0, f'q_{x_i}_{b}_{b_prime}')
 
 # Initial state probabilities alpha
 alpha = {}
-n_total_states = len(S) * len(B)
-for s in S:
+n_total_states = len(X) * len(B)
+for x_i in X:
     for b in B:
-        alpha[(s, b)] = 1 / n_total_states
-        
+        alpha[(x_i, b)] = 1 / n_total_states
+
 # Objective: maximize the expected reward    
 objective = solver.Objective()
-for s in S:
+for x_i in X:
     for b in B:
         for a in B:
-            objective.SetCoefficient(x[(s, b, a)], r(s, b, a))
+            objective.SetCoefficient(q[(x_i, b, a)], r(x_i, b, a))
 objective.SetMaximization()
 
 # Balance constraints
-for s_j in S:
+for x_j in X:
     for b_j in B:
-        lhs = solver.Sum(x[(s_j, b_j, a)] for a in B)
+        lhs = solver.Sum(q[(x_j, b_j, a)] for a in B)
         rhs = l * solver.Sum(
-          P(s_i, b_i, s_j, b_j, a) * x[(s_i, b_i, a)] 
-          for s_i in S for b_i in B for a in B
-          )
-        solver.Add(lhs == alpha[(s_j, b_j)] + rhs)
+            P(x_i, b_i, x_j, b_j, a) * q[(x_i, b_i, a)]
+            for x_i in X for b_i in B for a in B
+        )
+        solver.Add(lhs == alpha[(x_j, b_j)] + rhs)
 
 # Solve the problem
 status = solver.Solve()
 
 # Print the optimal solution
 if status == pywraplp.Solver.OPTIMAL:
-    for s in S:
-        print(f"If {s} jobs in the system:")
+    for x_i in X:
+        print(f"If {x_i} jobs in the system:")
         for b in B:
             print(f"   If previous service rate was {b}:")
             for a in B:
-                x_opt = x[(s, b, a)].solution_value()
+                x_opt = q[(x_i, b, a)].solution_value()
                 if x_opt > 0:
                     print(f"      Use service rate {a} (x={x_opt})")
 else:
@@ -407,7 +431,7 @@ In this solution, the objective shifts to **maximizing the average reward per pe
   - The objective function maximizes the average reward, summing over all states and actions without discounting.
 
 - **Balance Constraints**:
-  - The constraints now equate the total inflow and outflow probabilities for each state $(s_j, b_j)$.
+  - The constraints now equate the total inflow and outflow probabilities for each state $(x_j, b_j)$.
   - Implemented using `solver.Add`, ensuring that for each state, the sum of incoming probabilities equals the sum of outgoing probabilities.
 
 - **Total Probability Constraint**:
@@ -422,52 +446,59 @@ In this solution, the objective shifts to **maximizing the average reward per pe
 solver = pywraplp.Solver.CreateSolver('GLOP')
 solver.SetTimeLimit(60000)  # Set time limit in milliseconds (60 seconds)
 
-# Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
-x = {}
-for s in S:
+# Decision variables q_{(x,b),b'}: probability of choosing server state b' when state is (x,b)
+q = {}
+for x_i in X:
     for b in B:
         for b_prime in B:
-            x[(s, b, b_prime)] = solver.NumVar(0.0, 1.0, f'x_{s}_{b}_{b_prime}')
+            q[(x_i, b, b_prime)] = solver.NumVar(0.0, 1.0, f'q_{x_i}_{b}_{b_prime}')
+
+# Initial state probabilities alpha
+alpha = {}
+n_total_states = len(X) * len(B)
+for x_i in X:
+    for b in B:
+        alpha[(x_i, b)] = 1 / n_total_states
 
 # Objective: maximize the expected reward
 objective = solver.Objective()
-for s in S:
+for x_i in X:
     for b in B:
         for a in B:
-            objective.SetCoefficient(x[(s, b, a)], r(s, b, a))
+            objective.SetCoefficient(q[(x_i, b, a)], r(x_i, b, a))
 objective.SetMaximization()
 
 # Balance constraints
-for s_j in S:
+for x_j in X:
     for b_j in B:
-        # Right-hand side (outflow) - the sum of probabilities of choosing each action a in state (s_j, b_j)
-        outflow = solver.Sum(x[(s_j, b_j, a)] for a in B)
+        # Right-hand side (outflow) - the sum of probabilities of choosing each action a in state (x_j, b_j)
+        outflow = solver.Sum(q[(x_j, b_j, a)] for a in B)
         
         # Left-hand side (inflow) - the weighted sum of transition probabilities for each incoming state-action pair
         inflow = solver.Sum(
-            P(s_i, b_i, s_j, b_j, a) * x[(s_i, b_i, a)]
-            for s_i in S for b_i in B for a in B
+            P(x_i, b_i, x_j, b_j, a) * q[(x_i, b_i, a)]
+            for x_i in X for b_i in B for a in B
         )
         
         # Add the constraint that the inflow and outflow must be equal
-        solver.Add(inflow == outflow)
+        solver.Add(inflow == alpha[(x_j, b_j)] + outflow)
 
 # Probability constraint to ensure all probabilities sum to 1
-solver.Add(solver.Sum(x[(s, b, a)] for s in S for b in B for a in B) == 1)
+solver.Add(solver.Sum(q[(x_i, b, a)] for x_i in X for b in B for a in B) == 1)
 
 # Solve the problem
 status = solver.Solve()
 
 # Print the optimal solution
 if status == pywraplp.Solver.OPTIMAL:
-    for s in S:
-        print(f"If {s} jobs in the system:")
+    for x_i in X:
+        print(f"If {x_i} jobs in the system:")
         for b in B:
             print(f"   If previous service rate was {b}:")
             for a in B:
-                x_opt = x[(s, b, a)].solution_value()
+                x_opt = q[(x_i, b, a)].solution_value()
                 if x_opt > 0:
-                    print(f"      Use service rate {a} (x={x_opt:.2f})")
+                    print(f"      Use service rate {a} (x={x_opt})")
 else:
     print("No feasible solution found.")
 ```
@@ -495,43 +526,43 @@ This solution introduces a **service rate restriction** into the discounted rewa
 # Create the solver
 solver = pywraplp.Solver.CreateSolver('GLOP')
 
-# Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
-x = {}
-for s in S:
+# Decision variables q_{(x,b),b'}: probability of choosing server state b' when state is (x,b)
+q = {}
+for x_i in X:
     for b in B:
         for b_prime in B:
-            x[(s, b, b_prime)] = solver.NumVar(0.0, 1.0, f'x_{s}_{b}_{b_prime}')
+            q[(x_i, b, b_prime)] = solver.NumVar(0.0, 1.0, f'q_{x_i}_{b}_{b_prime}')
 
 # Initial state probabilities alpha
 alpha = {}
-n_total_states = len(S) * len(B)
-for s in S:
+n_total_states = len(X) * len(B)
+for x_i in X:
     for b in B:
-        alpha[(s, b)] = 1 / n_total_states
+        alpha[(x_i, b)] = 1 / n_total_states
         
 # Objective: maximize the expected reward    
 objective = solver.Objective()
-for s in S:
+for x_i in X:
     for b in B:
         for a in B:
-            objective.SetCoefficient(x[(s, b, a)], r(s, b, a))
+            objective.SetCoefficient(q[(x_i, b, a)], r(x_i, b, a))
 objective.SetMaximization()
 
 # Balance constraints
-for s_j in S:
+for x_j in X:
     for b_j in B:
-        lhs = solver.Sum(x[(s_j, b_j, a)] for a in B)
+        lhs = solver.Sum(q[(x_j, b_j, a)] for a in B)
         rhs = l * solver.Sum(
-          P(s_i, b_i, s_j, b_j, a) * x[(s_i, b_i, a)] 
-          for s_i in S for b_i in B for a in B
-          )
-        solver.Add(lhs == alpha[(s_j, b_j)] + rhs)
+            P(x_i, b_i, x_j, b_j, a) * q[(x_i, b_i, a)] 
+            for x_i in X for b_i in B for a in B
+        )
+        solver.Add(lhs == alpha[(x_j, b_j)] + rhs)
         
 # Define the left-hand side: the total probability of using server state b = 2
-service_rate_b2 = solver.Sum(x[(s, 2, a)] for s in S for a in B)
+service_rate_b2 = solver.Sum(q[(x_i, 2, a)] for x_i in X for a in B)
 
 # Define the right-hand side: 25% of the total probability across all states, server states, and actions
-total_probability = solver.Sum(x[(s, b, a)] for s in S for b in B for a in B)
+total_probability = solver.Sum(q[(x_i, b, a)] for x_i in X for b in B for a in B)
 solver.Add(service_rate_b2 <= 0.25 * total_probability)
 
 # Solve the problem
@@ -539,14 +570,14 @@ status = solver.Solve()
 
 # Print the optimal solution
 if status == pywraplp.Solver.OPTIMAL:
-    for s in S:
-        print(f"If {s} jobs in the system:")
+    for x_i in X:
+        print(f"If {x_i} jobs in the system:")
         for b in B:
             print(f"   If previous service rate was {b}:")
             for a in B:
-                x_opt = x[(s, b, a)].solution_value()
-                if x_opt > 0:
-                    print(f"      Use service rate {a} (x={x_opt})")
+                q_opt = q[(x_i, b, a)].solution_value()
+                if q_opt > 0:
+                    print(f"      Use service rate {a} (q={q_opt})")
 else:
     print("No feasible solution found.")
 ```
@@ -573,41 +604,41 @@ This solution applies the **service rate restriction** to the average reward mod
 solver = pywraplp.Solver.CreateSolver('GLOP')
 solver.SetTimeLimit(60000)  # Set time limit in milliseconds (60 seconds)
 
-# Decision variables x_{(s,b),b'}: probability of choosing server state b' when state is (s,b)
-x = {}
-for s in S:
+# Decision variables q_{(x,b),b'}: probability of choosing server state b' when state is (x,b)
+q = {}
+for x_i in X:
     for b in B:
         for b_prime in B:
-            x[(s, b, b_prime)] = solver.NumVar(0.0, 1.0, f'x_{s}_{b}_{b_prime}')
+            q[(x_i, b, b_prime)] = solver.NumVar(0.0, 1.0, f'q_{x_i}_{b}_{b_prime}')
 
 # Objective: maximize the expected reward
 objective = solver.Objective()
-for s in S:
+for x_i in X:
     for b in B:
         for a in B:
-            objective.SetCoefficient(x[(s, b, a)], r(s, b, a))
+            objective.SetCoefficient(q[(x_i, b, a)], r(x_i, b, a))
 objective.SetMaximization()
 
 # Balance constraints
-for s_j in S:
+for x_j in X:
     for b_j in B:
-        # Right-hand side (outflow) - the sum of probabilities of choosing each action a in state (s_j, b_j)
-        outflow = solver.Sum(x[(s_j, b_j, a)] for a in B)
+        # Outflow: the sum of probabilities of choosing each action a in state (x_j, b_j)
+        outflow = solver.Sum(q[(x_j, b_j, a)] for a in B)
         
-        # Left-hand side (inflow) - the weighted sum of transition probabilities for each incoming state-action pair
+        # Inflow: the weighted sum of transition probabilities for each incoming state-action pair
         inflow = solver.Sum(
-            P(s_i, b_i, s_j, b_j, a) * x[(s_i, b_i, a)]
-            for s_i in S for b_i in B for a in B
+            P(x_i, b_i, x_j, b_j, a) * q[(x_i, b_i, a)]
+            for x_i in X for b_i in B for a in B
         )
         
         # Add the constraint that the inflow and outflow must be equal
         solver.Add(inflow == outflow)
 
 # Probability constraint to ensure all probabilities sum to 1
-solver.Add(solver.Sum(x[(s, b, a)] for s in S for b in B for a in B) == 1)
+solver.Add(solver.Sum(q[(x_i, b, a)] for x_i in X for b in B for a in B) == 1)
 
 # Service rate restriction: Limit the probability of using server state b = 2 to 25%
-service_rate_limit = solver.Sum(x[(s, 2, a)] for s in S for a in B)
+service_rate_limit = solver.Sum(q[(x_i, 2, a)] for x_i in X for a in B)
 solver.Add(service_rate_limit <= 0.25)
 
 # Solve the problem
@@ -615,14 +646,14 @@ status = solver.Solve()
 
 # Print the optimal solution
 if status == pywraplp.Solver.OPTIMAL:
-    for s in S:
-        print(f"If {s} jobs in the system:")
+    for x_i in X:
+        print(f"If {x_i} jobs in the system:")
         for b in B:
             print(f"   If previous service rate was {b}:")
             for a in B:
-                x_opt = x[(s, b, a)].solution_value()
-                if x_opt > 0:
-                    print(f"      Use service rate {a} (x={x_opt:.2f})")
+                q_opt = q[(x_i, b, a)].solution_value()
+                if q_opt > 0:
+                    print(f"      Use service rate {a} (q={q_opt:.2f})")
 else:
     print("No feasible solution found.")
 ```
