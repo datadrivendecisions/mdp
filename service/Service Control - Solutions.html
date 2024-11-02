@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Ritsaart Bergsma, Jeroen Landman &amp; Witek ten Hove">
 
-<title>Service Control - Discounted Reward</title>
+<title>Assignment 2 - Service Control</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -101,21 +102,28 @@ window.Quarto = {
 
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Service-Control---Solutions.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Service Control - Discounted Reward</h1>
+<h1 class="title">Assignment 2 - Service Control</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ritsaart Bergsma, Jeroen Landman &amp; Witek ten Hove </p>
+          </div>
+  </div>
     
   
     
@@ -284,7 +292,7 @@ f_a(k)=\begin{cases}
 <ul>
 <li>Let <span class="math inline">\(f_b(n)\)</span> denote the probability of <span class="math inline">\(n \in \{1, 2\}\)</span> service completions under service rate <span class="math inline">\(b\)</span>, where the distributions of <span class="math inline">\(n\)</span> are given for each <span class="math inline">\(b \in B\)</span>. This only applies to starting states <span class="math inline">\(s\)</span> with <span class="math inline">\(x &gt; 1\)</span> when the system contains enough jobs to be processed.</li>
 </ul>
-<p>Define <span class="math inline">\(p(s' | s, a)\)</span> as the probability of transitioning to state <span class="math inline">\(s' = (x', b')\)</span> when the system is in state <span class="math inline">\(s = (x, b)\)</span> and action <span class="math inline">\(b'\)</span> is chosen. We can then distinguish the following cases:</p>
+<p>Define <span class="math inline">\(p(s' | s, a)\)</span> as the probability of transitioning to state <span class="math inline">\(s' = (x', b')\)</span> when the system is in state <span class="math inline">\(s = (x, b)\)</span> and action <span class="math inline">\(a=b'\)</span> is chosen. We can then distinguish the following cases:</p>
 <p><span class="math display">\[
 p(s' | s, a \neq b') = 0
 \]</span></p>
@@ -302,7 +310,7 @@ f^a(x') &amp; \text{if } x \in \{0, 1\} \text{ and } x' &lt; 8, \\
 <h4 class="anchored" data-anchor-id="cost-and-rewards-c">Cost and rewards (<span class="math inline">\(C\)</span>)</h4>
 <p>The cost function consists of four components:</p>
 <ol type="1">
-<li><p><strong>Reward for service completions</strong>: For each service completion <span class="math inline">\(n\)</span>, the system receives a reward of <span class="math inline">\(R = 5\)</span>. The total reward for service completions when the system is in state <span class="math inline">\(s\)</span> and action <span class="math inline">\(b'\)</span> is chosen is: <span class="math inline">\(5n\)</span>.</p></li>
+<li><p><strong>Expected reward for service completions</strong>: For each random number of service completions <span class="math inline">\(n \sim f_b(n)\)</span> the system receives a reward of <span class="math inline">\(R = 5\)</span>. The expected total reward for service completions when the system is in state <span class="math inline">\(s\)</span> and action <span class="math inline">\(a=b'\)</span> is chosen equals: <span class="math inline">\(5 \cdot \mathbb{E}(n)\)</span>.</p></li>
 <li><p><strong>Holding cost</strong>: The expected holding cost per period is <span class="math inline">\(h(x) = 2x\)</span> when there are <span class="math inline">\(x\)</span> jobs in the system.</p></li>
 <li><p><strong>Cost of changing service rate</strong>: If the controller changes the service rate from one period to the next (<span class="math inline">\(b \neq b'\)</span>), a fixed cost of <span class="math inline">\(K = 3\)</span> is incurred.</p></li>
 <li><p><strong>Per-period cost for using service rate</strong>: The cost <span class="math inline">\(d(b')\)</span> depends on the chosen service rate <span class="math inline">\(b'\)</span>, where: <span class="math inline">\(d(0) = 0, \quad d(1) = 2, \quad d(2) = 5\)</span></p></li>
@@ -338,29 +346,21 @@ Assumption 1
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>For each stationary policy <span class="math inline">\(f\)</span>, the associated Markov chain <span class="math inline">\(\{ X_n \}\)</span> has a single recurrent class of states (Unichain Assumption).</p>
+<p>For each stationary policy <span class="math inline">\(\pi\)</span>, the associated Markov chain <span class="math inline">\(\{ X_n \}\)</span> has a single recurrent class of states (Unichain Assumption).</p>
+<p><em>Proof:</em></p>
+<ol type="1">
+<li>Choose arbitrary <span class="math inline">\(s(x + 1, b')\)</span>. There exists a one-step path from <span class="math inline">\(s(x + 1, b')\)</span> to <span class="math inline">\(s(x, b)\)</span> with <span class="math inline">\(P(k = n - 1) &gt; 0\)</span> under policy <span class="math inline">\(\pi(s(x + 1, b'))\)</span>. This is evident as <span class="math inline">\(k\)</span> can take any value from <span class="math inline">\(0\)</span> to <span class="math inline">\(\infty\)</span> with probability larger than <span class="math inline">\(0\)</span> and <span class="math inline">\(n \subset k\)</span> with positive probabilities for all <span class="math inline">\(n\)</span>.</li>
+<li>Choose arbitrary <span class="math inline">\(s(x - 1, b')\)</span>. There exists a one-step path from <span class="math inline">\(s(x - 1, b')\)</span> to <span class="math inline">\(s(x, b)\)</span> with <span class="math inline">\(P(k = n + 1) &gt; 0\)</span> under policy <span class="math inline">\(\pi(s(x - 1, b'))\)</span>. Same as above.</li>
+<li>Choose arbitrary <span class="math inline">\(s(x, b)\)</span>. There exists a one-step path from <span class="math inline">\(s(x, b)\)</span> to itself with <span class="math inline">\(P(k = x) &gt; 0 \text{ if } x=\{0,1\} \text{ and } P(k = n) &gt; 0  \text{ if } x&gt;1\)</span> under policy <span class="math inline">\(\pi(s(x, b))\)</span>. Same as above.</li>
+</ol>
+<p>By recurrence and transitivity, all states under an arbitrary policy <span class="math inline">\(\pi\)</span> are in the same recurrent class. Therefore, the Markov chain is unichain.</p>
 </div>
 </div>
-<p>Under the unichain assumption, the Markov chain <span class="math display">\[\{ X_n \}\]</span> has a unique equilibrium distribution for each stationary policy. The equilibrium probabilities under stationary policy <span class="math inline">\(f\)</span>, <span class="math inline">\(\pi^f_{s'}\)</span> are the unique solution to equilibrium equations:</p>
-<p><span class="math display">\[
-\pi^f_{s'} = \sum_{s \in S} \pi^f_{s'} \cdot p(s'|s, f_{s}),
-\]</span> with:</p>
-<p><span class="math display">\[
-\sum_{s' \in S} \pi^f_{s'} = 1.
-\]</span></p>
-<p>The long-run average cost per unit time under a stationary policy f is given by:</p>
-<p><span class="math display">\[
-g^f = \sum_{s' \in S} \pi^f_{s'} \cdot C(j, f_{s'}).
-\]</span></p>
-<p>A stationary policy <span class="math inline">\(f^*\)</span> is said to be <strong>average cost optimal</strong> if</p>
-<p><span class="math display">\[
-g^{f^*} \leq g^{f} \quad \text{for each stationary policy } f.
-\]</span></p>
 <p>For solving an infinite MDP problem there are several methods available. The most common methods are:</p>
 <ol type="1">
-<li><p><strong>Value Iteration</strong>: This method iteratively computes the value function for each state by updating the value based on the Bellman equation. The policy is then derived from the value function.</p></li>
-<li><p><strong>Policy Iteration</strong>: This method alternates between policy evaluation and policy improvement steps. It evaluates the current policy and then improves it by selecting the best action at each state.</p></li>
-<li><p><strong>Linear Programming</strong>: The MDP problem can be formulated as a linear program, and the optimal policy can be obtained by solving the linear program.</p></li>
+<li><p>Value Iteration</p></li>
+<li><p>Policy Iteration</p></li>
+<li><p>Linear Programming</p></li>
 </ol>
 <p>For this particular instance we will use the linear programming approach to solve the MDP problem. Although part a of the problem set could be solved with all of the above mentioned methods, the linear programming approach is particularly well suited for part b problem as it allows for a direct formulation of the MDP problem and the addition of special constraints, in this case the constraint that the server may work at service rate <span class="math inline">\(b = 2\)</span> at most 25% of the time.</p>
 </section>
@@ -412,7 +412,7 @@ q_{s,a} \geq 0, \quad \forall a \in A(s), s \in S
 <li><strong>Switching Costs</strong>: Additional cost if the service rate changes (i.e., <span class="math inline">\(b \neq a\)</span>).</li>
 </ul></li>
 </ul>
-<div id="4d3aeea3" class="cell" data-execution_count="1">
+<div id="736a9c8e" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">##Initialize packages, parameters and functions</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ortools.linear_solver <span class="im">import</span> pywraplp</span>
@@ -516,7 +516,7 @@ q_{s,a} \geq 0, \quad \forall a \in A(s), s \in S
 <li>Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable <span class="math inline">\(x\)</span> is greater than zero.</li>
 </ul></li>
 </ul>
-<div id="64899ff4" class="cell" data-execution_count="2">
+<div id="530c70cc" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -683,7 +683,7 @@ If 8 jobs in the system:
 <li>The solver is executed, and upon finding an optimal solution, the code prints the optimal actions for each state.</li>
 </ul></li>
 </ul>
-<div id="f3a14f2f" class="cell" data-execution_count="3">
+<div id="7b49fca0" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>
@@ -814,7 +814,7 @@ If 8 jobs in the system:
 <li>Calculated the total probability of choosing service rate <span class="math inline">\(a = 2\)</span> across all states.</li>
 </ul></li>
 </ul>
-<div id="f15d3b26" class="cell" data-execution_count="4">
+<div id="91aa7d4c" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -965,7 +965,7 @@ If 8 jobs in the system:
 <li><p><strong>Initialization, Decision Variables, Objective Function, and Balance Constraints</strong>: Same as in the average cost model.</p></li>
 <li><p><strong>Total Probability Constraint</strong>: Ensures the probabilities sum to 1.</p></li>
 </ul>
-<div id="7067b271" class="cell" data-execution_count="5">
+<div id="55f504b0" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>

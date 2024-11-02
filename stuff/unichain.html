@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.551">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Unichain assumption</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="unichain_files/libs/clipboard/clipboard.min.js"></script>
+<script src="unichain_files/libs/quarto-html/quarto.js"></script>
+<script src="unichain_files/libs/quarto-html/popper.min.js"></script>
+<script src="unichain_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="unichain_files/libs/quarto-html/anchor.min.js"></script>
+<link href="unichain_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="unichain_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="unichain_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="unichain_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="unichain_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="unichain_files/libs/quarto-diagram/mermaid.min.js"></script>
+<script src="unichain_files/libs/quarto-diagram/mermaid-init.js"></script>
+<link href="unichain_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Unichain assumption</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Visualization of a unichain Markov chain with transient states:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    [*] --&gt; T1
+    [*] --&gt; T2
+    [*] --&gt; T3
+    T1 --&gt; R1
+    T2 --&gt; R1
+    T3 --&gt; R2
+    R1 --&gt; R2
+    R2 --&gt; R1
+    R1 --&gt; R1
+    R2 --&gt; R2: 1
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li><strong>States:</strong>
+<ul>
+<li><strong>T1, T2, T3:</strong> Transient states. The system may start in any of these states, but once it leaves, it doesn’t return.</li>
+<li><strong>R1, R2:</strong> Recurrent states forming a single recurrent class. The system can transition between these states indefinitely.</li>
+</ul></li>
+<li><strong>Transitions:</strong>
+<ul>
+<li>Arrows indicate possible transitions between states.</li>
+<li>Transient states (T1, T2, T3) have transitions leading to the recurrent states (R1, R2).</li>
+<li>Recurrent states (R1, R2) have transitions between each other and to themselves, indicating the possibility of remaining in the same state.</li>
+</ul></li>
+</ul>
+<p><strong>Key Points:</strong></p>
+<ul>
+<li><strong>Unichain Property:</strong> The chain has a single recurrent class (R1 and R2) and includes transient states (T1, T2, T3).</li>
+<li><strong>Transient States:</strong> Once the system leaves a transient state, it doesn’t return to it.</li>
+<li><strong>Recurrent States:</strong> The system can cycle between R1 and R2 indefinitely, characteristic of a recurrent class.</li>
+</ul>
+<p>This diagram illustrates a unichain Markov chain with transient states, where all paths eventually lead to the recurrent class, and within that class, the system can continue indefinitely.</p>
+<hr>
+<p><strong>Aperiodic</strong> and <strong>periodic</strong> Markov chains.</p>
+<hr>
+<section id="understanding-aperiodic-and-periodic-markov-chains" class="level2">
+<h2 class="anchored" data-anchor-id="understanding-aperiodic-and-periodic-markov-chains"><strong>Understanding Aperiodic and Periodic Markov Chains</strong></h2>
+<ul>
+<li><p><strong>Aperiodic Markov Chain:</strong> A Markov chain is aperiodic if it’s possible to return to any state at irregular time steps. Formally, the greatest common divisor (gcd) of the lengths of all possible loops (returns to the same state) is 1.</p></li>
+<li><p><strong>Periodic Markov Chain:</strong> A Markov chain is periodic if returns to a state can only occur at multiples of some integer greater than 1. The gcd of the return times is greater than 1.</p></li>
+</ul>
+<hr>
+</section>
+<section id="example-1-aperiodic-markov-chain" class="level2">
+<h2 class="anchored" data-anchor-id="example-1-aperiodic-markov-chain"><strong>Example 1: Aperiodic Markov Chain</strong></h2>
+<p>Let’s consider a simple three-state Markov chain where the states are 0, 1, and 2.</p>
+<section id="transition-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="transition-matrix"><strong>Transition Matrix</strong></h3>
+<p><span class="math display">\[
+P = \begin{pmatrix}
+0.5 &amp; 0.3 &amp; 0.2 \\
+0.1 &amp; 0.6 &amp; 0.3 \\
+0.2 &amp; 0.4 &amp; 0.4 \\
+\end{pmatrix}
+\]</span></p>
+<ul>
+<li>All transition probabilities are positive.</li>
+<li>It’s possible to stay in the same state or move to any other state in one step.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="example-2-periodic-markov-chain" class="level2">
+<h2 class="anchored" data-anchor-id="example-2-periodic-markov-chain"><strong>Example 2: Periodic Markov Chain</strong></h2>
+<p>Consider a two-state Markov chain where the states alternate.</p>
+<section id="transition-matrix-1" class="level3">
+<h3 class="anchored" data-anchor-id="transition-matrix-1"><strong>Transition Matrix</strong></h3>
+<p><span class="math display">\[
+P = \begin{pmatrix}
+0 &amp; 1 \\
+1 &amp; 0 \\
+\end{pmatrix}
+\]</span></p>
+<ul>
+<li>From state 0, you always move to state 1 in the next step.</li>
+<li>From state 1, you always move to state 0 in the next step.</li>
+<li>Returns to any state occur only at even time steps.</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="python-implementation" class="level2">
+<h2 class="anchored" data-anchor-id="python-implementation"><strong>Python Implementation</strong></h2>
+<p>Let’s simulate both chains and compare their behaviors.</p>
+<section id="import-necessary-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="import-necessary-libraries"><strong>Import Necessary Libraries</strong></h3>
+<div id="538912e7" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="define-the-markov-chains" class="level3">
+<h3 class="anchored" data-anchor-id="define-the-markov-chains"><strong>Define the Markov Chains</strong></h3>
+<section id="aperiodic-chain" class="level4">
+<h4 class="anchored" data-anchor-id="aperiodic-chain"><strong>Aperiodic Chain</strong></h4>
+<div id="961f3247" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># States: 0, 1, 2</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>states_aperiodic <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Transition Probability Matrix</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>P_aperiodic <span class="op">=</span> np.array([</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>],</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.1</span>, <span class="fl">0.6</span>, <span class="fl">0.3</span>],</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.4</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="periodic-chain" class="level4">
+<h4 class="anchored" data-anchor-id="periodic-chain"><strong>Periodic Chain</strong></h4>
+<div id="85537897" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># States: 0, 1</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>states_periodic <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Transition Probability Matrix</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>P_periodic <span class="op">=</span> np.array([</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">1</span>, <span class="dv">0</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="simulation-function" class="level3">
+<h3 class="anchored" data-anchor-id="simulation-function"><strong>Simulation Function</strong></h3>
+<p>We’ll define a function to simulate the Markov chain over a number of steps.</p>
+<div id="f6f321e1" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_markov_chain(P, states, start_state, num_steps):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    state <span class="op">=</span> start_state</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    state_history <span class="op">=</span> [state]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_steps):</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        state <span class="op">=</span> np.random.choice(states, p<span class="op">=</span>P[state])</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        state_history.append(state)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> state_history</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="simulate-the-chains" class="level3">
+<h3 class="anchored" data-anchor-id="simulate-the-chains"><strong>Simulate the Chains</strong></h3>
+<section id="parameters" class="level4">
+<h4 class="anchored" data-anchor-id="parameters"><strong>Parameters</strong></h4>
+<div id="e0b7064c" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>num_steps <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>start_state_aperiodic <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>start_state_periodic <span class="op">=</span> <span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="simulate-aperiodic-chain" class="level4">
+<h4 class="anchored" data-anchor-id="simulate-aperiodic-chain"><strong>Simulate Aperiodic Chain</strong></h4>
+<div id="1370723a" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>history_aperiodic <span class="op">=</span> simulate_markov_chain(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    P_aperiodic, states_aperiodic, start_state_aperiodic, num_steps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="simulate-periodic-chain" class="level4">
+<h4 class="anchored" data-anchor-id="simulate-periodic-chain"><strong>Simulate Periodic Chain</strong></h4>
+<div id="0e666826" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>history_periodic <span class="op">=</span> simulate_markov_chain(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    P_periodic, states_periodic, start_state_periodic, num_steps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="visualize-the-state-visits" class="level3">
+<h3 class="anchored" data-anchor-id="visualize-the-state-visits"><strong>Visualize the State Visits</strong></h3>
+<section id="function-to-plot-state-visits" class="level4">
+<h4 class="anchored" data-anchor-id="function-to-plot-state-visits"><strong>Function to Plot State Visits</strong></h4>
+<div id="eb5fb4fb" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_state_visits(state_history, title):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">2</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    plt.plot(state_history, <span class="st">'o-'</span>, markersize<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    plt.yticks(<span class="bu">sorted</span>(<span class="bu">set</span>(state_history)))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Step'</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'State'</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    plt.title(title)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    plt.grid(<span class="va">True</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="plot-aperiodic-chain" class="level4">
+<h4 class="anchored" data-anchor-id="plot-aperiodic-chain"><strong>Plot Aperiodic Chain</strong></h4>
+<div id="a11ae571" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>plot_state_visits(history_aperiodic, <span class="st">'Aperiodic Markov Chain State Visits'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unichain_files/figure-html/cell-10-output-1.png" width="948" height="228" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="plot-periodic-chain" class="level4">
+<h4 class="anchored" data-anchor-id="plot-periodic-chain"><strong>Plot Periodic Chain</strong></h4>
+<div id="892358dd" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plot_state_visits(history_periodic, <span class="st">'Periodic Markov Chain State Visits'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unichain_files/figure-html/cell-11-output-1.png" width="948" height="228" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="compute-state-return-times" class="level3">
+<h3 class="anchored" data-anchor-id="compute-state-return-times"><strong>Compute State Return Times</strong></h3>
+<p>We’ll compute the times at which the chain returns to the starting state.</p>
+<section id="function-to-compute-return-times" class="level4">
+<h4 class="anchored" data-anchor-id="function-to-compute-return-times"><strong>Function to Compute Return Times</strong></h4>
+<div id="1287c414" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_return_times(state_history, target_state):</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    return_times <span class="op">=</span> []</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    last_visit <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, state <span class="kw">in</span> <span class="bu">enumerate</span>(state_history):</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> state <span class="op">==</span> target_state:</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> last_visit <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>                return_times.append(idx <span class="op">-</span> last_visit)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>            last_visit <span class="op">=</span> idx</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> return_times</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="compute-and-display-return-times" class="level4">
+<h4 class="anchored" data-anchor-id="compute-and-display-return-times"><strong>Compute and Display Return Times</strong></h4>
+<div id="815bf414" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aperiodic Chain</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>return_times_aperiodic <span class="op">=</span> compute_return_times(history_aperiodic, start_state_aperiodic)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Aperiodic Chain Return Times:"</span>, return_times_aperiodic)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"GCD of Return Times (Aperiodic):"</span>, np.gcd.<span class="bu">reduce</span>(return_times_aperiodic))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Periodic Chain</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>return_times_periodic <span class="op">=</span> compute_return_times(history_periodic, start_state_periodic)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Periodic Chain Return Times:"</span>, return_times_periodic)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"GCD of Return Times (Periodic):"</span>, np.gcd.<span class="bu">reduce</span>(return_times_periodic))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Aperiodic Chain Return Times: [1, 22, 1, 5, 1, 5, 1, 48, 1, 2, 1, 5, 1, 1]
+GCD of Return Times (Aperiodic): 1
+Periodic Chain Return Times: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+GCD of Return Times (Periodic): 2</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="results-and-explanation" class="level2">
+<h2 class="anchored" data-anchor-id="results-and-explanation"><strong>Results and Explanation</strong></h2>
+<section id="aperiodic-markov-chain" class="level3">
+<h3 class="anchored" data-anchor-id="aperiodic-markov-chain"><strong>Aperiodic Markov Chain</strong></h3>
+<ul>
+<li><p><strong>State Visits Plot:</strong></p>
+<p>The plot shows that the chain moves between states 0, 1, and 2 without any regular pattern.</p></li>
+<li><p><strong>Return Times:</strong></p>
+<p>The return times to the starting state are irregular, and their gcd is typically 1, indicating aperiodicity.</p></li>
+</ul>
+</section>
+<section id="periodic-markov-chain" class="level3">
+<h3 class="anchored" data-anchor-id="periodic-markov-chain"><strong>Periodic Markov Chain</strong></h3>
+<ul>
+<li><p><strong>State Visits Plot:</strong></p>
+<p>The plot shows an alternating pattern between states 0 and 1.</p></li>
+<li><p><strong>Return Times:</strong></p>
+<p>The return times to the starting state are consistently 2, 4, 6, etc. The gcd of these times is 2, indicating periodicity with period 2.</p></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="complete-code" class="level2">
+<h2 class="anchored" data-anchor-id="complete-code"><strong>Complete Code</strong></h2>
+<p>Here’s the complete code assembled together:</p>
+<div id="ba18c936" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Aperiodic Markov Chain</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>states_aperiodic <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>P_aperiodic <span class="op">=</span> np.array([</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.5</span>, <span class="fl">0.3</span>, <span class="fl">0.2</span>],</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.1</span>, <span class="fl">0.6</span>, <span class="fl">0.3</span>],</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.4</span>]</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Periodic Markov Chain</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>states_periodic <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>P_periodic <span class="op">=</span> np.array([</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">0</span>, <span class="dv">1</span>],</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    [<span class="dv">1</span>, <span class="dv">0</span>]</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_markov_chain(P, states, start_state, num_steps):</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    state <span class="op">=</span> start_state</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    state_history <span class="op">=</span> [state]</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_steps):</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>        state <span class="op">=</span> np.random.choice(states, p<span class="op">=</span>P[state])</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>        state_history.append(state)</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> state_history</span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_state_visits(state_history, title):</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">2</span>))</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    plt.plot(state_history, <span class="st">'o-'</span>, markersize<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>    plt.yticks(<span class="bu">sorted</span>(<span class="bu">set</span>(state_history)))</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'Step'</span>)</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'State'</span>)</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>    plt.title(title)</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    plt.grid(<span class="va">True</span>)</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_return_times(state_history, target_state):</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>    return_times <span class="op">=</span> []</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>    last_visit <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, state <span class="kw">in</span> <span class="bu">enumerate</span>(state_history):</span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> state <span class="op">==</span> target_state:</span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> last_visit <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>                return_times.append(idx <span class="op">-</span> last_visit)</span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>            last_visit <span class="op">=</span> idx</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> return_times</span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulation Parameters</span></span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>num_steps <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>start_state_aperiodic <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a>start_state_periodic <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-52"><a href="#cb14-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate Chains</span></span>
+<span id="cb14-53"><a href="#cb14-53" aria-hidden="true" tabindex="-1"></a>history_aperiodic <span class="op">=</span> simulate_markov_chain(</span>
+<span id="cb14-54"><a href="#cb14-54" aria-hidden="true" tabindex="-1"></a>    P_aperiodic, states_aperiodic, start_state_aperiodic, num_steps)</span>
+<span id="cb14-55"><a href="#cb14-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-56"><a href="#cb14-56" aria-hidden="true" tabindex="-1"></a>history_periodic <span class="op">=</span> simulate_markov_chain(</span>
+<span id="cb14-57"><a href="#cb14-57" aria-hidden="true" tabindex="-1"></a>    P_periodic, states_periodic, start_state_periodic, num_steps)</span>
+<span id="cb14-58"><a href="#cb14-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-59"><a href="#cb14-59" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot State Visits</span></span>
+<span id="cb14-60"><a href="#cb14-60" aria-hidden="true" tabindex="-1"></a>plot_state_visits(history_aperiodic, <span class="st">'Aperiodic Markov Chain State Visits'</span>)</span>
+<span id="cb14-61"><a href="#cb14-61" aria-hidden="true" tabindex="-1"></a>plot_state_visits(history_periodic, <span class="st">'Periodic Markov Chain State Visits'</span>)</span>
+<span id="cb14-62"><a href="#cb14-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-63"><a href="#cb14-63" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Return Times</span></span>
+<span id="cb14-64"><a href="#cb14-64" aria-hidden="true" tabindex="-1"></a>return_times_aperiodic <span class="op">=</span> compute_return_times(history_aperiodic, start_state_aperiodic)</span>
+<span id="cb14-65"><a href="#cb14-65" aria-hidden="true" tabindex="-1"></a>return_times_periodic <span class="op">=</span> compute_return_times(history_periodic, start_state_periodic)</span>
+<span id="cb14-66"><a href="#cb14-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-67"><a href="#cb14-67" aria-hidden="true" tabindex="-1"></a><span class="co"># Display Return Times and GCD</span></span>
+<span id="cb14-68"><a href="#cb14-68" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Aperiodic Chain Return Times:"</span>, return_times_aperiodic)</span>
+<span id="cb14-69"><a href="#cb14-69" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> return_times_aperiodic:</span>
+<span id="cb14-70"><a href="#cb14-70" aria-hidden="true" tabindex="-1"></a>    gcd_aperiodic <span class="op">=</span> np.gcd.<span class="bu">reduce</span>(return_times_aperiodic)</span>
+<span id="cb14-71"><a href="#cb14-71" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"GCD of Return Times (Aperiodic):"</span>, gcd_aperiodic)</span>
+<span id="cb14-72"><a href="#cb14-72" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb14-73"><a href="#cb14-73" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"No returns to starting state in aperiodic chain."</span>)</span>
+<span id="cb14-74"><a href="#cb14-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-75"><a href="#cb14-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Periodic Chain Return Times:"</span>, return_times_periodic)</span>
+<span id="cb14-76"><a href="#cb14-76" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> return_times_periodic:</span>
+<span id="cb14-77"><a href="#cb14-77" aria-hidden="true" tabindex="-1"></a>    gcd_periodic <span class="op">=</span> np.gcd.<span class="bu">reduce</span>(return_times_periodic)</span>
+<span id="cb14-78"><a href="#cb14-78" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"GCD of Return Times (Periodic):"</span>, gcd_periodic)</span>
+<span id="cb14-79"><a href="#cb14-79" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb14-80"><a href="#cb14-80" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"No returns to starting state in periodic chain."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unichain_files/figure-html/cell-14-output-1.png" width="948" height="228" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unichain_files/figure-html/cell-14-output-2.png" width="948" height="228" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Aperiodic Chain Return Times: [2, 15, 16, 2, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 6, 13, 1, 1, 6, 4, 2, 1, 1]
+GCD of Return Times (Aperiodic): 1
+
+Periodic Chain Return Times: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+GCD of Return Times (Periodic): 2</code></pre>
+</div>
+</div>
+<hr>
+</section>
+<section id="interpreting-the-output" class="level2">
+<h2 class="anchored" data-anchor-id="interpreting-the-output"><strong>Interpreting the Output</strong></h2>
+<section id="aperiodic-chain-1" class="level3">
+<h3 class="anchored" data-anchor-id="aperiodic-chain-1"><strong>Aperiodic Chain</strong></h3>
+<ul>
+<li><p><strong>Return Times:</strong> The return times will vary and are not all multiples of a number greater than 1.</p></li>
+<li><p><strong>GCD:</strong> The gcd of the return times is typically 1, confirming aperiodicity.</p></li>
+</ul>
+</section>
+<section id="periodic-chain-1" class="level3">
+<h3 class="anchored" data-anchor-id="periodic-chain-1"><strong>Periodic Chain</strong></h3>
+<ul>
+<li><p><strong>Return Times:</strong> The return times are consistent and multiples of 2.</p></li>
+<li><p><strong>GCD:</strong> The gcd of the return times is 2, indicating the chain has a period of 2.</p></li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion"><strong>Conclusion</strong></h2>
+<p>By simulating both chains, we observe:</p>
+<ul>
+<li><p><strong>Aperiodic Chain:</strong> The chain does not exhibit a fixed cyclic pattern. The state can be revisited at irregular time intervals.</p></li>
+<li><p><strong>Periodic Chain:</strong> The chain exhibits a fixed cycle, returning to the starting state at regular intervals (every 2 steps).</p></li>
+</ul>
+<p>This simulation helps visualize the difference between aperiodic and periodic Markov chains. In the context of Markov Decision Processes (MDPs), ensuring that the chain is aperiodic is important for the convergence of algorithms and the validity of certain theoretical results, such as the unichain assumption.</p>
+<div id="0ed7f9f7" class="cell" data-execution_count="14">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> poisson</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameters</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>max_jobs <span class="op">=</span> <span class="dv">8</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>service_rates <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Define Poisson arrival probabilities</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>arrival_rate <span class="op">=</span> <span class="fl">1.5</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>arrival_probs <span class="op">=</span> {k: poisson.pmf(k, arrival_rate) <span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>)}</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Define departure probabilities based on service rate</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="co"># For each rate b, f_b(n) where n is the number of completions</span></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>departure_probs <span class="op">=</span> {</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="dv">1</span>: <span class="fl">0.8</span>, <span class="dv">2</span>: <span class="fl">0.2</span>},</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="dv">1</span>: <span class="fl">0.5</span>, <span class="dv">2</span>: <span class="fl">0.5</span>},</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>: {<span class="dv">1</span>: <span class="fl">0.2</span>, <span class="dv">2</span>: <span class="fl">0.8</span>}</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the states as (jobs, service rate)</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>states <span class="op">=</span> [(x, b) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(max_jobs <span class="op">+</span> <span class="dv">1</span>) <span class="cf">for</span> b <span class="kw">in</span> service_rates]</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Transition probability dictionary</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>transition_matrix <span class="op">=</span> []</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate transition probabilities</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (x, b) <span class="kw">in</span> states:</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (x_next, b_next) <span class="kw">in</span> states:</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Calculate transition probability from (x, b) to (x_next, b_next)</span></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>        prob <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> arrivals, p_arrival <span class="kw">in</span> arrival_probs.items():</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> completions, p_departure <span class="kw">in</span> departure_probs[b].items():</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>                jobs_after_arrivals <span class="op">=</span> <span class="bu">min</span>(x <span class="op">+</span> arrivals, max_jobs)</span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>                jobs_after_departures <span class="op">=</span> <span class="bu">max</span>(jobs_after_arrivals <span class="op">-</span> completions, <span class="dv">0</span>)</span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> jobs_after_departures <span class="op">==</span> x_next <span class="kw">and</span> b <span class="op">==</span> b_next:</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>                    prob <span class="op">+=</span> p_arrival <span class="op">*</span> p_departure</span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Store the transition with probability &gt; 0</span></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> prob <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>            transition_matrix.append({</span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>                <span class="st">"from_state"</span>: (x, b),</span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>                <span class="st">"to_state"</span>: (x_next, b_next),</span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a>                <span class="st">"probability"</span>: prob</span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a>            })</span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert transition matrix to a DataFrame for better readability</span></span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a>transition_df <span class="op">=</span> pd.DataFrame(transition_matrix)</span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a>transition_df <span class="op">=</span> transition_df.sort_values(by<span class="op">=</span>[<span class="st">"from_state"</span>, <span class="st">"to_state"</span>]).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a>transition_df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="74">
+<div>
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">from_state</th>
+<th data-quarto-table-cell-role="th">to_state</th>
+<th data-quarto-table-cell-role="th">probability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>(0, 0)</td>
+<td>(0, 0)</td>
+<td>0.608030</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>(0, 0)</td>
+<td>(1, 0)</td>
+<td>0.200817</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>(0, 1)</td>
+<td>(0, 1)</td>
+<td>0.683336</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>(0, 1)</td>
+<td>(1, 1)</td>
+<td>0.125511</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>(0, 2)</td>
+<td>(0, 2)</td>
+<td>0.758643</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">...</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">85</td>
+<td>(8, 0)</td>
+<td>(7, 0)</td>
+<td>0.647077</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">86</td>
+<td>(8, 1)</td>
+<td>(6, 1)</td>
+<td>0.404423</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">87</td>
+<td>(8, 1)</td>
+<td>(7, 1)</td>
+<td>0.404423</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">88</td>
+<td>(8, 2)</td>
+<td>(6, 2)</td>
+<td>0.647077</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">89</td>
+<td>(8, 2)</td>
+<td>(7, 2)</td>
+<td>0.161769</td>
+</tr>
+</tbody>
+</table>
+
+<p>90 rows × 3 columns</p>
+</div>
+</div>
+</div>
+</div>
+<div id="5771265d" class="cell" data-execution_count="15">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate_mermaid_chart(df, max_states<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Generate Mermaid code for a Markov chain state diagram from a transition DataFrame.</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters:</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">    - df: DataFrame containing transitions with columns "from_state", "to_state", and "probability".</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">    - max_states: Optional integer to limit the number of states included in the diagram.</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns:</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="co">    - Mermaid syntax as a string.</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Limit the number of states if max_states is set</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> max_states:</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>        unique_states <span class="op">=</span> pd.concat([df[<span class="st">'from_state'</span>], df[<span class="st">'to_state'</span>]]).unique()[:max_states]</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>        df <span class="op">=</span> df[df[<span class="st">'from_state'</span>].isin(unique_states) <span class="op">&amp;</span> df[<span class="st">'to_state'</span>].isin(unique_states)]</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Begin building the Mermaid syntax</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    mermaid_code <span class="op">=</span> <span class="st">"stateDiagram-v2</span><span class="ch">\n</span><span class="st">"</span></span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Loop through the DataFrame to add transitions</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _, row <span class="kw">in</span> df.iterrows():</span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>        from_state <span class="op">=</span> row[<span class="st">"from_state"</span>]</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>        to_state <span class="op">=</span> row[<span class="st">"to_state"</span>]</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>        probability <span class="op">=</span> row[<span class="st">"probability"</span>]</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Format states and add transition with probability</span></span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>        mermaid_code <span class="op">+=</span> <span class="ss">f'    "</span><span class="sc">{</span>from_state<span class="sc">}</span><span class="ss">" --&gt; "</span><span class="sc">{</span>to_state<span class="sc">}</span><span class="ss">": </span><span class="sc">{</span>probability<span class="sc">:.2f}</span><span class="ch">\n</span><span class="ss">'</span></span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> mermaid_code</span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate the Mermaid code for all states (or limit with max_states for readability)</span></span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a>mermaid_code <span class="op">=</span> generate_mermaid_chart(transition_df)</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(mermaid_code)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>stateDiagram-v2
+    "(0, 0)" --&gt; "(0, 0)": 0.61
+    "(0, 0)" --&gt; "(1, 0)": 0.20
+    "(0, 1)" --&gt; "(0, 1)": 0.68
+    "(0, 1)" --&gt; "(1, 1)": 0.13
+    "(0, 2)" --&gt; "(0, 2)": 0.76
+    "(0, 2)" --&gt; "(1, 2)": 0.05
+    "(1, 0)" --&gt; "(0, 0)": 0.29
+    "(1, 0)" --&gt; "(1, 0)": 0.32
+    "(1, 0)" --&gt; "(2, 0)": 0.20
+    "(1, 1)" --&gt; "(0, 1)": 0.39
+    "(1, 1)" --&gt; "(1, 1)": 0.29
+    "(1, 1)" --&gt; "(2, 1)": 0.13
+    "(1, 2)" --&gt; "(0, 2)": 0.49
+    "(1, 2)" --&gt; "(1, 2)": 0.27
+    "(1, 2)" --&gt; "(2, 2)": 0.05
+    "(2, 0)" --&gt; "(0, 0)": 0.04
+    "(2, 0)" --&gt; "(1, 0)": 0.25
+    "(2, 0)" --&gt; "(2, 0)": 0.32
+    "(2, 0)" --&gt; "(3, 0)": 0.20
+    "(2, 1)" --&gt; "(0, 1)": 0.11
+    "(2, 1)" --&gt; "(1, 1)": 0.28
+    "(2, 1)" --&gt; "(2, 1)": 0.29
+    "(2, 1)" --&gt; "(3, 1)": 0.13
+    "(2, 2)" --&gt; "(0, 2)": 0.18
+    "(2, 2)" --&gt; "(1, 2)": 0.31
+    "(2, 2)" --&gt; "(2, 2)": 0.27
+    "(2, 2)" --&gt; "(3, 2)": 0.05
+    "(3, 0)" --&gt; "(1, 0)": 0.04
+    "(3, 0)" --&gt; "(2, 0)": 0.25
+    "(3, 0)" --&gt; "(3, 0)": 0.32
+    "(3, 0)" --&gt; "(4, 0)": 0.20
+    "(3, 1)" --&gt; "(1, 1)": 0.11
+    "(3, 1)" --&gt; "(2, 1)": 0.28
+    "(3, 1)" --&gt; "(3, 1)": 0.29
+    "(3, 1)" --&gt; "(4, 1)": 0.13
+    "(3, 2)" --&gt; "(1, 2)": 0.18
+    "(3, 2)" --&gt; "(2, 2)": 0.31
+    "(3, 2)" --&gt; "(3, 2)": 0.27
+    "(3, 2)" --&gt; "(4, 2)": 0.05
+    "(4, 0)" --&gt; "(2, 0)": 0.04
+    "(4, 0)" --&gt; "(3, 0)": 0.25
+    "(4, 0)" --&gt; "(4, 0)": 0.32
+    "(4, 0)" --&gt; "(5, 0)": 0.20
+    "(4, 1)" --&gt; "(2, 1)": 0.11
+    "(4, 1)" --&gt; "(3, 1)": 0.28
+    "(4, 1)" --&gt; "(4, 1)": 0.29
+    "(4, 1)" --&gt; "(5, 1)": 0.13
+    "(4, 2)" --&gt; "(2, 2)": 0.18
+    "(4, 2)" --&gt; "(3, 2)": 0.31
+    "(4, 2)" --&gt; "(4, 2)": 0.27
+    "(4, 2)" --&gt; "(5, 2)": 0.05
+    "(5, 0)" --&gt; "(3, 0)": 0.04
+    "(5, 0)" --&gt; "(4, 0)": 0.25
+    "(5, 0)" --&gt; "(5, 0)": 0.32
+    "(5, 0)" --&gt; "(6, 0)": 0.20
+    "(5, 1)" --&gt; "(3, 1)": 0.11
+    "(5, 1)" --&gt; "(4, 1)": 0.28
+    "(5, 1)" --&gt; "(5, 1)": 0.29
+    "(5, 1)" --&gt; "(6, 1)": 0.13
+    "(5, 2)" --&gt; "(3, 2)": 0.18
+    "(5, 2)" --&gt; "(4, 2)": 0.31
+    "(5, 2)" --&gt; "(5, 2)": 0.27
+    "(5, 2)" --&gt; "(6, 2)": 0.05
+    "(6, 0)" --&gt; "(4, 0)": 0.04
+    "(6, 0)" --&gt; "(5, 0)": 0.25
+    "(6, 0)" --&gt; "(6, 0)": 0.32
+    "(6, 0)" --&gt; "(7, 0)": 0.20
+    "(6, 1)" --&gt; "(4, 1)": 0.11
+    "(6, 1)" --&gt; "(5, 1)": 0.28
+    "(6, 1)" --&gt; "(6, 1)": 0.29
+    "(6, 1)" --&gt; "(7, 1)": 0.13
+    "(6, 2)" --&gt; "(4, 2)": 0.18
+    "(6, 2)" --&gt; "(5, 2)": 0.31
+    "(6, 2)" --&gt; "(6, 2)": 0.27
+    "(6, 2)" --&gt; "(7, 2)": 0.05
+    "(7, 0)" --&gt; "(5, 0)": 0.04
+    "(7, 0)" --&gt; "(6, 0)": 0.30
+    "(7, 0)" --&gt; "(7, 0)": 0.47
+    "(7, 1)" --&gt; "(5, 1)": 0.11
+    "(7, 1)" --&gt; "(6, 1)": 0.40
+    "(7, 1)" --&gt; "(7, 1)": 0.29
+    "(7, 2)" --&gt; "(5, 2)": 0.18
+    "(7, 2)" --&gt; "(6, 2)": 0.51
+    "(7, 2)" --&gt; "(7, 2)": 0.12
+    "(8, 0)" --&gt; "(6, 0)": 0.16
+    "(8, 0)" --&gt; "(7, 0)": 0.65
+    "(8, 1)" --&gt; "(6, 1)": 0.40
+    "(8, 1)" --&gt; "(7, 1)": 0.40
+    "(8, 2)" --&gt; "(6, 2)": 0.65
+    "(8, 2)" --&gt; "(7, 2)": 0.16
+</code></pre>
+</div>
+</div>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">stateDiagram
+    "(0, 0)" --&gt; "(0, 0)": 0.61
+    "(0, 0)" --&gt; "(1, 0)": 0.20
+    "(0, 1)" --&gt; "(0, 1)": 0.68
+    "(0, 1)" --&gt; "(1, 1)": 0.13
+    "(0, 2)" --&gt; "(0, 2)": 0.76
+    "(0, 2)" --&gt; "(1, 2)": 0.05
+    "(1, 0)" --&gt; "(0, 0)": 0.29
+    "(1, 0)" --&gt; "(1, 0)": 0.32
+    "(1, 0)" --&gt; "(2, 0)": 0.20
+    "(1, 1)" --&gt; "(0, 1)": 0.39
+    "(1, 1)" --&gt; "(1, 1)": 0.29
+    "(1, 1)" --&gt; "(2, 1)": 0.13
+    "(1, 2)" --&gt; "(0, 2)": 0.49
+    "(1, 2)" --&gt; "(1, 2)": 0.27
+    "(1, 2)" --&gt; "(2, 2)": 0.05
+    "(2, 0)" --&gt; "(0, 0)": 0.04
+    "(2, 0)" --&gt; "(1, 0)": 0.25
+    "(2, 0)" --&gt; "(2, 0)": 0.32
+    "(2, 0)" --&gt; "(3, 0)": 0.20
+    "(2, 1)" --&gt; "(0, 1)": 0.11
+    "(2, 1)" --&gt; "(1, 1)": 0.28
+    "(2, 1)" --&gt; "(2, 1)": 0.29
+    "(2, 1)" --&gt; "(3, 1)": 0.13
+    "(2, 2)" --&gt; "(0, 2)": 0.18
+    "(2, 2)" --&gt; "(1, 2)": 0.31
+    "(2, 2)" --&gt; "(2, 2)": 0.27
+    "(2, 2)" --&gt; "(3, 2)": 0.05
+    "(3, 0)" --&gt; "(1, 0)": 0.04
+    "(3, 0)" --&gt; "(2, 0)": 0.25
+    "(3, 0)" --&gt; "(3, 0)": 0.32
+    "(3, 0)" --&gt; "(4, 0)": 0.20
+    "(3, 1)" --&gt; "(1, 1)": 0.11
+    "(3, 1)" --&gt; "(2, 1)": 0.28
+    "(3, 1)" --&gt; "(3, 1)": 0.29
+    "(3, 1)" --&gt; "(4, 1)": 0.13
+    "(3, 2)" --&gt; "(1, 2)": 0.18
+    "(3, 2)" --&gt; "(2, 2)": 0.31
+    "(3, 2)" --&gt; "(3, 2)": 0.27
+    "(3, 2)" --&gt; "(4, 2)": 0.05
+    "(4, 0)" --&gt; "(2, 0)": 0.04
+    "(4, 0)" --&gt; "(3, 0)": 0.25
+    "(4, 0)" --&gt; "(4, 0)": 0.32
+    "(4, 0)" --&gt; "(5, 0)": 0.20
+    "(4, 1)" --&gt; "(2, 1)": 0.11
+    "(4, 1)" --&gt; "(3, 1)": 0.28
+    "(4, 1)" --&gt; "(4, 1)": 0.29
+    "(4, 1)" --&gt; "(5, 1)": 0.13
+    "(4, 2)" --&gt; "(2, 2)": 0.18
+    "(4, 2)" --&gt; "(3, 2)": 0.31
+    "(4, 2)" --&gt; "(4, 2)": 0.27
+    "(4, 2)" --&gt; "(5, 2)": 0.05
+    "(5, 0)" --&gt; "(3, 0)": 0.04
+    "(5, 0)" --&gt; "(4, 0)": 0.25
+    "(5, 0)" --&gt; "(5, 0)": 0.32
+    "(5, 0)" --&gt; "(6, 0)": 0.20
+    "(5, 1)" --&gt; "(3, 1)": 0.11
+    "(5, 1)" --&gt; "(4, 1)": 0.28
+    "(5, 1)" --&gt; "(5, 1)": 0.29
+    "(5, 1)" --&gt; "(6, 1)": 0.13
+    "(5, 2)" --&gt; "(3, 2)": 0.18
+    "(5, 2)" --&gt; "(4, 2)": 0.31
+    "(5, 2)" --&gt; "(5, 2)": 0.27
+    "(5, 2)" --&gt; "(6, 2)": 0.05
+    "(6, 0)" --&gt; "(4, 0)": 0.04
+    "(6, 0)" --&gt; "(5, 0)": 0.25
+    "(6, 0)" --&gt; "(6, 0)": 0.32
+    "(6, 0)" --&gt; "(7, 0)": 0.20
+    "(6, 1)" --&gt; "(4, 1)": 0.11
+    "(6, 1)" --&gt; "(5, 1)": 0.28
+    "(6, 1)" --&gt; "(6, 1)": 0.29
+    "(6, 1)" --&gt; "(7, 1)": 0.13
+    "(6, 2)" --&gt; "(4, 2)": 0.18
+    "(6, 2)" --&gt; "(5, 2)": 0.31
+    "(6, 2)" --&gt; "(6, 2)": 0.27
+    "(6, 2)" --&gt; "(7, 2)": 0.05
+    "(7, 0)" --&gt; "(5, 0)": 0.04
+    "(7, 0)" --&gt; "(6, 0)": 0.30
+    "(7, 0)" --&gt; "(7, 0)": 0.47
+    "(7, 1)" --&gt; "(5, 1)": 0.11
+    "(7, 1)" --&gt; "(6, 1)": 0.40
+    "(7, 1)" --&gt; "(7, 1)": 0.29
+    "(7, 2)" --&gt; "(5, 2)": 0.18
+    "(7, 2)" --&gt; "(6, 2)": 0.51
+    "(7, 2)" --&gt; "(7, 2)": 0.12
+    "(8, 0)" --&gt; "(6, 0)": 0.16
+    "(8, 0)" --&gt; "(7, 0)": 0.65
+    "(8, 1)" --&gt; "(6, 1)": 0.40
+    "(8, 1)" --&gt; "(7, 1)": 0.40
+    "(8, 2)" --&gt; "(6, 2)": 0.65
+    "(8, 2)" --&gt; "(7, 2)": 0.16
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
