@@ -307,13 +307,13 @@ f^a(x') &amp; \text{if } x \in \{0, 1\} \text{ and } x' &lt; 8, \\
 <li><p><strong>Cost of changing service rate</strong>: If the controller changes the service rate from one period to the next (<span class="math inline">\(b \neq b'\)</span>), a fixed cost of <span class="math inline">\(K = 3\)</span> is incurred.</p></li>
 <li><p><strong>Per-period cost for using service rate</strong>: The cost <span class="math inline">\(d(b')\)</span> depends on the chosen service rate <span class="math inline">\(b'\)</span>, where: <span class="math inline">\(d(0) = 0, \quad d(1) = 2, \quad d(2) = 5\)</span></p></li>
 </ol>
-<p>Define the reward (or cost) function <span class="math inline">\(C(s, a)\)</span> for state <span class="math inline">\(s = (x,b)\)</span> and chosen action (service rate) <span class="math inline">\(a\)</span> as follows:</p>
+<p>Define the cost function <span class="math inline">\(C(s, a)\)</span> for state <span class="math inline">\(s = (x,b)\)</span> and chosen action (service rate) <span class="math inline">\(a\)</span> as follows:</p>
 <p><span class="math display">\[
 C(s, a) =
 \begin{cases}
-- d(a) - K \cdot \mathbb{1}_{\{b \neq a\}}, &amp; \text{if } s = 0 \\[8pt]
-R - h(1, H) - d(a) - K \cdot \mathbb{1}_{\{b \neq a\}}, &amp; \text{if } s = 1 \\[8pt]
-R \cdot \sum_{n=1}^{2} f_a(n) \cdot n - h(x, H) - d(a) - K \cdot \mathbb{1}_{\{b \neq a\}}, &amp; \text{if } s &gt; 1
+d(a) + K \cdot \mathbb{1}_{\{b \neq a\}}, &amp; \text{if } s = 0 \\[8pt]
+- R + h(1, H) + d(a) + K \cdot \mathbb{1}_{\{b \neq a\}}, &amp; \text{if } s = 1 \\[8pt]
+- R \cdot \sum_{n=1}^{2} f_a(n) \cdot n + h(x, H) + d(a) + K \cdot \mathbb{1}_{\{b \neq a\}}, &amp; \text{if } s &gt; 1
 \end{cases}
 \]</span></p>
 <p>where:</p>
@@ -412,7 +412,7 @@ q_{s,a} \geq 0, \quad \forall a \in A(s), s \in S
 <li><strong>Switching Costs</strong>: Additional cost if the service rate changes (i.e., <span class="math inline">\(b \neq a\)</span>).</li>
 </ul></li>
 </ul>
-<div id="d7508f92" class="cell" data-execution_count="1">
+<div id="4d3aeea3" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">##Initialize packages, parameters and functions</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ortools.linear_solver <span class="im">import</span> pywraplp</span>
@@ -516,7 +516,7 @@ q_{s,a} \geq 0, \quad \forall a \in A(s), s \in S
 <li>Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable <span class="math inline">\(x\)</span> is greater than zero.</li>
 </ul></li>
 </ul>
-<div id="93e640ed" class="cell" data-execution_count="2">
+<div id="64899ff4" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -683,7 +683,7 @@ If 8 jobs in the system:
 <li>The solver is executed, and upon finding an optimal solution, the code prints the optimal actions for each state.</li>
 </ul></li>
 </ul>
-<div id="66cf27ea" class="cell" data-execution_count="3">
+<div id="f3a14f2f" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>
@@ -814,7 +814,7 @@ If 8 jobs in the system:
 <li>Calculated the total probability of choosing service rate <span class="math inline">\(a = 2\)</span> across all states.</li>
 </ul></li>
 </ul>
-<div id="f2647dbd" class="cell" data-execution_count="4">
+<div id="f15d3b26" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -965,7 +965,7 @@ If 8 jobs in the system:
 <li><p><strong>Initialization, Decision Variables, Objective Function, and Balance Constraints</strong>: Same as in the average cost model.</p></li>
 <li><p><strong>Total Probability Constraint</strong>: Ensures the probabilities sum to 1.</p></li>
 </ul>
-<div id="8701de26" class="cell" data-execution_count="5">
+<div id="7067b271" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the solver</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>solver.SetTimeLimit(<span class="dv">60000</span>)  <span class="co"># Set time limit in milliseconds (60 seconds)</span></span>
