@@ -104,7 +104,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="045f204a" class="cell" data-execution_count="1">
+<div id="30e82b17" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># number of patients</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>L <span class="op">=</span> <span class="dv">50</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -175,7 +175,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> V_new, n, diff_value</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="2dca4a4f" class="cell" data-execution_count="2">
+<div id="564a635b" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>selected_states <span class="op">=</span> [(<span class="dv">0</span>, <span class="dv">1</span>), (<span class="dv">1</span>, <span class="dv">0</span>), (<span class="dv">3</span>, <span class="dv">7</span>), (<span class="dv">4</span>, <span class="dv">6</span>), (<span class="dv">7</span>, <span class="dv">13</span>), (<span class="dv">8</span>, <span class="dv">12</span>), (<span class="dv">11</span>, <span class="dv">19</span>), (<span class="dv">12</span>, <span class="dv">18</span>), (<span class="dv">15</span>, <span class="dv">25</span>) , (<span class="dv">16</span>, <span class="dv">24</span>), (<span class="dv">18</span>, <span class="dv">32</span>),(<span class="dv">19</span>, <span class="dv">31</span>), (<span class="dv">20</span>, <span class="dv">30</span>), ]</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>g_index_selected_states <span class="op">=</span> []</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>success_prob_selected_states <span class="op">=</span> []</span>
@@ -190,7 +190,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    success_prob <span class="op">=</span> (selected_state[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">1</span>) <span class="op">/</span> (selected_state[<span class="dv">0</span>] <span class="op">+</span> selected_state[<span class="dv">1</span>] <span class="op">+</span> <span class="dv">2</span>)</span>
 <span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    success_prob_selected_states.append(success_prob)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="21a39132" class="cell" data-execution_count="3">
+<div id="35a19580" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(selected_states)):</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"state: (x,y)=(</span><span class="sc">{</span>selected_states[i][<span class="dv">0</span>]<span class="sc">}</span><span class="ss">,</span><span class="sc">{</span>selected_states[i][<span class="dv">1</span>]<span class="sc">}</span><span class="ss">)"</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  diff_value=</span><span class="sc">{</span>diff_value_selected_states[i]<span class="sc">}</span><span class="ss">"</span>)</span>
