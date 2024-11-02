@@ -171,7 +171,7 @@ $$
 
 -   Let $f_b(n)$ denote the probability of $n \in \{1, 2\}$ service completions under service rate $b$, where the distributions of $n$ are given for each $b \in B$. This only applies to starting states $s$ with $x > 1$ when the system contains enough jobs to be processed.
 
-Define $p(s' | s, a)$ as the probability of transitioning to state $s' = (x', b')$ when the system is in state $s = (x, b)$ and action $b'$ is chosen. We can then distinguish the following cases:
+Define $p(s' | s, a)$ as the probability of transitioning to state $s' = (x', b')$ when the system is in state $s = (x, b)$ and action $a=b'$ is chosen. We can then distinguish the following cases:
 
 $$
 p(s' | s, a \neq b') = 0
@@ -191,7 +191,7 @@ $$
 
 The cost function consists of four components:
 
-1.  **Reward for service completions**: For each service completion $n$, the system receives a reward of $R = 5$. The total reward for service completions when the system is in state $s$ and action $b'$ is chosen is: $5n$.
+1.  **Expected reward for service completions**: For each random number of service completion $n \sim f_b(n)$ the system receives a reward of $R = 5$. The expected total reward for service completions when the system is in state $s$ and action $a=b'$ is chosen is: $5 \cdot \mathbb{E}[n]$.
 
 2.  **Holding cost**: The expected holding cost per period is $h(x) = 2x$ when there are $x$ jobs in the system.
 
