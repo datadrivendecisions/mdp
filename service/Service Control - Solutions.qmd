@@ -1,10 +1,13 @@
 ---
-title: Service Control - Discounted Reward
+title: Assignment 2 - Service Control
+author: Ritsaart Bergsma, Jeroen Landman & Witek ten Hove
 format:
   html:
     include-in-header:
       - text: |
           <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  pdf:
+    colorlinks: true
 jupyter: python3
 keep-ipynb: true
 ---
@@ -151,8 +154,7 @@ and the current service rate $b \in B$: $B = \{0, 1, 2\}$.
 
 #### Action space ($A$)
 
-At each decision epoch, the controller can take an action $a \in A = \{0, 1, 2\}$ equivalent to selecting a service rate 
-$b' \in B$ for the next epoch.
+At each decision epoch, the controller can take an action $a \in A = \{0, 1, 2\}$ equivalent to selecting a service rate $b' \in B$ for the next epoch.
 
 #### Transition probabilities ($P$)
 
@@ -197,7 +199,6 @@ The cost function consists of four components:
 
 4.  **Per-period cost for using service rate**: The cost $d(b')$ depends on the chosen service rate $b'$, where: $d(0) = 0, \quad d(1) = 2, \quad d(2) = 5$
 
-
 Define the cost function $C(s, a)$ for state $s = (x,b)$ and chosen action (service rate) $a$ as follows:
 
 $$
@@ -225,8 +226,9 @@ where:
 
 The goal is to find the optimal policy that minimizes the expected discounted cost or average cost per period. The optimal policy is a stationary policy that prescribes the service rate to choose at each state.
 
-::: {.callout-note}
+::: callout-note
 ## Assumption 1
+
 For each stationary policy $f$, the associated Markov chain $\{ X_n \}$ has a single recurrent class of states (Unichain Assumption).
 :::
 
@@ -234,8 +236,7 @@ Under the unichain assumption, the Markov chain $$\{ X_n \}$$ has a unique equil
 
 $$
 \pi^f_{s'} = \sum_{s \in S} \pi^f_{s'} \cdot p(s'|s, f_{s}),
-$$
-with:
+$$ with:
 
 $$
 \sum_{s' \in S} \pi^f_{s'} = 1.
@@ -265,31 +266,29 @@ For this particular instance we will use the linear programming approach to solv
 
 #### The Linear Programming Algorithm
 
-- **Define** $q_{s,a}$: the long-run fraction of decision epochs at which the system is in state $s$ and action $a$ is chosen.
+-   **Define** $q_{s,a}$: the long-run fraction of decision epochs at which the system is in state $s$ and action $a$ is chosen.
 
-- So, $\sum_{a \in A(s)} q_{s,a}$: the long-run fraction of decision epochs at which the system is in state $s$.
+-   So, $\sum_{a \in A(s)} q_{s,a}$: the long-run fraction of decision epochs at which the system is in state $s$.
 
-- Also, $\sum_{s \in S} \sum_{a \in A(s)} q_{s,a} = 1$.
+-   Also, $\sum_{s \in S} \sum_{a \in A(s)} q_{s,a} = 1$.
 
-- **Under the unichain assumption**, an average cost optimal policy can be computed using:
+-   **Under the unichain assumption**, an average cost optimal policy can be computed using:
 
-  **Minimize**  
-$$
-  \sum_{s \in S} \sum_{a \in A(s)} C(s, a) q_{s,a}
-$$
+    **Minimize**\
+    $$
+    \sum_{s \in S} \sum_{a \in A(s)} C(s, a) q_{s,a}
+    $$
 
-  **Subject to**  
-$$
-  \sum_{s \in S} \sum_{a \in A(s)} p(s'|s, a) q_{s,a} = \sum_{a \in A(s)} q_{s',a}, \quad \forall s' \in S
-$$
-$$
-  \sum_{s \in S} \sum_{a \in A(s)} q_{s,a} = 1
-$$
- $$
-  q_{s,a} \geq 0, \quad \forall a \in A(s), s \in S
- $$
+    **Subject to**\
+    $$
+    \sum_{s \in S} \sum_{a \in A(s)} p(s'|s, a) q_{s,a} = \sum_{a \in A(s)} q_{s',a}, \quad \forall s' \in S
+    $$ $$
+    \sum_{s \in S} \sum_{a \in A(s)} q_{s,a} = 1
+    $$ $$
+    q_{s,a} \geq 0, \quad \forall a \in A(s), s \in S
+     $$
 
-------
+------------------------------------------------------------------------
 
 ### Code
 

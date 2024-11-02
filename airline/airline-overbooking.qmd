@@ -1,6 +1,15 @@
 ---
-title: Airline overbooking
+title: Assignment 1 - Airline overbooking
+author: Ritsaart Bergsma, Jeroen Landman & Witek ten Hove
+format:
+  html:
+    include-in-header:
+      - text: |
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  pdf:
+    colorlinks: true
 jupyter: python3
+keep-ipynb: true
 ---
 
 ## Homework Assigmment 1.6 p.11 from Lecture notes
@@ -177,7 +186,7 @@ def plot_policies(T, f, S, r_max, probs=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (
         xaxis_title='Reservations (r)',
         yaxis_title='Optimal value (V*)',
     )
-    fig.write_image("images/airline-policies.png", width=800, height=600, scale=3) # Save the plot as an image                                   
+    fig.write_image("../images/airline-policies.png", width=800, height=600, scale=3) # Save the plot as an image                                   
     fig.show()
 ```
 

@@ -1,9 +1,13 @@
 ---
-title: Medicine Testing - Gittins Index
+title: Assignment 3 - Medicine Testing / Gittins Index
+author: Ritsaart Bergsma, Jeroen Landman & Witek ten Hove
+format:
+  html: default
+  pdf:
+    colorlinks: true
 jupyter: python3
+keep-ipynb: true
 ---
-
-
 
 ```{python}
 # number of patients
@@ -64,7 +68,7 @@ def value_iteration(selected: Tuple[int, int]):
             V_old[(x,y)] = 0
 
     max_n = 1000
-    eps = 0.001
+    eps = 0.00001
 
     for n in range(max_n):
         V_new = value_iteration_step(selected, V_old)
@@ -78,11 +82,14 @@ def value_iteration(selected: Tuple[int, int]):
 ```
 
 ```{python}
-selected_states = [(0, 1), (4, 6), (3, 7), (8, 12), (7, 13), (12, 18), (11, 19), (16, 24), (15, 26), (20, 30), (19, 31)]
+selected_states = [(0, 1), (1, 0), (3, 7), (4, 6), (7, 13), (8, 12), (11, 19), (12, 18), (15, 25) , (16, 24), (18, 32),(19, 31), (20, 30), ]
 g_index_selected_states = []
 success_prob_selected_states = []
+diff_value_selected_states = []
 for selected_state in selected_states:  
     V_selected, n, diff_value = value_iteration(selected_state)
+    diff_value_selected_states.append(diff_value)
+    
     g_index_selected = (1 - alpha) * V_selected[selected_state]
     g_index_selected_states.append(g_index_selected)
 
@@ -91,10 +98,11 @@ for selected_state in selected_states:
 ```
 
 ```{python}
-g_index_selected_states
+for i in range(len(selected_states)):
+    print(f"state: (x,y)=({selected_states[i][0]},{selected_states[i][1]})")
+    print(f"  diff_value={diff_value_selected_states[i]}")
+    print(f"  G(x,y)={round(g_index_selected_states[i],3)}")
+    print(f"  success prob={round(success_prob_selected_states[i],3)}")
 ```
 
-```{python}
-success_prob_selected_states
-```
 
