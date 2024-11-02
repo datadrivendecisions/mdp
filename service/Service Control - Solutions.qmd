@@ -306,6 +306,8 @@ For this particular instance we will use the linear programming approach to solv
 
 from ortools.linear_solver import pywraplp
 from scipy.stats import poisson
+import pandas as pd
+from IPython.display import display
 
 # Parameters
 d = { # cost for using server rate
@@ -437,16 +439,28 @@ status = solver.Solve()
 
 # Print the optimal solution
 if status == pywraplp.Solver.OPTIMAL:
+    opt_pol = {'x_i': [], 'b': [], 'a': [], 'q': []}
     for x_i in X:
         print(f"If {x_i} jobs in the system:")
         for b in B:
             print(f"   If previous service rate was {b}:")
+            q_opt = []
             for a in B:
-                x_opt = q[(x_i, b, a)].solution_value()
-                if x_opt > 0:
-                    print(f"      Use service rate {a} (x={x_opt})")
+                  q_value = q[(x_i, b, a)].solution_value()
+                  q_opt.append((a, q_value))
+            print(q_opt)
+            # Find the service rate with the maximum q value
+            best_action, best_q = max(q_opt, key=lambda item: item[1])
+            opt_pol['x_i'].append(x_i)
+            opt_pol['b'].append(b)
+            opt_pol['a'].append(best_action)
+            opt_pol['q'].append(best_q)
+            print(f"      Use service rate {best_action} (q={best_q})")
 else:
     print("No feasible solution found.")
+df = pd.DataFrame(data=opt_pol)
+display(df)
+df['q'].sum()
 ```
 
 #### Optimality criterion: average cost
@@ -528,16 +542,28 @@ status = solver.Solve()
 
 # Print the optimal solution
 if status == pywraplp.Solver.OPTIMAL:
+    opt_pol = {'x_i': [], 'b': [], 'a': [], 'q': []}
     for x_i in X:
         print(f"If {x_i} jobs in the system:")
         for b in B:
             print(f"   If previous service rate was {b}:")
+            q_opt = []
             for a in B:
-                x_opt = q[(x_i, b, a)].solution_value()
-                if x_opt > 0:
-                    print(f"      Use service rate {a} (x={x_opt})")
+                  q_value = q[(x_i, b, a)].solution_value()
+                  q_opt.append((a, q_value))
+            print(q_opt)
+            # Find the service rate with the maximum q value
+            best_action, best_q = max(q_opt, key=lambda item: item[1])
+            opt_pol['x_i'].append(x_i)
+            opt_pol['b'].append(b)
+            opt_pol['a'].append(best_action)
+            opt_pol['q'].append(best_q)
+            print(f"      Use service rate {best_action} (q={best_q})")
 else:
     print("No feasible solution found.")
+df = pd.DataFrame(data=opt_pol)
+display(df)
+df['q'].sum()
 ```
 
 #### Optimality criterion: discounted cost with service rate restriction
@@ -608,16 +634,28 @@ status = solver.Solve()
 
 # Print the optimal solution
 if status == pywraplp.Solver.OPTIMAL:
+    opt_pol = {'x_i': [], 'b': [], 'a': [], 'q': []}
     for x_i in X:
         print(f"If {x_i} jobs in the system:")
         for b in B:
             print(f"   If previous service rate was {b}:")
+            q_opt = []
             for a in B:
-                q_opt = q[(x_i, b, a)].solution_value()
-                if q_opt > 0:
-                    print(f"      Use service rate {a} (q={q_opt})")
+                  q_value = q[(x_i, b, a)].solution_value()
+                  q_opt.append((a, q_value))
+            print(q_opt)
+            # Find the service rate with the maximum q value
+            best_action, best_q = max(q_opt, key=lambda item: item[1])
+            opt_pol['x_i'].append(x_i)
+            opt_pol['b'].append(b)
+            opt_pol['a'].append(best_action)
+            opt_pol['q'].append(best_q)
+            print(f"      Use service rate {best_action} (q={best_q})")
 else:
     print("No feasible solution found.")
+df = pd.DataFrame(data=opt_pol)
+display(df)
+df['q'].sum()
 ```
 
 #### Optimality criterion: average cost with service rate restriction
@@ -685,16 +723,28 @@ status = solver.Solve()
 
 # Print the optimal solution
 if status == pywraplp.Solver.OPTIMAL:
+    opt_pol = {'x_i': [], 'b': [], 'a': [], 'q': []}
     for x_i in X:
         print(f"If {x_i} jobs in the system:")
         for b in B:
             print(f"   If previous service rate was {b}:")
+            q_opt = []
             for a in B:
-                q_opt = q[(x_i, b, a)].solution_value()
-                if q_opt > 0:
-                    print(f"      Use service rate {a} (q={q_opt:.2f})")
+                  q_value = q[(x_i, b, a)].solution_value()
+                  q_opt.append((a, q_value))
+            print(q_opt)
+            # Find the service rate with the maximum q value
+            best_action, best_q = max(q_opt, key=lambda item: item[1])
+            opt_pol['x_i'].append(x_i)
+            opt_pol['b'].append(b)
+            opt_pol['a'].append(best_action)
+            opt_pol['q'].append(best_q)
+            print(f"      Use service rate {best_action} (q={best_q})")
 else:
     print("No feasible solution found.")
+df = pd.DataFrame(data=opt_pol)
+display(df)
+df['q'].sum()
 ```
 
 **General Notes on the Code:**
