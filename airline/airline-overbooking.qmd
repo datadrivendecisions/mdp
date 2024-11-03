@@ -6,8 +6,6 @@ format:
     include-in-header:
       - text: |
           <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-  pdf:
-    colorlinks: true
 jupyter: python3
 keep-ipynb: true
 ---
@@ -126,7 +124,7 @@ def plot_policy(policy_opt, V_opt, n, title):
     fig = px.line(data, x = 'r', y = 'V_star', color='policy', title = title, markers=True)
     fig.show()
 
-def plot_policies(T, f, S, r_max, probs=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)], n=10):
+def plot_policies(T, f, S, r_max, probs=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (0.3, 0.1)], n=10, file_name="airline-policies.png"):
     fig = go.Figure()
     
     # Get a list of colors to use for different (p, q) pairs
@@ -186,7 +184,7 @@ def plot_policies(T, f, S, r_max, probs=[(0.2, 0.05), (0.2, 0.1), (0.3, 0.05), (
         xaxis_title='Reservations (r)',
         yaxis_title='Optimal value (V*)',
     )
-    fig.write_image("../images/airline-policies.png", width=800, height=600, scale=3) # Save the plot as an image                                   
+    fig.write_image(file_name, width=800, height=600, scale=3) # Save the plot as an image                                   
     fig.show()
 ```
 
@@ -331,7 +329,7 @@ f = 300
 S = 10
 p_cases = [0.2, 0.3]
 q_cases = [0.05, 0.1]
-r_max = 22
+r_max = 20
 penalty_func = lambda d, b: d * b
 ```
 
@@ -343,11 +341,17 @@ n=10
 plot_policies(T, f, S, r_max, probs, n)
 ```
 
+This chart shows the optimal values and policies for different combinations of $p$ and $q$ ten hours before the flight. The solid lines represent the optimal policy of accepting reservations, while the dotted lines represent the optimal policy of rejecting reservations. The gap in the lines indicates the level of $r$ where the policy switches from 'accept' to 'reject' The color coding indicates different combinations of $p$ and $q$.
+
 #### Conjectures
 
-1.  The booking limit $b_n$ depends only on $q$ and not on $p$.
-2.  The booking limit $b_n$ increases with $q$.
-3.  The optimal value $V^*_n(r)$ decreases with $q$ and increases with $p$
+**Conjecture 1** - The booking limit $b_n$ depends only on $q$ and not on $p$ and increases with $q$.
+
+Comparing the blue and green or red and purple lines ($p$ varies, $q$ is fixed) it is clear that the booking limit $b_n$ is independent of $p$. While comparing the blue and red lines or green and purple ($p$ is fixed, $q$ varies) it is clear that the booking limit $b_n$ increases with $q$.
+
+**Conjecture 2** - The optimal value $V^*_n(r)$ decreases with $q$ and increases with $p$.
+
+Comparing the blue and red or green and purple lines ($q$ varies, $p$ is fixed) it is clear that the optimal value $V^*_n(r)$ decreases with $q$. While comparing the blue and green or red and purple lines ($q$ is fixed, $p$ varies) it is clear that the optimal value $V^*_n(r)$ increases with $p$.
 
 #### Cases
 

@@ -308,6 +308,9 @@ from ortools.linear_solver import pywraplp
 from scipy.stats import poisson
 import pandas as pd
 from IPython.display import display
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Parameters
 d = { # cost for using server rate
@@ -373,96 +376,6 @@ def r(x, b, a):
         return - R * sum(f(n, a) * n for n in [1, 2]) + h(x, H) + d[a] + K*(b != a)
 ```
 
-#### Optimality criterion: discounted cost
-
-In this solution, we model the problem as a Markov Decision Process (MDP) with the goal of **minimizing the expected discounted cost** over an infinite horizon. The discount factor $\lambda = 0.95$ is applied to future costs, reflecting the preference for distant costs over immediate ones.
-
-**Code Explanation:**
-
--   **Initialization**:
-    -   Import necessary libraries (`pywraplp` for the solver and `poisson` from `scipy.stats`).
-    -   Define parameters such as costs, rewards, and probabilities.
-    -   Define helper functions for holding costs (`h`), processing probabilities (`f`), and arrival probabilities (`g` and `g_or_more`).
--   **Decision Variables**:
-    -   Create variables $q_{(x,b),a}$ representing the probability of being in state $(x, b)$ and choosing action $a$.
-    -   These variables are created using `solver.NumVar`.
--   **Objective Function**:
-    -   Constructed to minimize the expected discounted costs
-    -   Uses the immediate reward cost `r(x, b, a)` and sums over all states and actions.
-    -   Set up using `solver.Objective` and `objective.SetCoefficient`.
--   **Balance Constraints**:
-    -   Ensure the flow of probabilities between states adheres to the MDP dynamics.
-    -   Incorporate the discount factor $\lambda$.
-    -   Added using `solver.Add`, ensuring that the probability of being in a state equals the discounted sum of probabilities of transitioning into that state.
--   **Solving and Output**:
-    -   The solver is executed with `solver.Solve()`.
-    -   Upon finding an optimal solution, the code prints the optimal actions for each state where the decision variable $x$ is greater than zero.
-
-```{python}
-# Create the solver
-solver = pywraplp.Solver.CreateSolver('GLOP')
-
-# Decision variables q_{(x,b),b'}: probability of choosing server state b' when state is (x,b)
-q = {}
-for x_i in X:
-    for b in B:
-        for b_prime in B:
-            q[(x_i, b, b_prime)] = solver.NumVar(0.0, 1.0, f'q_{x_i}_{b}_{b_prime}')
-
-# Initial state probabilities alpha
-alpha = {}
-n_total_states = len(X) * len(B)
-for x_i in X:
-    for b in B:
-        alpha[(x_i, b)] = 1 / n_total_states
-
-# Objective: maximize the expected reward    
-objective = solver.Objective()
-for x_i in X:
-    for b in B:
-        for a in B:
-            objective.SetCoefficient(q[(x_i, b, a)], r(x_i, b, a))
-objective.SetMinimization()
-
-# Balance constraints
-for x_j in X:
-    for b_j in B:
-        lhs = solver.Sum(q[(x_j, b_j, a)] for a in B)
-        rhs = l * solver.Sum(
-            P(x_i, b_i, x_j, b_j, a) * q[(x_i, b_i, a)]
-            for x_i in X for b_i in B for a in B
-        )
-        solver.Add(lhs == alpha[(x_j, b_j)] + rhs)
-
-# Solve the problem
-status = solver.Solve()
-
-# Print the optimal solution
-if status == pywraplp.Solver.OPTIMAL:
-    opt_pol = {'x_i': [], 'b': [], 'a': [], 'q': []}
-    for x_i in X:
-        print(f"If {x_i} jobs in the system:")
-        for b in B:
-            print(f"   If previous service rate was {b}:")
-            q_opt = []
-            for a in B:
-                  q_value = q[(x_i, b, a)].solution_value()
-                  q_opt.append((a, q_value))
-            print(q_opt)
-            # Find the service rate with the maximum q value
-            best_action, best_q = max(q_opt, key=lambda item: item[1])
-            opt_pol['x_i'].append(x_i)
-            opt_pol['b'].append(b)
-            opt_pol['a'].append(best_action)
-            opt_pol['q'].append(best_q)
-            print(f"      Use service rate {best_action} (q={best_q})")
-else:
-    print("No feasible solution found.")
-df = pd.DataFrame(data=opt_pol)
-display(df)
-df['q'].sum()
-```
-
 #### Optimality criterion: average cost
 
 In this solution, the objective shifts to **minimizing the average cost per period** without considering discounting. This reflects a long-term perspective where future cost are valued equally with immediate cost
@@ -500,6 +413,12 @@ In this solution, the objective shifts to **minimizing the average cost per peri
     -   The solver is executed, and upon finding an optimal solution, the code prints the optimal actions for each state.
 
 ```{python}
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from ortools.linear_solver import pywraplp
+
 # Create the solver
 solver = pywraplp.Solver.CreateSolver('GLOP')
 solver.SetTimeLimit(60000)  # Set time limit in milliseconds (60 seconds)
@@ -540,122 +459,51 @@ solver.Add(solver.Sum(q[(x_i, b, a)] for x_i in X for b in B for a in B) == 1)
 # Solve the problem
 status = solver.Solve()
 
-# Print the optimal solution
+# Print the optimal solution and prepare DataFrame data
 if status == pywraplp.Solver.OPTIMAL:
-    opt_pol = {'x_i': [], 'b': [], 'a': [], 'q': []}
+    opt_pol = []
     for x_i in X:
-        print(f"If {x_i} jobs in the system:")
         for b in B:
-            print(f"   If previous service rate was {b}:")
             q_opt = []
             for a in B:
-                  q_value = q[(x_i, b, a)].solution_value()
-                  q_opt.append((a, q_value))
-            print(q_opt)
+                q_value = q[(x_i, b, a)].solution_value()
+                q_opt.append((a, q_value))
             # Find the service rate with the maximum q value
             best_action, best_q = max(q_opt, key=lambda item: item[1])
-            opt_pol['x_i'].append(x_i)
-            opt_pol['b'].append(b)
-            opt_pol['a'].append(best_action)
-            opt_pol['q'].append(best_q)
+            opt_pol.append({
+                'Jobs_in_System': x_i,
+                'Previous_Rate': b,
+                'Chosen_Rate': best_action,
+                'Probability': best_q
+            })
+            print(f"If {x_i} jobs in the system and previous service rate was {b}:")
             print(f"      Use service rate {best_action} (q={best_q})")
 else:
     print("No feasible solution found.")
-df = pd.DataFrame(data=opt_pol)
-display(df)
-df['q'].sum()
-```
 
-#### Optimality criterion: discounted cost with service rate restriction
+# Convert opt_pol to a DataFrame
+policy_df = pd.DataFrame(opt_pol)
+display(policy_df)
 
-This solution introduces a **service rate restriction** into the discounted cost model, limiting the usage of the highest service rate $b = 2$ to at most 25% of the time. This constraint could represent resource limitations or cost considerations.
+# Sum of probabilities as a check
+total_probability = policy_df['Probability'].sum()
+print(f"Total probability sum: {total_probability}")
 
-**Solution Design:**
+# Find maximum probability actions by (Jobs_in_System, Previous_Rate)
+policy_max_df = policy_df.loc[policy_df.groupby(['Jobs_in_System', 'Previous_Rate'])['Probability'].idxmax()]
 
--   **Service Rate Restriction**:
-    -   A new constraint is added to limit the total probability of choosing service rate $a = 2$.
-    -   The constraint ensures that the sum of probabilities where $a = 2$ does not exceed 25% of the total probability.
+# Prepare data for heatmap
+heatmap_data = policy_max_df.pivot(columns="Jobs_in_System", index="Previous_Rate", values="Chosen_Rate")
 
-**Code Explanation:**
+# Plotting the heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(heatmap_data, annot=True, cmap="YlGnBu", cbar_kws={'label': 'Chosen Service Rate (a)'})
+plt.title("Chosen Service Rate Heatmap by Previous Rate and Jobs in System")
+plt.xlabel("Jobs in system (s)")
+plt.ylabel("Previous service rate (b)")
+plt.savefig("no_constraint.png", dpi=300, bbox_inches="tight", format="png")
+plt.show()
 
--   **Initialization, Decision Variables, and Objective Function**: Same as in the discounted cost model.
-
--   **Balance Constraints**: Remain the same.
-
--   **Service Rate Restriction Constraint**:
-
-    -   Calculated the total probability of choosing service rate $a = 2$ across all states.
-
-```{python}
-# Create the solver
-solver = pywraplp.Solver.CreateSolver('GLOP')
-
-# Decision variables q_{(x,b),b'}: probability of choosing server state b' when state is (x,b)
-q = {}
-for x_i in X:
-    for b in B:
-        for b_prime in B:
-            q[(x_i, b, b_prime)] = solver.NumVar(0.0, 1.0, f'q_{x_i}_{b}_{b_prime}')
-
-# Initial state probabilities alpha
-alpha = {}
-n_total_states = len(X) * len(B)
-for x_i in X:
-    for b in B:
-        alpha[(x_i, b)] = 1 / n_total_states
-        
-# Objective: minimize the expected cost    
-objective = solver.Objective()
-for x_i in X:
-    for b in B:
-        for a in B:
-            objective.SetCoefficient(q[(x_i, b, a)], r(x_i, b, a))
-objective.SetMinimization()
-
-# Balance constraints
-for x_j in X:
-    for b_j in B:
-        lhs = solver.Sum(q[(x_j, b_j, a)] for a in B)
-        rhs = l * solver.Sum(
-            P(x_i, b_i, x_j, b_j, a) * q[(x_i, b_i, a)] 
-            for x_i in X for b_i in B for a in B
-        )
-        solver.Add(lhs == alpha[(x_j, b_j)] + rhs)
-        
-# Define the left-hand side: the total probability of using server state b = 2
-service_rate_b2 = solver.Sum(q[(x_i, 2, a)] for x_i in X for a in B)
-
-# Define the right-hand side: 25% of the total probability across all states, server states, and actions
-total_probability = solver.Sum(q[(x_i, b, a)] for x_i in X for b in B for a in B)
-solver.Add(service_rate_b2 <= 0.25 * total_probability)
-
-# Solve the problem
-status = solver.Solve()
-
-# Print the optimal solution
-if status == pywraplp.Solver.OPTIMAL:
-    opt_pol = {'x_i': [], 'b': [], 'a': [], 'q': []}
-    for x_i in X:
-        print(f"If {x_i} jobs in the system:")
-        for b in B:
-            print(f"   If previous service rate was {b}:")
-            q_opt = []
-            for a in B:
-                  q_value = q[(x_i, b, a)].solution_value()
-                  q_opt.append((a, q_value))
-            print(q_opt)
-            # Find the service rate with the maximum q value
-            best_action, best_q = max(q_opt, key=lambda item: item[1])
-            opt_pol['x_i'].append(x_i)
-            opt_pol['b'].append(b)
-            opt_pol['a'].append(best_action)
-            opt_pol['q'].append(best_q)
-            print(f"      Use service rate {best_action} (q={best_q})")
-else:
-    print("No feasible solution found.")
-df = pd.DataFrame(data=opt_pol)
-display(df)
-df['q'].sum()
 ```
 
 #### Optimality criterion: average cost with service rate restriction
@@ -677,6 +525,12 @@ This solution applies the **service rate restriction** to the average cost model
 -   **Total Probability Constraint**: Ensures the probabilities sum to 1.
 
 ```{python}
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from ortools.linear_solver import pywraplp
+
 # Create the solver
 solver = pywraplp.Solver.CreateSolver('GLOP')
 solver.SetTimeLimit(60000)  # Set time limit in milliseconds (60 seconds)
@@ -721,30 +575,48 @@ solver.Add(service_rate_limit <= 0.25)
 # Solve the problem
 status = solver.Solve()
 
-# Print the optimal solution
+# Print the optimal solution and prepare data for visualization
 if status == pywraplp.Solver.OPTIMAL:
-    opt_pol = {'x_i': [], 'b': [], 'a': [], 'q': []}
+    opt_pol = {'Jobs_in_System': [], 'Previous_Rate': [], 'Chosen_Rate': [], 'Probability': []}
     for x_i in X:
-        print(f"If {x_i} jobs in the system:")
         for b in B:
-            print(f"   If previous service rate was {b}:")
             q_opt = []
             for a in B:
-                  q_value = q[(x_i, b, a)].solution_value()
-                  q_opt.append((a, q_value))
-            print(q_opt)
+                q_value = q[(x_i, b, a)].solution_value()
+                q_opt.append((a, q_value))
             # Find the service rate with the maximum q value
             best_action, best_q = max(q_opt, key=lambda item: item[1])
-            opt_pol['x_i'].append(x_i)
-            opt_pol['b'].append(b)
-            opt_pol['a'].append(best_action)
-            opt_pol['q'].append(best_q)
+            opt_pol['Jobs_in_System'].append(x_i)
+            opt_pol['Previous_Rate'].append(b)
+            opt_pol['Chosen_Rate'].append(best_action)
+            opt_pol['Probability'].append(best_q)
+            print(f"If {x_i} jobs in the system and previous service rate was {b}:")
             print(f"      Use service rate {best_action} (q={best_q})")
 else:
     print("No feasible solution found.")
-df = pd.DataFrame(data=opt_pol)
-display(df)
-df['q'].sum()
+
+# Convert opt_pol to a DataFrame
+policy_df = pd.DataFrame(opt_pol)
+display(policy_df)
+
+# Sum of probabilities as a check
+total_probability = policy_df['Probability'].sum()
+print(f"Total probability sum: {total_probability}")
+
+# Find the maximum probability actions by (Jobs_in_System, Previous_Rate) if needed
+policy_max_df = policy_df.loc[policy_df.groupby(['Jobs_in_System', 'Previous_Rate'])['Probability'].idxmax()]
+
+# Prepare data for heatmap
+heatmap_data = policy_max_df.pivot(index="Previous_Rate", columns="Jobs_in_System", values="Chosen_Rate")
+
+# Plotting the heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(heatmap_data, annot=True, cmap="YlGnBu", cbar_kws={'label': 'Chosen Service Rate (a)'})
+plt.title("Chosen Service Rate Heatmap by Previous Rate and Jobs in System")
+plt.xlabel("Jobs in system (s)")
+plt.ylabel("Previous service rate (b)")
+plt.savefig("no_constraint.png", dpi=300, bbox_inches="tight", format="png")
+plt.show()
 ```
 
 **General Notes on the Code:**
