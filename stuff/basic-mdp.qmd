@@ -236,9 +236,9 @@ plt.show()
 
 A function that takes as input:
 
-1. A **policy** (which defines an action for each state).
-2. A **reward grid** (which gives the immediate reward for each state).
-3. The **transition matrices** (one for each action).
+1.  A **policy** (which defines an action for each state).
+2.  A **reward grid** (which gives the immediate reward for each state).
+3.  The **transition matrices** (one for each action).
 
 The function will construct the Bellman value equations for each state based on the given policy, rewards, and transition matrices, and return these equations in a format suitable for solving.
 
@@ -248,11 +248,7 @@ $$
 V(s) = R(s) + \gamma \sum_{s'} P(s, s') V(s')
 $$
 
-Where:
-- $V(s)$ is the value of state $s$,
-- $R(s)$ is the immediate reward for state $s$,
-- $\gamma$ is the discount factor,
-- $P(s, s')$ is the transition probability from state $s$ to state $s'$.
+Where: - $V(s)$ is the value of state $s$, - $R(s)$ is the immediate reward for state $s$, - $\gamma$ is the discount factor, - $P(s, s')$ is the transition probability from state $s$ to state $s'$.
 
 Let me write the function for this:
 
@@ -459,10 +455,10 @@ Here's a step-by-step guide to implementing the value iteration algorithm:
 
 ### Steps:
 
-1. Initialize the state values arbitrarily.
-2. Update the state values iteratively using the Bellman optimality equation.
-3. Repeat the updates until convergence (state values no longer change significantly).
-4. Extract the optimal policy from the converged state values.
+1.  Initialize the state values arbitrarily.
+2.  Update the state values iteratively using the Bellman optimality equation.
+3.  Repeat the updates until convergence (state values no longer change significantly).
+4.  Extract the optimal policy from the converged state values.
 
 ### Explanation:
 

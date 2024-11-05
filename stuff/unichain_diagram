@@ -1,0 +1,18 @@
+// Unichain
+digraph {
+	nodesep=1.5 rankdir=LR ranksep=2.0
+	node [shape=circle]
+	A [label="x̂, b0"]
+	B [label="x̂, b1"]
+	C [label="x̂, b2"]
+	node [shape=doublecircle]
+	D [label="x ≠ x̂"]
+	A -> A
+	B -> A
+	C -> A
+	A -> D [style=dashed]
+	D -> A [style=dashed]
+	B -> D [style=dashed]
+	C -> D [style=dashed]
+	D -> D
+}
