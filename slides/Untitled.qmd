@@ -1,8 +1,14 @@
 ---
 title: "Markov Decision Process"
-format: revealjs
-editor: visual
-jupyter: python3
+format:
+   revealjs:
+     slideNumber: true
+     transition: 'fade'
+     controls: true
+     progress: true
+     history: true
+     previewLinks: true
+     margin: 0.05
 ---
 
 ## Quarto
