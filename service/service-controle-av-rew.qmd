@@ -3,8 +3,6 @@ title: Service Control - Average Reward
 jupyter: python3
 ---
 
-
-
 ```{python}
 from scipy.stats import poisson
 
