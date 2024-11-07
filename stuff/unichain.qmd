@@ -539,11 +539,11 @@ dot.attr(rankdir='LR', nodesep='1.5', ranksep='2.0')  # Increased nodesep and ra
 
 # Define nodes
 dot.attr('node', shape='circle')
-dot.node('A', 'x̂, b0')
-dot.node('B', 'x̂, b1')
-dot.node('C', 'x̂, b2')
+dot.node('A', 'x&#x303;, b0')
+dot.node('B', 'x&#x303;, b1')
+dot.node('C', 'x&#x303;, b2')
 dot.attr('node', shape='doublecircle')
-dot.node('D', 'x ≠ x̂')
+dot.node('D', 'x &ne; x&#x303;, b0')
 
 # Define edges
 dot.edge('A', 'A', label='b0')
@@ -568,11 +568,11 @@ dot.attr(rankdir='LR', nodesep='1.5', ranksep='2.0')  # Increased nodesep and ra
 
 # Define nodes
 dot.attr('node', shape='circle')
-dot.node('A', 'x̂, b0')
-dot.node('B', 'x̂, b1')
-dot.node('C', 'x̂, b2')
+dot.node('A', 'x&#x303;, b0')
+dot.node('B', 'x&#x303;, b1')
+dot.node('C', 'x&#x303;, b2')
 dot.attr('node', shape='doublecircle')
-dot.node('D', 'x ≠ x̂')
+dot.node('D', 'x &ne; x&#x303;')
 
 # Define edges
 dot.edge('A', 'A', label='b0')

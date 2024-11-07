@@ -131,6 +131,8 @@ window.Quarto = {
 </header>
 
 
+<p><strong>Assumption 3.3</strong> <em>There is at least one state x ∈ <strong>X</strong> , such that there is a path from any state to x. If this is the case we call the chain unichain, state x is called recurrent.</em></p>
+<p>From: Koole, G. (2006). <em>Lecture notes Stochastic Optimization</em>.</p>
 <p>Visualization of a unichain Markov chain with transient states:</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
@@ -229,7 +231,7 @@ P = \begin{pmatrix}
 <p>Let’s simulate both chains and compare their behaviors.</p>
 <section id="import-necessary-libraries" class="level3">
 <h3 class="anchored" data-anchor-id="import-necessary-libraries"><strong>Import Necessary Libraries</strong></h3>
-<div id="cfe3dc51" class="cell" data-execution_count="1">
+<div id="dbcd7486" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -238,7 +240,7 @@ P = \begin{pmatrix}
 <h3 class="anchored" data-anchor-id="define-the-markov-chains"><strong>Define the Markov Chains</strong></h3>
 <section id="aperiodic-chain" class="level4">
 <h4 class="anchored" data-anchor-id="aperiodic-chain"><strong>Aperiodic Chain</strong></h4>
-<div id="da293da4" class="cell" data-execution_count="2">
+<div id="9bf05d08" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># States: 0, 1, 2</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>states_aperiodic <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>]</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -252,7 +254,7 @@ P = \begin{pmatrix}
 </section>
 <section id="periodic-chain" class="level4">
 <h4 class="anchored" data-anchor-id="periodic-chain"><strong>Periodic Chain</strong></h4>
-<div id="30debdb4" class="cell" data-execution_count="3">
+<div id="8c00495e" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># States: 0, 1</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>states_periodic <span class="op">=</span> [<span class="dv">0</span>, <span class="dv">1</span>]</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -267,7 +269,7 @@ P = \begin{pmatrix}
 <section id="simulation-function" class="level3">
 <h3 class="anchored" data-anchor-id="simulation-function"><strong>Simulation Function</strong></h3>
 <p>We’ll define a function to simulate the Markov chain over a number of steps.</p>
-<div id="3bcc4048" class="cell" data-execution_count="4">
+<div id="5dbe7575" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_markov_chain(P, states, start_state, num_steps):</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    state <span class="op">=</span> start_state</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    state_history <span class="op">=</span> [state]</span>
@@ -281,7 +283,7 @@ P = \begin{pmatrix}
 <h3 class="anchored" data-anchor-id="simulate-the-chains"><strong>Simulate the Chains</strong></h3>
 <section id="parameters" class="level4">
 <h4 class="anchored" data-anchor-id="parameters"><strong>Parameters</strong></h4>
-<div id="bf56914e" class="cell" data-execution_count="5">
+<div id="534573d0" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>num_steps <span class="op">=</span> <span class="dv">100</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>start_state_aperiodic <span class="op">=</span> <span class="dv">0</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>start_state_periodic <span class="op">=</span> <span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -289,14 +291,14 @@ P = \begin{pmatrix}
 </section>
 <section id="simulate-aperiodic-chain" class="level4">
 <h4 class="anchored" data-anchor-id="simulate-aperiodic-chain"><strong>Simulate Aperiodic Chain</strong></h4>
-<div id="6180ca5c" class="cell" data-execution_count="6">
+<div id="dba127f3" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>history_aperiodic <span class="op">=</span> simulate_markov_chain(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    P_aperiodic, states_aperiodic, start_state_aperiodic, num_steps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="simulate-periodic-chain" class="level4">
 <h4 class="anchored" data-anchor-id="simulate-periodic-chain"><strong>Simulate Periodic Chain</strong></h4>
-<div id="4a8d32e7" class="cell" data-execution_count="7">
+<div id="ddfe368f" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>history_periodic <span class="op">=</span> simulate_markov_chain(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    P_periodic, states_periodic, start_state_periodic, num_steps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -306,7 +308,7 @@ P = \begin{pmatrix}
 <h3 class="anchored" data-anchor-id="visualize-the-state-visits"><strong>Visualize the State Visits</strong></h3>
 <section id="function-to-plot-state-visits" class="level4">
 <h4 class="anchored" data-anchor-id="function-to-plot-state-visits"><strong>Function to Plot State Visits</strong></h4>
-<div id="8fa7f64d" class="cell" data-execution_count="8">
+<div id="4d4ab52e" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_state_visits(state_history, title):</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">2</span>))</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    plt.plot(state_history, <span class="st">'o-'</span>, markersize<span class="op">=</span><span class="dv">4</span>)</span>
@@ -320,7 +322,7 @@ P = \begin{pmatrix}
 </section>
 <section id="plot-aperiodic-chain" class="level4">
 <h4 class="anchored" data-anchor-id="plot-aperiodic-chain"><strong>Plot Aperiodic Chain</strong></h4>
-<div id="dbf9f4b5" class="cell" data-execution_count="9">
+<div id="bae748a4" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>plot_state_visits(history_aperiodic, <span class="st">'Aperiodic Markov Chain State Visits'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -333,7 +335,7 @@ P = \begin{pmatrix}
 </section>
 <section id="plot-periodic-chain" class="level4">
 <h4 class="anchored" data-anchor-id="plot-periodic-chain"><strong>Plot Periodic Chain</strong></h4>
-<div id="ab77976b" class="cell" data-execution_count="10">
+<div id="4d59e38d" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>plot_state_visits(history_periodic, <span class="st">'Periodic Markov Chain State Visits'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
@@ -350,7 +352,7 @@ P = \begin{pmatrix}
 <p>We’ll compute the times at which the chain returns to the starting state.</p>
 <section id="function-to-compute-return-times" class="level4">
 <h4 class="anchored" data-anchor-id="function-to-compute-return-times"><strong>Function to Compute Return Times</strong></h4>
-<div id="a07baf0a" class="cell" data-execution_count="11">
+<div id="ec879390" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_return_times(state_history, target_state):</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    return_times <span class="op">=</span> []</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    last_visit <span class="op">=</span> <span class="va">None</span></span>
@@ -364,7 +366,7 @@ P = \begin{pmatrix}
 </section>
 <section id="compute-and-display-return-times" class="level4">
 <h4 class="anchored" data-anchor-id="compute-and-display-return-times"><strong>Compute and Display Return Times</strong></h4>
-<div id="e184847f" class="cell" data-execution_count="12">
+<div id="d794ba4d" class="cell" data-execution_count="12">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aperiodic Chain</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>return_times_aperiodic <span class="op">=</span> compute_return_times(history_aperiodic, start_state_aperiodic)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Aperiodic Chain Return Times:"</span>, return_times_aperiodic)</span>
@@ -375,7 +377,7 @@ P = \begin{pmatrix}
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Periodic Chain Return Times:"</span>, return_times_periodic)</span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"GCD of Return Times (Periodic):"</span>, np.gcd.<span class="bu">reduce</span>(return_times_periodic))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Aperiodic Chain Return Times: [14, 9, 1, 6, 1, 1, 7, 1, 17, 1, 1, 1, 1, 1, 37, 1]
+<pre><code>Aperiodic Chain Return Times: [3, 1, 3, 1, 1, 1, 14, 1, 1, 1, 1, 1, 8, 1, 5, 5, 1, 7, 11, 1, 7, 1, 1, 1, 4, 1, 1]
 GCD of Return Times (Aperiodic): 1
 Periodic Chain Return Times: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 GCD of Return Times (Periodic): 2</code></pre>
@@ -410,7 +412,7 @@ GCD of Return Times (Periodic): 2</code></pre>
 <section id="complete-code" class="level2">
 <h2 class="anchored" data-anchor-id="complete-code"><strong>Complete Code</strong></h2>
 <p>Here’s the complete code assembled together:</p>
-<div id="d6e2b9ff" class="cell" data-execution_count="13">
+<div id="14424330" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -506,7 +508,7 @@ GCD of Return Times (Periodic): 2</code></pre>
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Aperiodic Chain Return Times: [8, 1, 1, 1, 5, 1, 3, 1, 1, 1, 2, 2, 1, 1, 7, 2, 5, 1, 1, 6, 1, 2, 13, 1, 1, 1, 27]
+<pre><code>Aperiodic Chain Return Times: [4, 6, 3, 2, 1, 1, 1, 5, 1, 4, 10, 1, 2, 1, 1, 3, 12, 6, 2, 7, 1, 3, 1, 4, 2, 3, 10]
 GCD of Return Times (Aperiodic): 1
 
 Periodic Chain Return Times: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
@@ -541,7 +543,7 @@ GCD of Return Times (Periodic): 2</code></pre>
 <li><p><strong>Periodic Chain:</strong> The chain exhibits a fixed cycle, returning to the starting state at regular intervals (every 2 steps).</p></li>
 </ul>
 <p>This simulation helps visualize the difference between aperiodic and periodic Markov chains. In the context of Markov Decision Processes (MDPs), ensuring that the chain is aperiodic is important for the convergence of algorithms and the validity of certain theoretical results, such as the unichain assumption.</p>
-<div id="c661b164" class="cell" data-execution_count="14">
+<div id="00cf63d4" class="cell" data-execution_count="14">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> poisson</span>
@@ -680,7 +682,7 @@ GCD of Return Times (Periodic): 2</code></pre>
 </div>
 </div>
 </div>
-<div id="1a4fac5c" class="cell" data-execution_count="15">
+<div id="8188e3fe" class="cell" data-execution_count="15">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -796,7 +798,7 @@ Component 3: {(1, 0)}
 Component 4: {(2, 1)}</code></pre>
 </div>
 </div>
-<div id="2657c4fd" class="cell" data-execution_count="16">
+<div id="4f3106a7" class="cell" data-execution_count="16">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> graphviz <span class="im">import</span> Digraph</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new directed graph</span></span>
@@ -805,11 +807,11 @@ Component 4: {(2, 1)}</code></pre>
 <span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Define nodes</span></span>
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>dot.attr(<span class="st">'node'</span>, shape<span class="op">=</span><span class="st">'circle'</span>)</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'A'</span>, <span class="st">'x̂, b0'</span>)</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'B'</span>, <span class="st">'x̂, b1'</span>)</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'C'</span>, <span class="st">'x̂, b2'</span>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'A'</span>, <span class="st">'x&amp;#x303;, b0'</span>)</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'B'</span>, <span class="st">'x&amp;#x303;, b1'</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'C'</span>, <span class="st">'x&amp;#x303;, b2'</span>)</span>
 <span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>dot.attr(<span class="st">'node'</span>, shape<span class="op">=</span><span class="st">'doublecircle'</span>)</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'D'</span>, <span class="st">'x ≠ x̂'</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'D'</span>, <span class="st">'x &amp;ne; x&amp;#x303;, b0'</span>)</span>
 <span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Define edges</span></span>
 <span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>dot.edge(<span class="st">'A'</span>, <span class="st">'A'</span>, label<span class="op">=</span><span class="st">'b0'</span>)</span>
@@ -828,18 +830,18 @@ Component 4: {(2, 1)}</code></pre>
 </div>
 </div>
 <p><img src="unichain_always_b0_diagram.png" class="img-fluid"></p>
-<div id="27d7486b" class="cell" data-execution_count="17">
+<div id="fbea02cf" class="cell" data-execution_count="17">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new directed graph</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>dot <span class="op">=</span> Digraph(comment<span class="op">=</span><span class="st">'Unichain'</span>, <span class="bu">format</span><span class="op">=</span><span class="st">'png'</span>)</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>dot.attr(rankdir<span class="op">=</span><span class="st">'LR'</span>, nodesep<span class="op">=</span><span class="st">'1.5'</span>, ranksep<span class="op">=</span><span class="st">'2.0'</span>)  <span class="co"># Increased nodesep and ranksep for more space between nodes</span></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Define nodes</span></span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>dot.attr(<span class="st">'node'</span>, shape<span class="op">=</span><span class="st">'circle'</span>)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'A'</span>, <span class="st">'x̂, b0'</span>)</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'B'</span>, <span class="st">'x̂, b1'</span>)</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'C'</span>, <span class="st">'x̂, b2'</span>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'A'</span>, <span class="st">'x&amp;#x303;, b0'</span>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'B'</span>, <span class="st">'x&amp;#x303;, b1'</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'C'</span>, <span class="st">'x&amp;#x303;, b2'</span>)</span>
 <span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>dot.attr(<span class="st">'node'</span>, shape<span class="op">=</span><span class="st">'doublecircle'</span>)</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'D'</span>, <span class="st">'x ≠ x̂'</span>)</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>dot.node(<span class="st">'D'</span>, <span class="st">'x &amp;ne; x&amp;#x303;'</span>)</span>
 <span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Define edges</span></span>
 <span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>dot.edge(<span class="st">'A'</span>, <span class="st">'A'</span>, label<span class="op">=</span><span class="st">'b0'</span>)</span>

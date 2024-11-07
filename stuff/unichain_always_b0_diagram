@@ -2,11 +2,11 @@
 digraph {
 	nodesep=1.5 rankdir=LR ranksep=2.0
 	node [shape=circle]
-	A [label="x̂, b0"]
-	B [label="x̂, b1"]
-	C [label="x̂, b2"]
+	A [label="x&#x303;, b0"]
+	B [label="x&#x303;, b1"]
+	C [label="x&#x303;, b2"]
 	node [shape=doublecircle]
-	D [label="x ≠ x̂"]
+	D [label="x &ne; x&#x303;, b0"]
 	A -> A [label=b0]
 	B -> A [label=b0]
 	C -> A [label=b0]
