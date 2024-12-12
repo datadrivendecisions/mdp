@@ -5,7 +5,9 @@ format:
   html:
     include-in-header:
       - text: |
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/p5@1.11.1/lib/p5.min.js"></script>
+    include-after-body:
+      - file: "scripts.html"
   pdf:
     colorlinks: true
 jupyter: python3
@@ -74,71 +76,6 @@ The transition from state $s$ to $s'$ of the queuing system is as follows:
 
 System state update between observations $t \text{ and } t+1$
 ::::
-
-<script>
-    function setup() {
-        const canvas = createCanvas(800, 200);
-        canvas.parent('sketch-holder');
-        textAlign(CENTER, CENTER);
-        textSize(14);
-    }
-
-    function draw() {
-        background(255);
-        
-        // Timeline base
-        const startX = 50;
-        const endX = 750;
-        const baseY = 100;
-        strokeWeight(2);
-        line(startX, baseY, endX, baseY);
-        
-        // Draw events
-        const events = [
-            { x: 150, label: "State s", symbol: "(x,b)" },
-            { x: 300, label: "Choose\nservice rate", symbol: "b'" },
-            { x: 450, label: "Jobs depart\n(0,1,2)", symbol: "↓" },
-            { x: 600, label: "New jobs\narrive", symbol: "↑" },
-            { x: 700, label: "State s'", symbol: "(x',b')" }
-        ];
-        
-        // Draw arrows and events
-        strokeWeight(1);
-        for (let i = 0; i < events.length; i++) {
-            const event = events[i];
-            
-            // Draw vertical line
-            line(event.x, baseY - 20, event.x, baseY + 20);
-            
-            // Draw label
-            fill(0);
-            noStroke();
-            text(event.label, event.x, baseY + 45);
-            
-            // Draw state/symbol
-            textSize(16);
-            text(event.symbol, event.x, baseY - 35);
-            textSize(14);
-            
-            // Draw arrow to next event if not last event
-            if (i < events.length - 1) {
-                stroke(0);
-                drawArrow(event.x, baseY, events[i + 1].x - 40, baseY);
-            }
-        }
-    }
-    
-    function drawArrow(x1, y1, x2, y2) {
-        line(x1, y1, x2, y2);
-        push();
-        translate(x2, y2);
-        const angle = atan2(y2 - y1, x2 - x1);
-        rotate(angle);
-        const arrowSize = 8;
-        triangle(0, arrowSize/2, 0, -arrowSize/2, arrowSize, 0);
-        pop();
-    }
-</script>
 
 To formulate this problem as an infinite horizon Markov decision process (MDP), we define the key components:
 
@@ -233,9 +170,9 @@ For each stationary policy $\pi$, the associated Markov chain $\{ X_n \}$ has a 
 
 *Proof:*
 
-1. Choose arbitrary $s(x + 1, b')$. There exists a one-step path from $s(x + 1, b')$ to $s(x, b)$ with $P(k = n - 1) > 0$ under policy $\pi(s(x + 1, b'))$. This is evident as $k$ can take any value from $0$ to $\infty$ with probability larger than $0$ and $n \subset k$ with positive probabilities for all $n$.
-2. Choose arbitrary $s(x - 1, b')$. There exists a one-step path from $s(x - 1, b')$ to $s(x, b)$ with $P(k = n + 1) > 0$ under policy $\pi(s(x - 1, b'))$. Same as above.
-3. Choose arbitrary $s(x, b)$. There exists a one-step path from $s(x, b)$ to itself with $P(k = x) > 0 \text{ if } x=\{0,1\} \text{ and } P(k = n) > 0  \text{ if } x>1$ under policy $\pi(s(x, b))$. Same as above.
+1.  Choose arbitrary $s(x + 1, b')$. There exists a one-step path from $s(x + 1, b')$ to $s(x, b)$ with $P(k = n - 1) > 0$ under policy $\pi(s(x + 1, b'))$. This is evident as $k$ can take any value from $0$ to $\infty$ with probability larger than $0$ and $n \subset k$ with positive probabilities for all $n$.
+2.  Choose arbitrary $s(x - 1, b')$. There exists a one-step path from $s(x - 1, b')$ to $s(x, b)$ with $P(k = n + 1) > 0$ under policy $\pi(s(x - 1, b'))$. Same as above.
+3.  Choose arbitrary $s(x, b)$. There exists a one-step path from $s(x, b)$ to itself with $P(k = x) > 0 \text{ if } x=\{0,1\} \text{ and } P(k = n) > 0  \text{ if } x>1$ under policy $\pi(s(x, b))$. Same as above.
 
 By recurrence and transitivity, all states under an arbitrary policy $\pi$ are in the same recurrent class. Therefore, the Markov chain is unichain.
 :::
@@ -461,6 +398,9 @@ status = solver.Solve()
 
 # Print the optimal solution and prepare DataFrame data
 if status == pywraplp.Solver.OPTIMAL:
+    minimized_cost = solver.Objective().Value()
+    print(f"Minimized objective value: {minimized_cost}")
+    
     opt_pol = []
     for x_i in X:
         for b in B:

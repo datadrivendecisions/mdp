@@ -10,9 +10,12 @@ jupyter: python3
 
 ```{python}
 import numpy as np
+import pandas as pd
 from scipy.stats import poisson
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.express as px
+from random import sample
 ```
 
 ## Model
@@ -31,14 +34,14 @@ X = range(X_max + 1)
 B = [0, 1, 2]
 
 # Create states
-S = [[b for b in B] for x in X]
+S = [[x,b] for x in X for b in B]
 
 for x, s in enumerate(S):
     print(f'State {x}, {s}')
 
 # Service rate probabilities
 f_b = [[0.8, 0.2],[0.5, 0.5],[0.2, 0.8]]
-b_1, n_0 = [1, 0] 
+b_1, n_0 = [1, 1] 
 print(f_b[b_1][n_0-1]) # Expect 0.5
 b_1, n_0 = [0, 2] 
 print(f_b[b_1][n_0-1]) # Expect 0.2
@@ -52,6 +55,10 @@ def g(n):
 # probability of n or more new jobs arriving
 def g_or_more(n):
     return 1 - sum(g(m) for m in range(n))
+
+# cost function for calculating the holding cost
+def h(x, H):
+    return H * x # expected holding cost per period
 ```
 
 ```{python}
@@ -82,28 +89,209 @@ def P(s_i, s_j, f_b, a):
 
 # Expected cost function
 # Define the expected reward R_{(s,b),a} when state is (s,b) and chosen service rate is a
-def r(x, b, a, f_b, R, H, K, d):
+def r(x, b, a):
     if x == 0:
         return d[a] + K*(b != a) # no costs for processing and holding jobs
     elif x == 1:
         return  - R + h(1, H) + d[a] + K*(b != a) # reward and cost for processing and holding 1 job
     else:
-        return - R * sum(f_b[a][n-1] * n for n in [1, 2]) + H*x + d[a] + K*(b != a)
+        return - R * sum(f_b[a][n-1] * n for n in [1, 2]) + h(x, H) + d[a] + K*(b != a)
 
-# Test reward function
+# Test transition and reward functions
 test_cases = [
-  [[0, 0], [0, 1], 1],
-  [[3, 1], [5, 1], 1],
-  [[3, 1], [5, 1], 0],
-  [[8, 2], [5, 1], 1],
-  [[8, 2], [5, 1], 2],
-  [[8, 2], [5, 1], 0],
-  [[8, 2], [6, 2], 2],
-  [[5, 0], [8, 1], 1],
-  [[5, 0], [8, 2], 2]
+  [S[0], S[1], 1],
+  [S[10], S[16], 1],
+  [S[10], S[16], 0],
+  [S[26], S[16], 1],
+  [S[26], S[16], 2],
+  [S[26], S[16], 0],
+  [S[26], S[20], 2],
+  [S[15], S[25], 1],
+  [S[15], S[26], 2]
   ]
   
 for s_i, s_j, a in test_cases:
- print(f'For state {s_i} the probability of ending in stat {s_j} after action {a} is {P(s_i, s_j, f_b, a)} and the cost is {r(s_i[0], s_i[1], a, f_b, R, H, K, d)}')
+ print(f'For state {s_i} the probability of ending in state {s_j} after action {a} is {P(s_i, s_j, f_b, a)} and the cost is {r(s_i[0], s_i[1], a)}')
 
 ```
+
+## Solution
+
+```{python}
+
+# Value function
+def V_s(i, f_b, S, A, V_prev_t):
+    exp_V_i = []
+    for a in A:
+      c = r(S[i][0], S[i][1], a)
+      p = [P(S[i], s_j, f_b, a) for s_j in S]
+      exp_V_i.append(c + sum([p[j]*V_prev_t[j] for j in range(len(V_prev_t))]))
+    return(min(exp_V_i), exp_V_i.index(min(exp_V_i)))
+
+# Test value function
+V_prev_t = [0]*len(S)
+V_s(10, f_b, S, B, V_prev_t) # Expect 0.5, 1
+    
+```
+
+```{python}
+# Value iteration
+def value_iteration(f_b, S, B, V_prev_t, epsilon=0.0001):
+    V_t = [V_s(i, f_b, S, B, V_prev_t) for i in range(len(S))]
+    
+    for t in range(1000):
+        V_prev_t = [V_t[i][0] for i in range(len(V_t))]
+        V_t = [V_s(i, f_b, S, B, V_prev_t) for i in range(len(S))]
+        m = min([V_t[i][0] - V_prev_t[i] for i in range(len(V_t))])
+        M = max([V_t[i][0] - V_prev_t[i] for i in range(len(V_t))])
+        if M - m >= 0.0 and M - m <= m * epsilon:
+          print(f'Stopped early at iteration {t} with difference {M - m}')
+          break
+    print(f'Converged after {t} iterations with average cost {0.5 * (M + m)} and policy {[(S[i], B[V_t[i][1]]) for i in range(len(S))]}')     
+    return(t, V_t, 0.5 * (M + m))
+          
+optimal_policy = value_iteration(f_b, S, B, V_prev_t)
+```
+
+```{python}
+import pandas as pd
+import plotly.express as px
+
+# Assuming optimal_policy is defined properly
+t, V_t, cost = optimal_policy
+
+# Extract total cost and actions from V_t
+total_cost = [V_t[i][0] for i in range(len(V_t))]
+actions = [str(B[V_t[i][1]]) for i in range(len(V_t))]
+
+# Extract jobs and previous rates from S
+jobs = [int(S[i][0]) for i in range(len(S))]
+previous_rate = [int(S[i][1]) for i in range(len(S))]
+
+# Create a DataFrame
+df = pd.DataFrame({'Jobs': jobs, 'Previous rate': previous_rate, 'Action': actions, 'Cost': total_cost})
+
+# Display the first 10 rows
+df
+
+# Create a scatter plot with Plotly, using a discrete color scale
+fig = px.scatter(df, 
+                 x='Jobs', 
+                 y='Previous rate', 
+                 color='Action', 
+                 title='Optimal Policy with value iteration',
+                 color_discrete_sequence=['tomato', 'gold', 'dodgerblue'],
+                 category_orders={"Action": ['0', '1', '2']})
+fig.update_traces(marker=dict(size=30))  # Increase marker size
+fig.update_yaxes(tickmode='linear', dtick=1)  # Make y-axis handle integer values
+fig.show()
+fig.write_html("value-iteration.html")
+```
+
+```{python}
+# Correct pivot to use proper column for the index and values
+df_pivot = df.pivot(index="Previous rate", columns="Jobs", values="Action")
+df_pivot.head(10)
+
+# Create a heatmap with Plotly
+fig = px.imshow(df_pivot, 
+                labels={'x': 'Previous rate', 'y': 'Jobs', 'color': 'Action'},
+                x=df_pivot.columns,
+                y=df_pivot.index,
+                color_continuous_scale='Viridis')
+fig.update_layout(title='Optimal Policy with value iteration')
+fig.show()
+```
+
+```{python}
+# Function to get action given Jobs and Previous rate
+def get_action(df, jobs, previous_rate):
+    result = df[(df['Jobs'] == jobs) & (df['Previous rate'] == previous_rate)]
+    if not result.empty:
+        return result['Action'].values[0]
+    else:
+        return None
+      
+# Test get_action()
+get_action(df, 1, 1)
+
+# Function to sample from list [1,2] according to chosen distribution f_b = [[0.8, 0.2],[0.5, 0.5],[0.2, 0.8]]
+def sample_f_b(b, f_b):
+    return np.random.choice([1, 2], p=f_b[b])
+
+# Policy simulation
+def policy_sim(T, df, start_jobs=0, start_rate=0):
+    X_max = df['Jobs'].max()
+    jobs = start_jobs
+    previous_rate = start_rate
+    total_cost = 0
+    sim_list = []
+    jobs_list = []
+    actions_list = []
+    average_cost_list = []
+    for t in range(T):
+        sim_list.append(t)
+        jobs_list.append(jobs)
+        action = get_action(df, jobs, previous_rate)
+        actions_list.append(action)
+        # print(f'Time {t}, Jobs {jobs}, Previous rate {previous_rate}, Action {action}')
+        total_cost += r(jobs, previous_rate, int(action))
+        jobs = max(0, min(X_max, jobs + np.random.poisson(1.5) - sample_f_b(int(action), f_b)))
+        previous_rate = int(action)
+        average_cost_list.append(total_cost/(t+1))
+    return sim_list, jobs_list, actions_list , average_cost_list
+  
+# Test policy_sim()
+sim_list, jobs_list, actions_list , average_cost_list = policy_sim(1000, df, start_jobs=0, start_rate=0)
+
+df_policy_sim = pd.DataFrame({'Sim': [], 'Jobs': [], 'Action': [], 'Average cost': [], 'Run': []})
+
+# Bootstrap mean average cost by running simulating the policy for 1000 periods 10 times
+for i in range(100):
+    random_x = sample(range(X_max),1)[0]
+    random_rate = sample(B,1)[0]
+    sim_list, jobs_list, actions_list , average_cost_list = policy_sim(1000, df, start_jobs=random_x, start_rate=random_rate)
+    temp_policy_sim = pd.DataFrame({'Sim': sim_list, 'Jobs': jobs_list, 'Action': actions_list, 'Average cost': average_cost_list})
+    temp_policy_sim['Run'] = i
+    df_policy_sim = pd.concat([df_policy_sim, temp_policy_sim])
+df_policy_sim
+
+# Retrieve last record of each run, extract average and calculate mean for all runs
+df_policy_sim.groupby('Run').tail(1)['Average cost'].mean()
+```
+
+
+```{python}
+# Create a line plot with Plotly
+fig = px.line(df_policy_sim, 
+              x=df_policy_sim.index, 
+              y='Average cost', 
+              title=f'Average cost over time for 100 runs of the policy simulation',
+              color='Run',
+              labels={
+                     "index": "Sim"
+                 },)
+fig.update_traces(showlegend=False)
+fig.show()
+fig.write_html("average-cost.html")
+```
+
+```{python}
+# Test policy_sim()
+sim_list, jobs_list, actions_list, average_cost_list = policy_sim(1000, df, start_jobs=2, start_rate=1)
+actions_list = [str(a) for a in actions_list]
+
+policy_sim_list = pd.DataFrame({'Sim': sim_list, 'Jobs': jobs_list, 'Action': actions_list, 'Average cost': average_cost_list})
+
+fig = px.scatter(policy_sim_list, 
+                 x='Sim', 
+                 y='Jobs',
+                 color='Action',
+                 color_discrete_sequence=['tomato', 'gold', 'dodgerblue'],
+                 category_orders={"Action": ['0', '1', '2']},
+                 title='Policy and jobs evolution for a single run of the policy simulation')
+fig.update_traces(marker=dict(size=15))  # Increase marker size
+fig.show()
+fig.write_html("policy-sim.html")
+```
+

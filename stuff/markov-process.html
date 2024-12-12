@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.551">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="MIT">
+
+<title>From Poisson to Markov</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="markov-process_files/libs/clipboard/clipboard.min.js"></script>
+<script src="markov-process_files/libs/quarto-html/quarto.js"></script>
+<script src="markov-process_files/libs/quarto-html/popper.min.js"></script>
+<script src="markov-process_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="markov-process_files/libs/quarto-html/anchor.min.js"></script>
+<link href="markov-process_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="markov-process_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="markov-process_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="markov-process_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="markov-process_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css">
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#poisson-processes" id="toc-poisson-processes" class="nav-link" data-scroll-target="#poisson-processes">Poisson Processes</a>
+  <ul class="collapse">
+  <li><a href="#definition" id="toc-definition" class="nav-link" data-scroll-target="#definition">Definition</a></li>
+  <li><a href="#inter-arrival-times" id="toc-inter-arrival-times" class="nav-link" data-scroll-target="#inter-arrival-times">Inter-Arrival Times</a></li>
+  <li><a href="#conditional-densities" id="toc-conditional-densities" class="nav-link" data-scroll-target="#conditional-densities">Conditional Densities</a></li>
+  <li><a href="#python-example-simulating-a-poisson-process" id="toc-python-example-simulating-a-poisson-process" class="nav-link" data-scroll-target="#python-example-simulating-a-poisson-process">Python Example: Simulating a Poisson Process</a></li>
+  <li><a href="#conditional-densities-1" id="toc-conditional-densities-1" class="nav-link" data-scroll-target="#conditional-densities-1">Conditional Densities</a></li>
+  </ul></li>
+  <li><a href="#finite-state-markov-chains" id="toc-finite-state-markov-chains" class="nav-link" data-scroll-target="#finite-state-markov-chains">Finite-State Markov Chains</a>
+  <ul class="collapse">
+  <li><a href="#definition-1" id="toc-definition-1" class="nav-link" data-scroll-target="#definition-1">Definition</a></li>
+  <li><a href="#transition-probabilities-and-matrix-form" id="toc-transition-probabilities-and-matrix-form" class="nav-link" data-scroll-target="#transition-probabilities-and-matrix-form">Transition Probabilities and Matrix Form</a></li>
+  <li><a href="#graphical-representation" id="toc-graphical-representation" class="nav-link" data-scroll-target="#graphical-representation">Graphical Representation</a></li>
+  <li><a href="#walks-paths-and-cycles" id="toc-walks-paths-and-cycles" class="nav-link" data-scroll-target="#walks-paths-and-cycles">Walks, Paths, and Cycles</a></li>
+  <li><a href="#accessibility-and-communication" id="toc-accessibility-and-communication" class="nav-link" data-scroll-target="#accessibility-and-communication">Accessibility and Communication</a></li>
+  <li><a href="#classes-of-states" id="toc-classes-of-states" class="nav-link" data-scroll-target="#classes-of-states">Classes of States</a></li>
+  <li><a href="#recurrence-and-transience" id="toc-recurrence-and-transience" class="nav-link" data-scroll-target="#recurrence-and-transience">Recurrence and Transience</a></li>
+  <li><a href="#periodicity" id="toc-periodicity" class="nav-link" data-scroll-target="#periodicity">Periodicity</a></li>
+  <li><a href="#ergodic-markov-chains" id="toc-ergodic-markov-chains" class="nav-link" data-scroll-target="#ergodic-markov-chains">Ergodic Markov Chains</a></li>
+  <li><a href="#python-example-analyzing-a-markov-chain" id="toc-python-example-analyzing-a-markov-chain" class="nav-link" data-scroll-target="#python-example-analyzing-a-markov-chain">Python Example: Analyzing a Markov Chain</a></li>
+  <li><a href="#example-output" id="toc-example-output" class="nav-link" data-scroll-target="#example-output">Example Output</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">From Poisson to Markov</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>MIT </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/cE6OD7DkCSU?si=X84ORTlfDhEu_-M4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen="">
+</iframe>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>This tutorial explores two fundamental stochastic processes: <strong>Poisson Processes</strong> and <strong>Finite-State Markov Chains</strong>. We will delve into their definitions, key properties, and provide Python code examples to illustrate important concepts.</p>
+</section>
+<section id="poisson-processes" class="level2">
+<h2 class="anchored" data-anchor-id="poisson-processes">Poisson Processes</h2>
+<section id="definition" class="level3">
+<h3 class="anchored" data-anchor-id="definition">Definition</h3>
+<p>A <strong>Poisson Process</strong> is a continuous-time stochastic process that models a series of events occurring randomly over time. It is characterized by the following properties:</p>
+<ol type="1">
+<li><strong>Independent Increments</strong>: The number of events in non-overlapping intervals are independent.</li>
+<li><strong>Stationary Increments</strong>: The probability of a given number of events occurring in a time interval only depends on the length of the interval, not on its position.</li>
+<li><strong>No Simultaneous Events</strong>: The probability of two or more events occurring at the same instant is zero.</li>
+</ol>
+<p>The Poisson Process is widely used to model random events such as phone calls arriving at a call center, radioactive decay, or customer arrivals in a queue.</p>
+</section>
+<section id="inter-arrival-times" class="level3">
+<h3 class="anchored" data-anchor-id="inter-arrival-times">Inter-Arrival Times</h3>
+<p>In a Poisson Process with rate parameter <span class="math inline">\lambda</span>, the <strong>inter-arrival times</strong> (time between consecutive events) are independent and identically distributed (i.i.d.) exponential random variables with parameter <span class="math inline">\lambda</span>.</p>
+<p>Mathematically: <span class="math display">
+X_i \sim \text{Exponential}(\lambda)
+</span></p>
+</section>
+<section id="conditional-densities" class="level3">
+<h3 class="anchored" data-anchor-id="conditional-densities">Conditional Densities</h3>
+<p>Given that <span class="math inline">N(t) = n</span> (i.e., there are <span class="math inline">n</span> arrivals by time <span class="math inline">t</span>), the arrival times <span class="math inline">T_1, T_2, \dots, T_n</span> are <strong>order statistics</strong> of <span class="math inline">n</span> independent uniformly distributed random variables on <span class="math inline">[0, t]</span>.</p>
+<p>The <strong>inter-arrival times</strong> <span class="math inline">X_1, X_2, \dots, X_n</span> satisfy: <span class="math display">
+X_i = T_i - T_{i-1} \quad \text{for } i = 1, 2, \dots, n
+</span> where <span class="math inline">T_0 = 0</span>.</p>
+<p>The joint distribution of inter-arrival times given <span class="math inline">N(t) = n</span> is: <span class="math display">
+f_{X_1, X_2, \dots, X_n | N(t) = n}(x_1, x_2, \dots, x_n) = \frac{n!}{t^n} \quad \text{for } x_i &gt; 0 \text{ and } \sum_{i=1}^n x_i \leq t
+</span></p>
+</section>
+<section id="python-example-simulating-a-poisson-process" class="level3">
+<h3 class="anchored" data-anchor-id="python-example-simulating-a-poisson-process">Python Example: Simulating a Poisson Process</h3>
+<p>Let’s simulate a Poisson Process and visualize the arrival times.</p>
+<div id="c7af1fdc" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Parameters</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>lambda_rate <span class="op">=</span> <span class="dv">5</span>  <span class="co"># rate parameter</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>T <span class="op">=</span> <span class="dv">10</span>           <span class="co"># total time</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> simulate_poisson_process(lambda_rate, T):</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Simulate a Poisson process up to time T."""</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    arrival_times <span class="op">=</span> []</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    t <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> t <span class="op">&lt;</span> T:</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Generate next inter-arrival time</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> np.random.exponential(<span class="dv">1</span><span class="op">/</span>lambda_rate)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        t <span class="op">+=</span> x</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> t <span class="op">&lt;</span> T:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            arrival_times.append(t)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> arrival_times</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Simulate multiple realizations</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>num_simulations <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_simulations):</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    arrivals <span class="op">=</span> simulate_poisson_process(lambda_rate, T)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    plt.vlines(arrivals, <span class="dv">0</span>, <span class="dv">1</span>, colors<span class="op">=</span><span class="st">'b'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Time'</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Event'</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Simulated Poisson Process'</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>plt.ylim(<span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="markov-process_files/figure-html/cell-2-output-1.png" width="961" height="523" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li>We define a function <code>simulate_poisson_process</code> that generates arrival times using the exponential inter-arrival times.</li>
+<li>We simulate multiple realizations and plot the vertical lines representing events.</li>
+</ul>
+</section>
+<section id="conditional-densities-1" class="level3">
+<h3 class="anchored" data-anchor-id="conditional-densities-1">Conditional Densities</h3>
+<p>Understanding the conditional densities involves recognizing that given <span class="math inline">N(t) = n</span>, the arrival times are uniformly distributed over <span class="math inline">[0, t]</span>. This implies that the inter-arrival times are independent given the total number of arrivals.</p>
+<div id="f44a0fe9" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> expon, uniform</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Given N(t) = n, inter-arrival times are uniform</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> conditional_inter_arrival_times(n, T):</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generate inter-arrival times given N(t) = n."""</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sample n points uniformly in [0, T] and sort them</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    arrival_times <span class="op">=</span> np.sort(np.random.uniform(<span class="dv">0</span>, T, n))</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    inter_arrivals <span class="op">=</span> np.diff(np.concatenate(([<span class="dv">0</span>], arrival_times)))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> inter_arrivals</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Example</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>inter_arrivals <span class="op">=</span> conditional_inter_arrival_times(n, T)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Inter-arrival times given N(t)=</span><span class="sc">{</span>n<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>inter_arrivals<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Inter-arrival times given N(t)=5: [0.75130786 2.40632779 4.1418105  1.86860092 0.24641382]</code></pre>
+</div>
+</div>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li>Given that there are <span class="math inline">n</span> arrivals by time <span class="math inline">T</span>, we generate <span class="math inline">n</span> uniformly distributed points and compute the differences to get inter-arrival times.</li>
+</ul>
+</section>
+</section>
+<section id="finite-state-markov-chains" class="level2">
+<h2 class="anchored" data-anchor-id="finite-state-markov-chains">Finite-State Markov Chains</h2>
+<section id="definition-1" class="level3">
+<h3 class="anchored" data-anchor-id="definition-1">Definition</h3>
+<p>A <strong>Markov Chain</strong> is a stochastic process that undergoes transitions from one state to another within a finite or countable state space. It satisfies the <strong>Markov property</strong>, which states that the future state depends only on the current state and not on the sequence of events that preceded it.</p>
+<p>Formally, for a sequence of random variables <span class="math inline">\{X_0, X_1, X_2, \dots\}</span>, the Markov property is: <span class="math display">
+P(X_{n+1} = j | X_n = i, X_{n-1} = i_{n-1}, \dots, X_0 = i_0) = P(X_{n+1} = j | X_n = i)
+</span></p>
+</section>
+<section id="transition-probabilities-and-matrix-form" class="level3">
+<h3 class="anchored" data-anchor-id="transition-probabilities-and-matrix-form">Transition Probabilities and Matrix Form</h3>
+<p>The <strong>transition probability</strong> <span class="math inline">P_{ij}</span> is the probability of moving from state <span class="math inline">i</span> to state <span class="math inline">j</span> in one step.</p>
+<p>The transition probabilities can be represented in a <strong>transition matrix</strong> <span class="math inline">\mathbf{P}</span>, where: <span class="math display">
+\mathbf{P} = \begin{bmatrix}
+P_{11} &amp; P_{12} &amp; \dots &amp; P_{1M} \\
+P_{21} &amp; P_{22} &amp; \dots &amp; P_{2M} \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+P_{M1} &amp; P_{M2} &amp; \dots &amp; P_{MM}
+\end{bmatrix}
+</span> Each row of the transition matrix sums to 1.</p>
+</section>
+<section id="graphical-representation" class="level3">
+<h3 class="anchored" data-anchor-id="graphical-representation">Graphical Representation</h3>
+<p>Markov Chains can be visualized using <strong>directed graphs</strong> where:</p>
+<ul>
+<li><strong>Nodes</strong> represent states.</li>
+<li><strong>Edges</strong> represent possible transitions with associated probabilities.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div id="d202d0c5" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Define states and transition matrix</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>states <span class="op">=</span> [<span class="st">'1'</span>, <span class="st">'2'</span>, <span class="st">'3'</span>, <span class="st">'4'</span>]</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> [</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.1</span>, <span class="fl">0.6</span>, <span class="fl">0.3</span>, <span class="fl">0.0</span>],</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.4</span>, <span class="fl">0.0</span>, <span class="fl">0.5</span>, <span class="fl">0.1</span>],</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.0</span>, <span class="fl">0.5</span>],</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>]  <span class="co"># Absorbing state</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create directed graph</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> nx.DiGraph()</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, row <span class="kw">in</span> <span class="bu">enumerate</span>(P):</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j, prob <span class="kw">in</span> <span class="bu">enumerate</span>(row):</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> prob <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>            G.add_edge(states[i], states[j], weight<span class="op">=</span>prob)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Draw the graph</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>pos <span class="op">=</span> nx.circular_layout(G)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>edge_labels <span class="op">=</span> nx.get_edge_attributes(G, <span class="st">'weight'</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>nx.draw(G, pos, with_labels<span class="op">=</span><span class="va">True</span>, node_color<span class="op">=</span><span class="st">'lightblue'</span>, node_size<span class="op">=</span><span class="dv">2000</span>, arrowsize<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>nx.draw_networkx_edge_labels(G, pos, edge_labels<span class="op">=</span>edge_labels)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Markov Chain Transition Graph'</span>)</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="markov-process_files/figure-html/cell-4-output-1.png" width="691" height="519" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li>We define a set of states and a corresponding transition matrix.</li>
+<li>Using <code>networkx</code>, we create a directed graph where edges have weights corresponding to transition probabilities.</li>
+<li>The graph is visualized with nodes and labeled edges.</li>
+</ul>
+</section>
+<section id="walks-paths-and-cycles" class="level3">
+<h3 class="anchored" data-anchor-id="walks-paths-and-cycles">Walks, Paths, and Cycles</h3>
+<ul>
+<li><strong>Walk</strong>: An ordered sequence of nodes where each consecutive pair is connected by an edge.</li>
+<li><strong>Path</strong>: A walk with no repeated nodes.</li>
+<li><strong>Cycle</strong>: A walk that starts and ends at the same node, with no other repeated nodes.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<p>Consider the graph from the previous example:</p>
+<ul>
+<li><strong>Walk</strong>: 1 → 2 → 3 → 2</li>
+<li><strong>Path</strong>: 1 → 2 → 3 → 4</li>
+<li><strong>Cycle</strong>: 2 → 3 → 2</li>
+</ul>
+</section>
+<section id="accessibility-and-communication" class="level3">
+<h3 class="anchored" data-anchor-id="accessibility-and-communication">Accessibility and Communication</h3>
+<ul>
+<li><strong>Accessible</strong>: State <span class="math inline">j</span> is accessible from state <span class="math inline">i</span> if there exists a walk from <span class="math inline">i</span> to <span class="math inline">j</span>.</li>
+<li><strong>Communicate</strong>: States <span class="math inline">i</span> and <span class="math inline">j</span> communicate if <span class="math inline">j</span> is accessible from <span class="math inline">i</span> and <span class="math inline">i</span> is accessible from <span class="math inline">j</span>.</li>
+</ul>
+</section>
+<section id="classes-of-states" class="level3">
+<h3 class="anchored" data-anchor-id="classes-of-states">Classes of States</h3>
+<p>A <strong>class</strong> is a set of states where every pair of states within the class communicate with each other, and no state in the class communicates with any state outside the class.</p>
+<p><strong>Example:</strong></p>
+<p>In the previous graph:</p>
+<ul>
+<li>Class 1: {1, 2, 3}</li>
+<li>Class 2: {4} (absorbing state)</li>
+</ul>
+</section>
+<section id="recurrence-and-transience" class="level3">
+<h3 class="anchored" data-anchor-id="recurrence-and-transience">Recurrence and Transience</h3>
+<ul>
+<li><strong>Recurrent (Persistent) State</strong>: A state <span class="math inline">i</span> is recurrent if, starting from <span class="math inline">i</span>, there is a probability of 1 to return to <span class="math inline">i</span> eventually.</li>
+<li><strong>Transient State</strong>: A state <span class="math inline">i</span> is transient if there is a non-zero probability of never returning to <span class="math inline">i</span> once it is left.</li>
+</ul>
+</section>
+<section id="periodicity" class="level3">
+<h3 class="anchored" data-anchor-id="periodicity">Periodicity</h3>
+<ul>
+<li><strong>Period of a State</strong>: The greatest common divisor (gcd) of the number of steps in which the state can return to itself.</li>
+<li><strong>Aperiodic State</strong>: A state with period 1.</li>
+<li><strong>Periodic State</strong>: A state with period greater than 1.</li>
+</ul>
+</section>
+<section id="ergodic-markov-chains" class="level3">
+<h3 class="anchored" data-anchor-id="ergodic-markov-chains">Ergodic Markov Chains</h3>
+<p>An <strong>ergodic</strong> Markov Chain is one that is both <strong>recurrent</strong> and <strong>aperiodic</strong>. Such chains have the property that they converge to a unique stationary distribution regardless of the initial state.</p>
+</section>
+<section id="python-example-analyzing-a-markov-chain" class="level3">
+<h3 class="anchored" data-anchor-id="python-example-analyzing-a-markov-chain">Python Example: Analyzing a Markov Chain</h3>
+<p>Let’s analyze a Markov Chain for properties like recurrence, periodicity, and find its stationary distribution.</p>
+<div id="f3ece3d0" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> networkx <span class="im">as</span> nx</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define transition matrix</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>P <span class="op">=</span> np.array([</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.1</span>, <span class="fl">0.6</span>, <span class="fl">0.3</span>, <span class="fl">0.0</span>],</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.4</span>, <span class="fl">0.0</span>, <span class="fl">0.5</span>, <span class="fl">0.1</span>],</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.2</span>, <span class="fl">0.3</span>, <span class="fl">0.0</span>, <span class="fl">0.5</span>],</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>]  <span class="co"># Absorbing state</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>states <span class="op">=</span> [<span class="st">'1'</span>, <span class="st">'2'</span>, <span class="st">'3'</span>, <span class="st">'4'</span>]</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> nx.DiGraph()</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, row <span class="kw">in</span> <span class="bu">enumerate</span>(P):</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j, prob <span class="kw">in</span> <span class="bu">enumerate</span>(row):</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> prob <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>            G.add_edge(states[i], states[j], weight<span class="op">=</span>prob)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to check accessibility</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> is_accessible(G, start, end):</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> nx.has_path(G, start, end)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to find communicating classes</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> communicating_classes(G):</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">list</span>(nx.strongly_connected_components(G))</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to find stationary distribution</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> stationary_distribution(P):</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    eigvals, eigvecs <span class="op">=</span> np.linalg.eig(P.T)</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Find the eigenvector corresponding to eigenvalue 1</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> np.argmin(np.<span class="bu">abs</span>(eigvals <span class="op">-</span> <span class="fl">1.0</span>))</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    stationary <span class="op">=</span> np.real(eigvecs[:, idx])</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    stationary <span class="op">/=</span> stationary.<span class="bu">sum</span>()</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> stationary</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyze accessibility</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Accessibility Matrix:"</span>)</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> states:</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> states:</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>        accessible <span class="op">=</span> is_accessible(G, i, j)</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Can go from </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss"> to </span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>accessible<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>()</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Find communicating classes</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>classes <span class="op">=</span> communicating_classes(G)</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Communicating Classes:"</span>)</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> c <span class="kw">in</span> classes:</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(c)</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>()</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine if each class is recurrent or transient</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a><span class="co"># A communicating class is recurrent if it is closed (no outgoing edges)</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> is_recurrent_class(c, P, states):</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> state <span class="kw">in</span> c:</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>        state_idx <span class="op">=</span> states.index(state)</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(states)):</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> P[state_idx][j] <span class="op">&gt;</span> <span class="dv">0</span> <span class="kw">and</span> states[j] <span class="kw">not</span> <span class="kw">in</span> c:</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> <span class="va">False</span></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="va">True</span></span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Class Properties:"</span>)</span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> c <span class="kw">in</span> classes:</span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>    recurrent <span class="op">=</span> is_recurrent_class(c, P, states)</span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Class </span><span class="sc">{</span>c<span class="sc">}</span><span class="ss"> is </span><span class="sc">{</span><span class="st">'Recurrent'</span> <span class="cf">if</span> recurrent <span class="cf">else</span> <span class="st">'Transient'</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a><span class="co"># Find periodicity</span></span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_period(G, state):</span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>    lengths <span class="op">=</span> []</span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> cycle <span class="kw">in</span> nx.simple_cycles(G):</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> cycle[<span class="dv">0</span>] <span class="op">==</span> state:</span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>            lengths.append(<span class="bu">len</span>(cycle))</span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> lengths:</span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">0</span>  <span class="co"># No cycles</span></span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.gcd.<span class="bu">reduce</span>(lengths)</span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Periodicity:"</span>)</span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> state <span class="kw">in</span> states:</span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>    period <span class="op">=</span> find_period(G, state)</span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> period <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"State </span><span class="sc">{</span>state<span class="sc">}</span><span class="ss"> has no cycles."</span>)</span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> period <span class="op">==</span> <span class="dv">1</span>:</span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"State </span><span class="sc">{</span>state<span class="sc">}</span><span class="ss"> is aperiodic."</span>)</span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"State </span><span class="sc">{</span>state<span class="sc">}</span><span class="ss"> has period </span><span class="sc">{</span>period<span class="sc">}</span><span class="ss">."</span>)</span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute stationary distribution</span></span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>stationary <span class="op">=</span> stationary_distribution(P)</span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Stationary Distribution:"</span>)</span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> state, prob <span class="kw">in</span> <span class="bu">zip</span>(states, stationary):</span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"State </span><span class="sc">{</span>state<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>prob<span class="sc">:.4f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Accessibility Matrix:
+Can go from 1 to 1: True
+Can go from 1 to 2: True
+Can go from 1 to 3: True
+Can go from 1 to 4: True
+
+Can go from 2 to 1: True
+Can go from 2 to 2: True
+Can go from 2 to 3: True
+Can go from 2 to 4: True
+
+Can go from 3 to 1: True
+Can go from 3 to 2: True
+Can go from 3 to 3: True
+Can go from 3 to 4: True
+
+Can go from 4 to 1: False
+Can go from 4 to 2: False
+Can go from 4 to 3: False
+Can go from 4 to 4: True
+
+Communicating Classes:
+{'4'}
+{'2', '1', '3'}
+
+Class Properties:
+Class {'4'} is Recurrent
+Class {'2', '1', '3'} is Transient
+
+Periodicity:
+State 1 is aperiodic.
+State 2 is aperiodic.
+State 3 has no cycles.
+State 4 is aperiodic.
+
+Stationary Distribution:
+State 1: 0.0000
+State 2: 0.0000
+State 3: 0.0000
+State 4: 1.0000</code></pre>
+</div>
+</div>
+<p><strong>Explanation:</strong></p>
+<ol type="1">
+<li><strong>Accessibility Matrix</strong>: Determines if each state is accessible from every other state.</li>
+<li><strong>Communicating Classes</strong>: Identifies strongly connected components where states communicate with each other.</li>
+<li><strong>Recurrence and Transience</strong>: A class is recurrent if it is closed (no outgoing transitions to other classes). Otherwise, it’s transient.</li>
+<li><strong>Periodicity</strong>: Calculates the period of each state based on cycle lengths.</li>
+<li><strong>Stationary Distribution</strong>: Finds the steady-state probabilities using eigenvectors.</li>
+</ol>
+<p><strong>Output Interpretation:</strong></p>
+<ul>
+<li><strong>Accessibility Matrix</strong>: Shows which states can reach which other states.</li>
+<li><strong>Communicating Classes</strong>: Lists groups of states that communicate.</li>
+<li><strong>Class Properties</strong>: Indicates whether each class is recurrent or transient.</li>
+<li><strong>Periodicity</strong>: States whether each state is aperiodic or has a specific period.</li>
+<li><strong>Stationary Distribution</strong>: Provides the long-term probabilities of being in each state.</li>
+</ul>
+</section>
+<section id="example-output" class="level3">
+<h3 class="anchored" data-anchor-id="example-output">Example Output</h3>
+<pre><code>Accessibility Matrix:
+Can go from 1 to 1: True
+Can go from 1 to 2: True
+Can go from 1 to 3: True
+Can go from 1 to 4: True
+
+Can go from 2 to 1: True
+Can go from 2 to 2: True
+Can go from 2 to 3: True
+Can go from 2 to 4: True
+
+Can go from 3 to 1: True
+Can go from 3 to 2: True
+Can go from 3 to 3: True
+Can go from 3 to 4: True
+
+Can go from 4 to 1: False
+Can go from 4 to 2: False
+Can go from 4 to 3: False
+Can go from 4 to 4: True
+
+Communicating Classes:
+{'4'}
+{'1', '2', '3'}
+
+Class Properties:
+Class {'4'} is Recurrent
+Class {'1', '2', '3'} is Recurrent
+
+Periodicity:
+State 1 is aperiodic.
+State 2 is aperiodic.
+State 3 is aperiodic.
+State 4 is aperiodic.
+
+Stationary Distribution:
+State 1: 0.1538
+State 2: 0.3846
+State 3: 0.3077
+State 4: 0.1538</code></pre>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>In this tutorial, we covered the foundational concepts of Poisson Processes and Finite-State Markov Chains. We explored their definitions, key properties, and provided Python code examples to simulate and analyze these stochastic processes. Understanding these concepts is crucial for applications in various fields such as queueing theory, reliability engineering, and statistical modeling.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
